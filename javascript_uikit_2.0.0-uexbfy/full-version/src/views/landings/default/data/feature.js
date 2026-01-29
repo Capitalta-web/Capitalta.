@@ -86,7 +86,13 @@ export const aboutCapitalta = {
       { primary: 'Enfoque en soluciones a la medida para cada cliente' },
       { primary: 'Compromiso con la transparencia y la responsabilidad financiera' }
     ],
-    actionBtn: { children: 'Conoce nuestra historia', href: '/sobre-nosotros' }
+    actionBtn: { children: 'Conoce nuestra historia', href: '/sobre-nosotros' },
+    imageSx: {
+      width: { xs: '100%', sm: '60%', md: '50%' },
+      right: { xs: 0, sm: 0, md: 0 },
+      backgroundSize: 'cover',
+      opacity: 0.6
+    }
   },
   blockData2: {
     image: '/assets/images/capitalta/team-collaboration.jpeg',
@@ -113,7 +119,13 @@ export const aboutCapitalta = {
       { primary: 'Agilidad sin sacrificar profundidad en el análisis' },
       { primary: 'Cercanía y comunicación constante con nuestros clientes' }
     ],
-    actionBtn: { children: 'Conoce nuestros principios', href: '/sobre-nosotros' }
+    actionBtn: { children: 'Conoce nuestros principios', href: '/sobre-nosotros' },
+    imageSx: {
+      width: { xs: '100%', sm: '60%', md: '50%' },
+      right: { xs: 0, sm: 0, md: 0 },
+      backgroundSize: 'cover',
+      opacity: 0.6
+    }
   }
 };
 
