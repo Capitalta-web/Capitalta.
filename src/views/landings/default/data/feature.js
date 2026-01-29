@@ -87,12 +87,7 @@ export const aboutCapitalta = {
       { primary: 'Compromiso con la transparencia y la responsabilidad financiera' }
     ],
     actionBtn: { children: 'Conoce nuestra historia', href: '/sobre-nosotros' },
-    imageSx: {
-      width: { xs: '100%', sm: '60%', md: '50%' },
-      right: { xs: 0, sm: 0, md: 0 },
-      backgroundSize: 'cover',
-      opacity: 0.6
-    }
+    imagePosition: 'left'
   },
   blockData2: {
     image: '/assets/images/capitalta/team-collaboration.jpeg',
@@ -107,7 +102,10 @@ export const aboutCapitalta = {
     icon: 'tabler-eye',
     title: 'Nuestra visión',
     description: 'Ser el socio financiero preferido de emprendedores, inversionistas y empresas que buscan crecer con orden y claridad.',
-    description2: 'Queremos construir relaciones duraderas basadas en confianza y resultados.'
+    description2: 'Queremos construir relaciones duraderas basadas en confianza y resultados.',
+    imageSx: {
+      objectPosition: 'center 20%'
+    }
   },
   blockData4: {
     image: '/assets/images/capitalta/modern-workspace.jpeg',
@@ -120,12 +118,7 @@ export const aboutCapitalta = {
       { primary: 'Cercanía y comunicación constante con nuestros clientes' }
     ],
     actionBtn: { children: 'Conoce nuestros principios', href: '/sobre-nosotros' },
-    imageSx: {
-      width: { xs: '100%', sm: '60%', md: '50%' },
-      right: { xs: 0, sm: 0, md: 0 },
-      backgroundSize: 'cover',
-      opacity: 0.6
-    }
+    imagePosition: 'left'
   }
 };
 

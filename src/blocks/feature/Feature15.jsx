@@ -43,7 +43,7 @@ function BoxContent({ icon, title, description, stackProps }) {
 
 /***************************  FEATURE - CARD  ***************************/
 
-function CardBlock({ image, title, description, icon, list, description2, actionBtn, actionBtn2, imageSx, inlineImage }) {
+function CardBlock({ image, title, description, icon, list, description2, actionBtn, actionBtn2, imageSx, inlineImage, imagePosition = 'right' }) {
   const boxPadding = { xs: 3, md: 5 };
 
   const renderContent = (overrideMaxWidth = false) => (
@@ -91,23 +91,41 @@ function CardBlock({ image, title, description, icon, list, description2, action
   );
 
   if (image && !inlineImage) {
+    const ImageBlock = (
+      <Grid size={{ xs: 12, md: 5 }} sx={{ position: 'relative', minHeight: { xs: 200, md: 'auto' } }}>
+        <GraphicsImage
+          image={image}
+          cardMediaProps={{ component: 'img' }}
+          sx={{
+            width: 1,
+            height: 1,
+            objectFit: 'cover',
+            ...imageSx
+          }}
+        />
+      </Grid>
+    );
+
+    const ContentBlock = (
+      <Grid size={{ xs: 12, md: 7 }} sx={{ p: boxPadding }}>
+        {renderContent(true)}
+      </Grid>
+    );
+
     return (
       <GraphicsCard sx={{ height: 1, overflow: 'hidden' }}>
-        <Grid container sx={{ height: 1 }}>
-          <Grid size={{ xs: 12, md: 7 }} sx={{ p: boxPadding }}>
-            {renderContent(true)}
-          </Grid>
-          <Grid size={{ xs: 12, md: 5 }} sx={{ position: 'relative', minHeight: { xs: 200, md: 'auto' } }}>
-            <GraphicsImage
-              image={image}
-              sx={{
-                width: 1,
-                height: 1,
-                objectFit: 'cover',
-                ...imageSx
-              }}
-            />
-          </Grid>
+        <Grid container sx={{ height: 1 }} direction={imagePosition === 'left' ? { xs: 'column', md: 'row' } : { xs: 'column-reverse', md: 'row' }}>
+          {imagePosition === 'left' ? (
+            <>
+              {ImageBlock}
+              {ContentBlock}
+            </>
+          ) : (
+            <>
+              {ContentBlock}
+              {ImageBlock}
+            </>
+          )}
         </Grid>
       </GraphicsCard>
     );
@@ -155,7 +173,8 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 icon: blockData1.icon,
                 list: blockData1.list,
                 actionBtn: blockData1.actionBtn,
-                imageSx: blockData1.imageSx
+                imageSx: blockData1.imageSx,
+                imagePosition: blockData1.imagePosition
               }}
             />
           </Grid>
@@ -169,7 +188,8 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 description2: blockData2.description2,
                 actionBtn2: blockData2.actionBtn2,
                 inlineImage: true,
-                imageSx: blockData2.imageSx
+                imageSx: blockData2.imageSx,
+                imagePosition: blockData2.imagePosition
               }}
             />
           </Grid>
@@ -183,7 +203,8 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 description2: blockData3.description2,
                 actionBtn2: blockData3.actionBtn2,
                 inlineImage: true,
-                imageSx: blockData3.imageSx
+                imageSx: blockData3.imageSx,
+                imagePosition: blockData3.imagePosition
               }}
             />
           </Grid>
@@ -196,7 +217,8 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 icon: blockData4.icon,
                 list: blockData4.list,
                 actionBtn: blockData4.actionBtn,
-                imageSx: blockData4.imageSx
+                imageSx: blockData4.imageSx,
+                imagePosition: blockData4.imagePosition
               }}
             />
           </Grid>
