@@ -50,23 +50,24 @@ export default function FeatureProducts({ heading, caption, features }) {
                   sx={{
                     p: { xs: 3, md: 4 },
                     height: '100%',
-                    borderRadius: 4,
+                    borderRadius: 3,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 3,
                     transition: 'all 0.3s ease-in-out',
+                    border: '1px solid',
+                    borderColor: 'divider',
                     '&:hover': {
                       transform: 'translateY(-8px)',
                       boxShadow: theme.shadows[8], // Matched with Hero7 cards
                       borderColor: 'success.main', // Matched with Hero7 green tone
+                      borderWidth: 2,
                       '& .MuiButton-root': {
                          color: 'success.main',
                          borderColor: 'success.main',
                          bgcolor: alpha(theme.palette.success.main, 0.08)
                       }
-                    },
-                    border: '1px solid',
-                    borderColor: 'divider'
+                    }
                   }}
                   variant="outlined"
                 >
