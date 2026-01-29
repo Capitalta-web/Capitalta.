@@ -20,7 +20,7 @@ import Box from '@mui/material/Box';
 // @project
 import { Feature15, FeatureProducts } from '@/blocks/feature';
 import { ProcessTimeline } from '@/blocks/process';
-import { Hero17 } from '@/blocks/hero';
+import { Hero7 } from '@/blocks/hero';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import LazySection from '@/components/LazySection';
 import SvgIcon from '@/components/SvgIcon';
@@ -118,7 +118,7 @@ export default function Main() {
 
   return (
     <>
-      <Hero17 {...hero} />
+      <Hero7 {...hero} />
       <FeatureProducts {...feature20} />
       <Feature15 {...aboutCapitalta} />
       <ContainerWrapper>

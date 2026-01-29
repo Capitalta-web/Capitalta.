@@ -76,7 +76,7 @@ export const aboutCapitalta = {
   caption:
     'Capitalta es una firma financiera mexicana que diseña soluciones de crédito claras, transparentes y accesibles para personas y empresas.',
   blockData1: {
-    image: '/assets/images/capitalta/victor-iaquA2snPbk-unsplash.jpg',
+    image: '/assets/images/capitalta/office-meeting.jpeg',
     icon: 'tabler-building-bank',
     title: 'Capitalta en pocas palabras',
     description:
@@ -86,10 +86,16 @@ export const aboutCapitalta = {
       { primary: 'Enfoque en soluciones a la medida para cada cliente' },
       { primary: 'Compromiso con la transparencia y la responsabilidad financiera' }
     ],
-    actionBtn: { children: 'Conoce nuestra historia', href: '/sobre-nosotros' }
+    actionBtn: { children: 'Conoce nuestra historia', href: '/sobre-nosotros' },
+    imageSx: {
+      width: { xs: '100%', sm: '60%', md: '50%' },
+      right: { xs: 0, sm: 0, md: 0 },
+      backgroundSize: 'cover',
+      opacity: 0.6
+    }
   },
   blockData2: {
-    image: '/assets/images/capitalta/valores-transparencia.jpg',
+    image: '/assets/images/capitalta/team-collaboration.jpeg',
     icon: 'tabler-target-arrow',
     title: 'Nuestra misión',
     description:
@@ -97,14 +103,14 @@ export const aboutCapitalta = {
     description2: 'Creemos en el crédito como una herramienta estratégica, no solo táctica.'
   },
   blockData3: {
-    image: '/assets/images/capitalta/crecimiento-empresarial.jpg',
+    image: '/assets/images/capitalta/executive-portrait.jpeg',
     icon: 'tabler-eye',
     title: 'Nuestra visión',
     description: 'Ser el socio financiero preferido de emprendedores, inversionistas y empresas que buscan crecer con orden y claridad.',
     description2: 'Queremos construir relaciones duraderas basadas en confianza y resultados.'
   },
   blockData4: {
-    image: '/assets/images/capitalta/steeph-almer-wjNX2i14QlU-unsplash.jpg',
+    image: '/assets/images/capitalta/modern-workspace.jpeg',
     icon: 'tabler-shield-check',
     title: 'Fundamentos corporativos',
     description: 'Operamos bajo principios que guían cada decisión de crédito, desde el análisis hasta el seguimiento.',
@@ -113,7 +119,13 @@ export const aboutCapitalta = {
       { primary: 'Agilidad sin sacrificar profundidad en el análisis' },
       { primary: 'Cercanía y comunicación constante con nuestros clientes' }
     ],
-    actionBtn: { children: 'Conoce nuestros principios', href: '/sobre-nosotros' }
+    actionBtn: { children: 'Conoce nuestros principios', href: '/sobre-nosotros' },
+    imageSx: {
+      width: { xs: '100%', sm: '60%', md: '50%' },
+      right: { xs: 0, sm: 0, md: 0 },
+      backgroundSize: 'cover',
+      opacity: 0.6
+    }
   }
 };
 
@@ -199,141 +211,15 @@ export const feature7 = {
   caption: 'Gain a competitive edge with real-time performance monitoring.',
   testimonials: [
     {
-      image: { light: '/assets/images/graphics/ai/graphics6-light.svg', dark: '/assets/images/graphics/ai/graphics6-dark.svg' },
-      features: [
-        {
-          icon: 'tabler-star',
-          title: 'Core value',
-          content: 'Unlock growth potential through continuous monitoring, enabling proactive strategies in a competitive landscape.'
-        }
-      ]
+      name: 'John Doe',
+      designation: 'CEO',
+      review:
+        'The team at SaasAble is incredibly talented and dedicated. They went above and beyond to ensure our project was a success.'
     },
     {
-      image: { light: '/assets/images/graphics/ai/graphics8-light.svg', dark: '/assets/images/graphics/ai/graphics8-dark.svg' },
-      features: [
-        {
-          icon: 'tabler-route',
-          title: 'Multi-cloud orchestration',
-          content: 'Enhances flexibility and resilience in a multi-cloud environment.'
-        }
-      ]
-    },
-    {
-      image: { light: '/assets/images/graphics/ai/graphics3-light.svg', dark: '/assets/images/graphics/ai/graphics3-dark.svg' },
-      features: [
-        {
-          icon: 'tabler-history',
-          title: 'Story',
-          content: 'Real-time performance insights empower teams to respond swiftly, optimizing operations and driving growth.'
-        }
-      ]
-    }
-  ],
-  breadcrumbs: [{ title: 'Core Value' }, { title: 'Culture' }, { title: 'Story' }]
-};
-
-export const feature23 = {
-  heading: 'Culture of innovation',
-  caption:
-    'Join a team that embraces forward-thinking ideas, fosters innovation, and cultivates an environment where your creativity can flourish.',
-  heading2: 'Growth',
-  caption2: 'Our culture prioritizes continuous learning, encouraging personal and professional development. ',
-  image: { light: '/assets/images/graphics/default/feature23-light.png', dark: '/assets/images/graphics/default/feature23-dark.png' },
-  primaryBtn: { children: 'Join  our Team', href: '#', sx: { textTransform: 'none' } },
-
-  features: [
-    {
-      icon: 'tabler-users',
-      title: 'Teamwork',
-      content: 'We embrace varied perspectives and backgrounds, creating an inclusive environment.'
-    },
-    {
-      icon: 'tabler-star',
-      title: 'Inclusivity',
-      content: 'We embrace varied perspectives and backgrounds, creating an inclusive environment.'
-    }
-  ]
-};
-
-export const feature18 = {
-  heading: 'Powerful admin interface',
-  caption: 'Manage data, users, and workflows effortlessly with intuitive, customizable admin controls and features.',
-  topics: [
-    {
-      icon: 'tabler-sparkles',
-      title: 'Material UI Powered',
-      title2: 'Leverage power of material UI components',
-      description: 'The power and flexibility of Material UI components in admin template',
-      image: {
-        light: '/assets/images/graphics/default/admin-dashboard.png',
-        dark: '/assets/images/graphics/default/admin-dashboard-dark.png'
-      },
-      isImageBorder: true,
-      list: [
-        { primary: 'Next.js JavaScript/TypeScript' },
-        { primary: 'Customizable themes' },
-        { primary: 'Rich form and Table components' },
-        { primary: 'Responsive grid system' }
-      ],
-      actionBtn: { children: 'View Dashboard', href: ADMIN_PATH, ...linkProps },
-      actionBtn2: { children: 'Docs', href: DOCS_URL, ...linkProps }
-    },
-    {
-      icon: 'tabler-palette',
-      title: 'Customizable Themes',
-      title2: 'Flexible theming options',
-      description: 'Tailor themes effortlessly with MUI 7 robust theming system.',
-      image: {
-        light: '/assets/images/graphics/default/admin-dashboard-2.png',
-        dark: '/assets/images/graphics/default/admin-dashboard-2-dark.png'
-      },
-      isImageBorder: true,
-      list: [
-        { primary: 'Easy options for Theming' },
-        { primary: 'Layout options' },
-        { primary: 'Color presets tailored to your web apps' },
-        { primary: 'Consistency in design' }
-      ],
-      actionBtn: { children: 'View Dashboard', href: ADMIN_PATH, ...linkProps },
-      actionBtn2: { children: 'Docs', href: DOCS_URL, ...linkProps }
-    },
-    {
-      icon: 'tabler-rocket',
-      title: 'Faster Development',
-      title2: 'Rapid development',
-      description: 'Launch projects quicker with pre-built layouts and components.',
-      image: {
-        light: '/assets/images/graphics/default/admin-dashboard-3.png',
-        dark: '/assets/images/graphics/default/admin-dashboard-3.png'
-      },
-      isImageBorder: true,
-      list: [
-        { primary: 'Time saving' },
-        { primary: 'Tested and Reliable' },
-        { primary: 'Customization ready' },
-        { primary: 'Enhanced user experience' }
-      ],
-      actionBtn: { children: 'View Dashboard', href: ADMIN_PATH, ...linkProps },
-      actionBtn2: { children: 'Docs', href: DOCS_URL, ...linkProps }
-    },
-    {
-      icon: 'tabler-scale',
-      title: 'Scalability',
-      title2: 'Build to scale',
-      description: 'Easily scale your app with flexible, modular, and extensible templates.',
-      image: {
-        light: '/assets/images/graphics/default/admin-dashboard.png',
-        dark: '/assets/images/graphics/default/admin-dashboard-dark.png'
-      },
-      isImageBorder: true,
-      list: [
-        { primary: 'Modular architecture' },
-        { primary: 'Performance optimized' },
-        { primary: 'Extensible codebase' },
-        { primary: 'Future proof diesign' }
-      ],
-      actionBtn: { children: 'View Dashboard', href: ADMIN_PATH, ...linkProps },
-      actionBtn2: { children: 'Docs', href: DOCS_URL, ...linkProps }
+      name: 'Jane Smith',
+      designation: 'CTO',
+      review: 'I highly recommend SaasAble for any software development needs. Their expertise and professionalism are unmatched.'
     }
   ]
 };

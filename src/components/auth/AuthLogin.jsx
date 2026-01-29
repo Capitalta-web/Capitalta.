@@ -2,9 +2,11 @@
 import PropTypes from 'prop-types';
 
 import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation'; // Added
 
 // @mui
 import { useTheme } from '@mui/material/styles';
+import Alert from '@mui/material/Alert'; // Added
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
@@ -18,6 +20,7 @@ import { useForm } from 'react-hook-form';
 // @project
 import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 import { NextLink } from '../routes';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient'; // Added
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
@@ -26,7 +29,12 @@ import { CloseEye, OpenEye } from '@/icons';
 
 export default function AuthLogin({ inputSx }) {
   const theme = useTheme();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const registered = searchParams.get('registered');
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added
+  const [errorMsg, setErrorMsg] = useState(''); // Added
 
   // Initialize react-hook-form
   const {
@@ -37,14 +45,42 @@ export default function AuthLogin({ inputSx }) {
   } = useForm();
 
   // Handle form submission
-  const onSubmit = (data) => {
-    console.log(data);
-    reset();
+  const onSubmit = async (data) => {
+    setErrorMsg('');
+    setIsLoading(true);
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setErrorMsg('Error de configuración de Supabase.');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password
+      });
+
+      if (error) {
+        setErrorMsg(error.message === 'Invalid login credentials' ? 'Credenciales incorrectas' : error.message);
+      } else {
+        router.push('/mi-cuenta/citas');
+        router.refresh();
+      }
+    } catch (err) {
+      setErrorMsg('Ocurrió un error inesperado.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack sx={{ gap: 2.5 }}>
+        {registered && <Alert severity="success">Registro exitoso. Por favor inicia sesión.</Alert>}
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
             Email
@@ -99,8 +135,8 @@ export default function AuthLogin({ inputSx }) {
             </Link>
           </Stack>
         </Stack>
-        <Button fullWidth type="submit" color="primary" variant="contained" sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
-          Sign In
+        <Button fullWidth type="submit" color="primary" variant="contained" disabled={isLoading} sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
+          {isLoading ? 'Iniciando...' : 'Sign In'}
         </Button>
       </Stack>
     </form>

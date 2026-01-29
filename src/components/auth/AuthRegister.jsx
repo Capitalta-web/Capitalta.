@@ -2,9 +2,11 @@
 import PropTypes from 'prop-types';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Added
 
 // @mui
 import { useTheme } from '@mui/material/styles';
+import Alert from '@mui/material/Alert'; // Added
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -17,6 +19,7 @@ import { useForm } from 'react-hook-form';
 
 // @project
 import { emailSchema, passwordSchema, firstNameSchema, lastNameSchema } from '@/utils/validationSchema';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient'; // Corrected
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
@@ -25,8 +28,11 @@ import { CloseEye, OpenEye } from '@/icons';
 
 export default function AuthRegister({ inputSx }) {
   const theme = useTheme();
+  const router = useRouter(); // Added
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenConfirm, setIsOpenConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added
+  const [errorMsg, setErrorMsg] = useState(''); // Added
 
   // Initialize react-hook-form
   const {
@@ -37,14 +43,52 @@ export default function AuthRegister({ inputSx }) {
   } = useForm();
 
   // Handle form submission
-  const onSubmit = (data) => {
-    console.log(data);
-    reset();
+  const onSubmit = async (data) => {
+    if (data.password !== data.confirmPassword) {
+      setErrorMsg('Passwords do not match');
+      return;
+    }
+
+    setIsLoading(true);
+    setErrorMsg('');
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setErrorMsg('Supabase configuration error');
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: `${data.firstname} ${data.lastname}`,
+            avatar_url: ''
+          }
+        }
+      });
+
+      if (error) {
+        setErrorMsg(error.message);
+      } else {
+        router.push('/auth/login?registered=true');
+        reset();
+      }
+    } catch (err) {
+      setErrorMsg('Unexpected error occurred');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack sx={{ gap: 2.5 }}>
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>

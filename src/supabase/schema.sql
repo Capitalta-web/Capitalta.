@@ -162,9 +162,63 @@ create trigger on_auth_user_updated
   before update on public.users
   for each row execute procedure public.handle_updated_at();
 
+-- Función para manejar nuevo usuario (insertar en public.users)
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.users (id, email, full_name, avatar_url)
+  values (
+    new.id,
+    new.email,
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'avatar_url'
+  );
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Trigger para creación de usuario
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
 -- Trigger para articulos_blog
 create trigger on_articulos_blog_updated
   before update on public.articulos_blog
   for each row execute procedure public.handle_updated_at();
 
+-- ------------------------------------------------------------
+-- 6. TABLA: citas (Citas presenciales)
+-- ------------------------------------------------------------
+create table if not exists public.citas (
+  id uuid default uuid_generate_v4() primary key,
+  created_at timestamptz default now(),
+  fecha date not null,
+  hora text not null,
+  sucursal_id text not null,
+  nombre_cliente text not null,
+  email text,
+  telefono text,
+  codigo_cita text unique not null,
+  status text default 'programada', -- programada, confirmada, cancelada, completada
+  notas text
+);
 
+-- RLS para citas
+alter table public.citas enable row level security;
+
+-- Permitir inserción pública (para que el Chatbot y la Web puedan agendar sin login estricto)
+create policy "Permitir inserción pública de citas"
+  on public.citas for insert
+  with check (true);
+
+-- Permitir lectura solo a usuarios autenticados (staff)
+create policy "Solo staff ve todas las citas"
+  on public.citas for select
+  using ( auth.role() = 'service_role' );
+
+-- Permitir a usuarios ver sus propias citas basadas en el email
+create policy "Usuarios ven sus propias citas por email"
+  on public.citas for select
+  using ( (select auth.jwt() ->> 'email') = email );

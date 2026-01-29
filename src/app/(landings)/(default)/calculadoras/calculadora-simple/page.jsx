@@ -28,8 +28,8 @@ const MONTO_MIN = 30000;
 const MONTO_MAX = 10000000;
 const PLAZO_MIN = 3;
 const PLAZO_MAX = 60;
-const TASA_MIN = 12;
-const TASA_MAX = 20;
+const TASA_MIN = 24;
+const TASA_MAX = 24;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -479,23 +479,11 @@ export default function CalculadoraSimplePage() {
                 <Box>
                   <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="subtitle2">Tasa anual estimada</Typography>
-                    <Typography variant="body2">{tasaAjustada}%</Typography>
+                    <Typography variant="body2">{tasaAjustada}% (Fija)</Typography>
                   </Stack>
-                  <Slider
-                    value={Math.min(TASA_MAX, Math.max(TASA_MIN, tasaAnual || TASA_MIN))}
-                    min={TASA_MIN}
-                    max={TASA_MAX}
-                    step={0.5}
-                    onChange={(_, value) => setTasaAnual(typeof value === 'number' ? value : tasaAnual)}
-                  />
-                  <TextField
-                    sx={{ mt: 1.5 }}
-                    label="Tasa anual estimada (%)"
-                    type="number"
-                    value={tasaAnual}
-                    onChange={(event) => setTasaAnual(Number(event.target.value) || 0)}
-                    helperText={`Rango sugerido: entre ${TASA_MIN}% y ${TASA_MAX}% anual`}
-                  />
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+                    La tasa de interés para este producto es fija del 24% anual.
+                  </Typography>
                 </Box>
               </Stack>
 

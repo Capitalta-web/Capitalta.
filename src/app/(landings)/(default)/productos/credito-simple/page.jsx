@@ -90,7 +90,7 @@ function formatoMoneda(valor) {
 export default function CreditoSimplePage() {
   const [monto, setMonto] = useState(250000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(18);
+  const [tasaAnual, setTasaAnual] = useState(24);
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -405,11 +405,13 @@ export default function CreditoSimplePage() {
                 helperText={`Rango sugerido: ${PLAZO_MIN} a ${PLAZO_MAX} meses`}
               />
               <TextField
-                label="Tasa anual estimada (%)"
+                label="Tasa anual fija (%)"
                 type="number"
                 value={tasaAnual}
-                onChange={(event) => setTasaAnual(Number(event.target.value) || 0)}
-                helperText="Ejemplo de referencia: entre 12% y 20% anual"
+                InputProps={{
+                  readOnly: true,
+                }}
+                helperText="La tasa de interés para este producto es fija del 24% anual."
               />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>

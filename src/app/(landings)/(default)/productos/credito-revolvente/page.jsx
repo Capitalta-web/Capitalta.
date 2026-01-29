@@ -40,7 +40,7 @@ export default function CreditoRevolventePage() {
   const [linea, setLinea] = useState(1000000);
   const [porcentajeUso, setPorcentajeUso] = useState(50);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(14);
+  const [tasaAnual, setTasaAnual] = useState(24);
 
   const lineaAjustada = useMemo(() => {
     if (!linea || linea <= 0) {
@@ -391,11 +391,13 @@ export default function CreditoRevolventePage() {
                 helperText={`Rango sugerido: ${PLAZO_MIN} a ${PLAZO_MAX} meses`}
               />
               <TextField
-                label="Tasa anual estimada (%)"
+                label="Tasa anual fija (%)"
                 type="number"
                 value={tasaAnual}
-                onChange={(event) => setTasaAnual(Number(event.target.value) || 0)}
-                helperText="Ejemplo de referencia: entre 10% y 18% anual"
+                InputProps={{
+                  readOnly: true,
+                }}
+                helperText="La tasa de interés para este producto es fija del 24% anual."
               />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>

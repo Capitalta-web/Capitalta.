@@ -32,7 +32,7 @@ const PORCENTAJE_MAX = 40;
 const PLAZO_MIN = 6;
 const PLAZO_MAX = 18;
 const TASA_APERTURA = 0.045;
-const TASA_MENSUAL = 0.03;
+const TASA_MENSUAL = 0.02;
 const IVA = 0.16;
 
 function formatoMoneda(valor) {
@@ -472,7 +472,7 @@ export default function CalculadoraVentaKeyPage() {
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Interés mensual</Typography>
-                    <Typography variant="body2">3% + IVA</Typography>
+                    <Typography variant="body2">2% + IVA</Typography>
                   </Stack>
                 </Stack>
               </Box>

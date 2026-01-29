@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,35 +16,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
-
-// export const metadata = {
-//   title: 'Mis citas presenciales | Capitalta'
-// };
-
-const citasMock = [
-  {
-    id: 'CAP-2026-000123',
-    fecha: '2026-02-10',
-    hora: '10:00',
-    sucursal: 'Sucursal Reforma',
-    direccion: 'Paseo de la Reforma 123, CDMX',
-    estado: 'confirmada',
-    tipoCredito: 'Crédito Simple',
-    monto: 500000
-  },
-  {
-    id: 'CAP-2026-000098',
-    fecha: '2026-01-05',
-    hora: '12:00',
-    sucursal: 'Sucursal Polanco',
-    direccion: 'Av. Presidente Masaryk 45, CDMX',
-    estado: 'completada',
-    tipoCredito: 'Crédito Empresarial',
-    monto: 2000000
-  }
-];
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { sucursalesMock } from '@/utils/citas';
 
 function formatoFecha(fechaISO) {
   const fecha = new Date(fechaISO);
@@ -67,7 +44,7 @@ function formatoMoneda(valor) {
 }
 
 function etiquetaEstado(estado) {
-  if (estado === 'confirmada') {
+  if (estado === 'confirmada' || estado === 'programada') {
     return { label: 'Confirmada', color: 'primary' };
   }
 
@@ -83,22 +60,94 @@ function etiquetaEstado(estado) {
 }
 
 export default function MisCitasPage() {
-  const [citas] = useState(citasMock);
+  const router = useRouter();
+  const [citas, setCitas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [filtro, setFiltro] = useState('todas');
+
+  useEffect(() => {
+    const fetchCitas = async () => {
+      setLoading(true);
+      const supabase = createSupabaseBrowserClient();
+      
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
+      // Verificar sesión
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setLoading(false);
+        // Opcional: Redirigir al login si no hay sesión
+        // router.push('/auth/login'); 
+        return;
+      }
+
+      setUser(session.user);
+
+      // Obtener citas del usuario (por email)
+      const { data, error } = await supabase
+        .from('citas')
+        .select('*')
+        .eq('email', session.user.email)
+        .order('fecha', { ascending: false });
+
+      if (!error && data) {
+        // Enriquecer datos con nombre de sucursal
+        const citasEnriquecidas = data.map(cita => {
+          const sucursalInfo = sucursalesMock.find(s => s.id === cita.sucursal_id);
+          return {
+            ...cita,
+            id: cita.codigo_cita || cita.id, // Preferir codigo_cita
+            sucursal: sucursalInfo ? sucursalInfo.nombre : cita.sucursal_id,
+            direccion: sucursalInfo ? sucursalInfo.direccion : '',
+            tipoCredito: 'Crédito Simple', // Placeholder, podría venir de DB si existiera columna
+            monto: 0 // Placeholder
+          };
+        });
+        setCitas(citasEnriquecidas);
+      }
+
+      setLoading(false);
+    };
+
+    fetchCitas();
+  }, [router]);
 
   const citasFiltradas = useMemo(() => {
     if (filtro === 'futuras') {
       const hoy = new Date();
-      return citas.filter((cita) => new Date(cita.fecha) >= hoy);
+      // Resetear horas para comparar solo fechas si se desea, o mantener precisión
+      return citas.filter((cita) => new Date(`${cita.fecha}T${cita.hora}`) >= hoy);
     }
 
     if (filtro === 'pasadas') {
       const hoy = new Date();
-      return citas.filter((cita) => new Date(cita.fecha) < hoy);
+      return citas.filter((cita) => new Date(`${cita.fecha}T${cita.hora}`) < hoy);
     }
 
     return citas;
   }, [citas, filtro]);
+
+  if (loading) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+        <Typography variant="h5">Inicia sesión para ver tus citas</Typography>
+        <Button variant="contained" href="/auth/login/1">Ir al Login</Button>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -177,22 +226,24 @@ export default function MisCitasPage() {
                     {citasFiltradas.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5}>
-                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          <Typography variant="body2" sx={{ color: 'text.secondary', py: 3, textAlign: 'center' }}>
                             Aún no tienes citas registradas. Agenda tu primera cita después de que tu crédito sea aprobado.
                           </Typography>
                         </TableCell>
                       </TableRow>
                     )}
                     {citasFiltradas.map((cita) => {
-                      const { label, color } = etiquetaEstado(cita.estado);
+                      const { label, color } = etiquetaEstado(cita.status || cita.estado);
 
                       return (
                         <TableRow key={cita.id}>
                           <TableCell>
                             <Typography variant="body2">{cita.id}</Typography>
+                            {/* 
                             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                               {cita.tipoCredito} · {formatoMoneda(cita.monto)}
-                            </Typography>
+                            </Typography> 
+                            */}
                           </TableCell>
                           <TableCell>
                             <Typography variant="body2">{formatoFecha(cita.fecha)}</Typography>
@@ -211,14 +262,16 @@ export default function MisCitasPage() {
                           </TableCell>
                           <TableCell align="right">
                             <Stack direction="row" spacing={1} sx={{ justifyContent: 'flex-end' }}>
-                              {cita.estado === 'confirmada' && (
+                              {(cita.status === 'confirmada' || cita.status === 'programada') && (
                                 <>
+                                  {/* 
                                   <Button size="small" variant="text">
                                     Reprogramar
                                   </Button>
                                   <Button size="small" variant="text" color="error">
                                     Cancelar
                                   </Button>
+                                  */}
                                 </>
                               )}
                               <Button size="small" variant="outlined">
