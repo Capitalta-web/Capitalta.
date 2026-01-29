@@ -2,7 +2,7 @@
 import PropTypes from 'prop-types';
 
 // @mui
-import { useTheme } from '@mui/material/styles';
+import { useTheme, alpha } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -57,8 +57,13 @@ export default function FeatureProducts({ heading, caption, features }) {
                     transition: 'all 0.3s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-8px)',
-                      boxShadow: theme.shadows[12],
-                      borderColor: 'primary.main'
+                      boxShadow: theme.shadows[8], // Matched with Hero7 cards
+                      borderColor: 'success.main', // Matched with Hero7 green tone
+                      '& .MuiButton-root': {
+                         color: 'success.main',
+                         borderColor: 'success.main',
+                         bgcolor: alpha(theme.palette.success.main, 0.08)
+                      }
                     },
                     border: '1px solid',
                     borderColor: 'divider'
@@ -70,8 +75,8 @@ export default function FeatureProducts({ heading, caption, features }) {
                       sx={{
                         width: 56,
                         height: 56,
-                        bgcolor: 'primary.lighter',
-                        color: 'primary.main',
+                        bgcolor: alpha(theme.palette.success.main, 0.1), // Matched with Hero7 green tone
+                        color: 'success.main',
                         borderRadius: 2
                       }}
                     >

@@ -2,7 +2,6 @@
 import PropTypes from 'prop-types';
 
 // @mui
-import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -20,16 +19,14 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsImage from '@/components/GraphicsImage';
 import SvgIcon from '@/components/SvgIcon';
 import Typeset from '@/components/Typeset';
-import { ThemeDirection } from '@/config';
-import { withAlpha } from '@/utils/colorUtils';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
 /***************************  FEATURE - BLOCK CONTENT ***************************/
 
-function BoxContent({ icon, title, description }) {
+function BoxContent({ icon, title, description, stackProps }) {
   return (
     (icon || title || description) && (
-      <Stack sx={{ gap: { xs: 2, md: 3 }, position: 'relative', maxWidth: { xs: '80%', sm: 280, md: 320 } }}>
+      <Stack sx={{ gap: { xs: 2, md: 3 }, position: 'relative', maxWidth: { xs: '80%', sm: 280, md: 320 }, ...stackProps?.sx }} {...stackProps}>
         {icon && (
           <Avatar sx={{ bgcolor: 'grey.300', width: { xs: 48, md: 60 }, height: { xs: 48, md: 60 }, borderRadius: 10 }}>
             <SvgIcon {...(typeof icon === 'string' ? { name: icon } : { ...icon })} />
@@ -47,76 +44,80 @@ function BoxContent({ icon, title, description }) {
 /***************************  FEATURE - CARD  ***************************/
 
 function CardBlock({ image, title, description, icon, list, description2, actionBtn, actionBtn2, imageSx, inlineImage }) {
-  const theme = useTheme();
-
-  const gc = theme.vars.palette.grey[200];
-  const gradient =
-    theme.direction === ThemeDirection.RTL
-      ? `radial-gradient(70.25% 2% at 50% 50%, ${gc} 0%,  ${withAlpha(gc, 0)} 100%)`
-      : `radial-gradient(57.25% 128.81% at 50% 50%, ${gc} 0%, ${withAlpha(gc, 0)} 100%)`;
-
   const boxPadding = { xs: 3, md: 5 };
-  const imgRadius = { xs: 20, md: 24 };
+
+  const renderContent = (overrideMaxWidth = false) => (
+    <Stack sx={{ height: 1, justifyContent: 'space-between', gap: inlineImage ? 3 : 7 }}>
+      <BoxContent
+        {...{ icon, title, description }}
+        stackProps={overrideMaxWidth ? { sx: { maxWidth: '100%' } } : undefined}
+      />
+      {image && inlineImage && (
+        <Box
+          component="img"
+          src={image}
+          alt={title}
+          sx={{
+            width: 1,
+            height: 200,
+            objectFit: 'cover',
+            borderRadius: 2,
+            ...imageSx
+          }}
+        />
+      )}
+      <Stack sx={{ gap: 2, alignItems: 'flex-start' }}>
+        {list && (
+          <List disablePadding sx={{ maxWidth: 320 }}>
+            {list.map((item, index) => (
+              <ListItem disablePadding key={index} sx={{ py: 0.25 }}>
+                <ListItemAvatar sx={{ minWidth: 32, height: 24 }}>
+                  <SvgIcon name="tabler-rosette-discount-check" stroke={1} color="grey.800" />
+                </ListItemAvatar>
+                <ListItemText>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {item.primary}
+                  </Typography>
+                </ListItemText>
+              </ListItem>
+            ))}
+          </List>
+        )}
+        {description2 && <Typography>{description2}</Typography>}
+        {actionBtn && <Button variant="contained" color="primary" {...actionBtn} />}
+        {actionBtn2 && <Button variant="outlined" color="primary" {...actionBtn2} />}
+      </Stack>
+    </Stack>
+  );
+
+  if (image && !inlineImage) {
+    return (
+      <GraphicsCard sx={{ height: 1, overflow: 'hidden' }}>
+        <Grid container sx={{ height: 1 }}>
+          <Grid size={{ xs: 12, md: 7 }} sx={{ p: boxPadding }}>
+            {renderContent(true)}
+          </Grid>
+          <Grid size={{ xs: 12, md: 5 }} sx={{ position: 'relative', minHeight: { xs: 200, md: 'auto' } }}>
+            <GraphicsImage
+              image={image}
+              sx={{
+                width: 1,
+                height: 1,
+                objectFit: 'cover',
+                ...imageSx
+              }}
+            />
+          </Grid>
+        </Grid>
+      </GraphicsCard>
+    );
+  }
 
   return (
     <GraphicsCard sx={{ height: 1, position: 'relative' }}>
-      {image && !inlineImage && (
-        <GraphicsCard>
-          <GraphicsImage
-            image={image}
-            sx={{
-              backgroundSize: 'contain',
-              backgroundPositionX: 'right',
-              borderTopRightRadius: imgRadius,
-              borderBottomRightRadius: imgRadius,
-              position: 'absolute',
-              width: 1,
-              height: 1,
-              right: { xs: -180, sm: -115, md: -90 },
-              ...imageSx
-            }}
-          />
-          <Box sx={{ background: gradient, top: 0, right: 0, position: 'absolute', width: 1, height: 1 }} />
-        </GraphicsCard>
-      )}
-      <Stack sx={{ p: boxPadding, height: 1, justifyContent: 'space-between', gap: inlineImage ? 3 : 7 }}>
-        <BoxContent {...{ icon, title, description }} />
-        {image && inlineImage && (
-          <Box
-            component="img"
-            src={image}
-            alt={title}
-            sx={{
-              width: 1,
-              height: 200,
-              objectFit: 'cover',
-              borderRadius: 2,
-              ...imageSx
-            }}
-          />
-        )}
-        <Stack sx={{ gap: 2, alignItems: 'flex-start' }}>
-          {list && (
-            <List disablePadding sx={{ maxWidth: 320 }}>
-              {list.map((item, index) => (
-                <ListItem disablePadding key={index} sx={{ py: 0.25 }}>
-                  <ListItemAvatar sx={{ minWidth: 32, height: 24 }}>
-                    <SvgIcon name="tabler-rosette-discount-check" stroke={1} color="grey.800" />
-                  </ListItemAvatar>
-                  <ListItemText>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {item.primary}
-                    </Typography>
-                  </ListItemText>
-                </ListItem>
-              ))}
-            </List>
-          )}
-          {description2 && <Typography>{description2}</Typography>}
-          {actionBtn && <Button variant="contained" color="primary" {...actionBtn} />}
-          {actionBtn2 && <Button variant="outlined" color="primary" {...actionBtn2} />}
-        </Stack>
-      </Stack>
+      <Box sx={{ p: boxPadding, height: 1 }}>
+        {renderContent()}
+      </Box>
     </GraphicsCard>
   );
 }

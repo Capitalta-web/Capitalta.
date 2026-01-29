@@ -153,8 +153,9 @@ export default function Hero7({ headLine, captionLine, primaryBtn, image1, image
                   sx={{
                     position: 'absolute',
                     top: { xs: 38, md: 46 },
-                    left: { xs: 130, sm: 60, md: isRTL ? 150 : 120 },
+                    left: { xs: 20, sm: -40, md: -60 }, // Moved to Left as requested
                     height: { xs: 280, sm: 320, md: 480 },
+                    borderRadius: { xs: 4, md: 6 }, // Rounded corners
                     zIndex: 1
                   }}
                 />
@@ -174,13 +175,14 @@ export default function Hero7({ headLine, captionLine, primaryBtn, image1, image
                 <Card
                   sx={{
                     position: 'absolute',
-                    top: { xs: 40, sm: 60, md: 40 },
-                    left: { xs: 20, sm: -40, md: -80 },
+                    top: { xs: 40, sm: 80, md: 80 },
+                    right: { xs: -20, sm: -100, md: -140 }, // Moved to Right side
                     width: { xs: 200, sm: 240, md: 280 },
                     p: 2.5,
                     borderRadius: 3,
                     boxShadow: theme.shadows[8],
-                    zIndex: 2
+                    zIndex: 2,
+                    left: 'auto' // Clear left
                   }}
                 >
                   <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
@@ -236,8 +238,8 @@ export default function Hero7({ headLine, captionLine, primaryBtn, image1, image
               <Card
                 sx={{
                   position: 'absolute',
-                  bottom: { xs: 120, md: 160 },
-                  right: { xs: -20, md: -40 },
+                  bottom: { xs: 80, md: 100 },
+                  right: { xs: 0, sm: -60, md: -80 }, // Adjusted position below/right
                   width: { xs: 140, md: 180 },
                   p: 2,
                   borderRadius: 3,
@@ -284,11 +286,12 @@ export default function Hero7({ headLine, captionLine, primaryBtn, image1, image
                 sx={{
                   position: 'absolute',
                   bottom: { xs: 20, md: 52 },
-                  left: { sm: -80, md: -60 },
+                  left: { sm: -140, md: -180 }, // Moved further left to clear image
                   borderRadius: { xs: 1.5, md: 2 },
                   p: { xs: 1, sm: 1.25, md: 1.5 },
                   bgcolor: 'primary.lighter',
-                  width: 'fit-content'
+                  width: 'fit-content',
+                  zIndex: 2 // Ensure it's above background patterns
                 }}
               >
                 <Avatar
