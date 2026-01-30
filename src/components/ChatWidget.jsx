@@ -77,6 +77,9 @@ export default function ChatWidget() {
   const [sessionId, setSessionId] = useState('');
   const messagesEndRef = useRef(null);
 
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -118,6 +121,7 @@ export default function ChatWidget() {
 
   const startListening = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      setIsVoiceMode(true); // Activar modo visual
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
       recognition.lang = 'es-MX';
@@ -128,10 +132,13 @@ export default function ChatWidget() {
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
+        // Auto-enviar si estamos en modo voz
+        handleSend(transcript);
       };
       recognition.onerror = (event) => {
         console.error('Speech recognition error', event.error);
         setIsListening(false);
+        // No cerrar modo voz inmediatamente para permitir reintentos
       };
       recognition.onend = () => setIsListening(false);
       recognition.start();
@@ -174,6 +181,11 @@ export default function ChatWidget() {
       const assistantMessage = data.message;
       
       setMessages((prev) => [...prev, assistantMessage]);
+      // Detectar redirección en el contenido del mensaje
+      if (assistantMessage.content.includes('/auth/registro') || assistantMessage.content.includes('REDIRECT_REGISTER')) {
+         if (router) router.push('/auth/registro');
+      }
+
       speakText(assistantMessage.content);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -228,7 +240,79 @@ export default function ChatWidget() {
             sx={{ borderBottom: '1px solid #eee', py: 1.5 }}
           />
           
-          <CardContent sx={{ flexGrow: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <CardContent sx={{ flexGrow: 1, overflowY: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 1, position: 'relative' }}>
+            {isVoiceMode && (
+              <Box 
+                sx={{ 
+                  position: 'absolute', 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  bottom: 0, 
+                  bgcolor: 'rgba(255,255,255,0.95)', 
+                  zIndex: 10,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 3
+                }}
+              >
+                <Box sx={{ position: 'relative', width: 100, height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                   {/* Visualizador de onda simulado */}
+                   {(isListening || isSpeaking) && (
+                     <>
+                      <Box sx={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '50%',
+                        bgcolor: isSpeaking ? 'primary.light' : 'error.light',
+                        opacity: 0.3,
+                        animation: 'pulse 1.5s infinite'
+                      }} />
+                      <Box sx={{
+                        position: 'absolute',
+                        width: '70%',
+                        height: '70%',
+                        borderRadius: '50%',
+                        bgcolor: isSpeaking ? 'primary.main' : 'error.main',
+                        opacity: 0.5,
+                        animation: 'pulse 1.5s infinite 0.5s'
+                      }} />
+                     </>
+                   )}
+                   <Avatar sx={{ width: 60, height: 60, bgcolor: isSpeaking ? 'primary.dark' : (isListening ? 'error.dark' : 'grey.500') }}>
+                     {isSpeaking ? <ChatIcon /> : <MicIcon active={true} />}
+                   </Avatar>
+                </Box>
+                
+                <Typography variant="h6" align="center" sx={{ px: 2 }}>
+                  {isSpeaking ? "Hablando..." : (isListening ? "Escuchando..." : "Toque para hablar")}
+                </Typography>
+                
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                   <Button variant="outlined" color="error" onClick={() => setIsVoiceMode(false)}>
+                     Salir
+                   </Button>
+                   {!isListening && !isSpeaking && (
+                      <Button variant="contained" onClick={startListening}>
+                        Hablar
+                      </Button>
+                   )}
+                </Box>
+                <style>
+                  {`
+                    @keyframes pulse {
+                      0% { transform: scale(1); opacity: 0.5; }
+                      50% { transform: scale(1.2); opacity: 0.2; }
+                      100% { transform: scale(1); opacity: 0.5; }
+                    }
+                  `}
+                </style>
+              </Box>
+            )}
+
             <List sx={{ p: 0 }}>
               {messages.map((msg, index) => (
                 <ListItem key={index} alignItems="flex-start" sx={{ px: 0, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
