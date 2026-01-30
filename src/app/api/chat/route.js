@@ -262,7 +262,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
       // Segunda llamada al modelo con los resultados de las herramientas
       const secondResponse = await client.chat.completions.create({
-        model: process.env.XAI_API_KEY ? 'grok-4-fast-non-reasoning' : 'gpt-3.5-turbo',
+        model: process.env.XAI_API_KEY ? 'grok-beta' : 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: currentSystemPrompt },
           ...messagesWithTools

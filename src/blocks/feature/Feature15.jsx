@@ -226,7 +226,8 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 description: blockData4.description,
                 icon: blockData4.icon,
                 list: blockData4.list,
-                actionBtn: blockData4.actionBtn
+                actionBtn: blockData4.actionBtn,
+                imagePosition: 'right'
               }}
             />
           </Grid>
@@ -246,7 +247,8 @@ CardBlock.propTypes = {
   list: PropTypes.array,
   description2: PropTypes.string,
   actionBtn: PropTypes.any,
-  actionBtn2: PropTypes.any
+  actionBtn2: PropTypes.any,
+  imagePosition: PropTypes.string
 };
 
 Feature15.propTypes = {

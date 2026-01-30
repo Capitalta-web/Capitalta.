@@ -55,6 +55,15 @@ const WhatsAppIcon = () => (
   </svg>
 );
 
+const MicIcon = ({ active }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={active ? "#ef4444" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+    <line x1="12" y1="19" x2="12" y2="23"></line>
+    <line x1="8" y1="23" x2="16" y2="23"></line>
+  </svg>
+);
+
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -62,6 +71,8 @@ export default function ChatWidget() {
     { role: 'assistant', content: '¡Hola! Soy el asistente virtual de Capitalta. ¿En qué puedo ayudarte hoy?' }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [userContext, setUserContext] = useState(null);
   const [sessionId, setSessionId] = useState('');
   const messagesEndRef = useRef(null);
@@ -99,10 +110,53 @@ export default function ChatWidget() {
     scrollToBottom();
   }, [messages, isOpen]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+  }, []);
 
-    const userMessage = { role: 'user', content: input };
+  const startListening = () => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'es-MX';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => setIsListening(true);
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+      };
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+      };
+      recognition.onend = () => setIsListening(false);
+      recognition.start();
+    } else {
+      alert('Tu navegador no soporta reconocimiento de voz.');
+    }
+  };
+
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-MX';
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleSend = async (textOverride = null) => {
+    const textToSend = textOverride || input;
+    if (!textToSend.trim() || isLoading) return;
+
+    const userMessage = { role: 'user', content: textToSend };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
@@ -110,30 +164,22 @@ export default function ChatWidget() {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-          userContext,
-          sessionId
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...messages, userMessage], userContext, sessionId })
       });
 
-      if (!response.ok) {
-        throw new Error('Error en la comunicación');
-      }
+      if (!response.ok) throw new Error('Error en la comunicación');
 
       const data = await response.json();
-      const assistantMessage = data.message; // Expecting { role: 'assistant', content: '...' }
-
+      const assistantMessage = data.message;
+      
       setMessages((prev) => [...prev, assistantMessage]);
+      speakText(assistantMessage.content);
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: 'Lo siento, tuve un problema al procesar tu mensaje. Por favor intenta de nuevo.' }
-      ]);
+      const errorMessage = { role: 'assistant', content: 'Lo siento, tuve un problema al procesar tu mensaje. Por favor intenta de nuevo.' };
+      setMessages((prev) => [...prev, errorMessage]);
+      speakText(errorMessage.content);
     } finally {
       setIsLoading(false);
     }
@@ -239,18 +285,21 @@ export default function ChatWidget() {
               Contactar por WhatsApp
             </Button>
             <Box sx={{ display: 'flex', gap: 1 }}>
+              <IconButton aria-label="microphone" onClick={startListening} color={isListening ? 'error' : 'default'} disabled={isLoading}>
+                <MicIcon active={isListening} />
+              </IconButton>
               <TextField
                 fullWidth
-                placeholder="Escribe un mensaje..."
+                placeholder={isListening ? "Escuchando..." : "Escribe un mensaje..."}
                 variant="outlined"
                 size="small"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyPress}
-                disabled={isLoading}
+                disabled={isLoading || isListening}
               />
-              <IconButton color="primary" onClick={handleSend} disabled={!input.trim() || isLoading}>
-                <SendIcon />
+              <IconButton color="primary" aria-label="send" onClick={() => handleSend()} disabled={isLoading || !input.trim()}>
+                {isLoading ? <CircularProgress size={24} /> : <SendIcon />}
               </IconButton>
             </Box>
           </Box>

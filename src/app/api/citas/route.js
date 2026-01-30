@@ -25,19 +25,24 @@ export async function POST(request) {
     nombre_cliente, 
     email, 
     telefono, 
-    codigo_cita,
-    cliente_id, // Opcional
-    credito_id  // Opcional
+    codigo_cita
   } = body;
 
   if (!sucursal_id || !fecha || !hora || !nombre_cliente || !codigo_cita) {
     return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
   }
 
+  // Validación básica de sucursal (según valores esperados)
+  const sucursalesValidas = ['reforma', 'polanco'];
+  if (!sucursalesValidas.includes(sucursal_id.toLowerCase())) {
+     // Si no es una de las conocidas, permitimos pasar pero logueamos advertencia o rechazamos si es estricto.
+     // Para MVP flexible, lo dejamos pasar pero normalizamos a minúsculas.
+  }
+
   const { data, error } = await supabase
     .from('citas')
     .insert({
-      sucursal_id,
+      sucursal_id: sucursal_id.toLowerCase(),
       fecha,
       hora,
       nombre_cliente,
@@ -45,8 +50,7 @@ export async function POST(request) {
       telefono,
       codigo_cita,
       status: 'programada',
-      // Campos opcionales si existen en la tabla (si no, Supabase los ignorará o dará error si no están en schema)
-      // Asegúrate de que el schema coincida.
+      // Eliminamos campos cliente_id y credito_id ya que no existen en el schema actual de 'citas'
     })
     .select()
     .single();
