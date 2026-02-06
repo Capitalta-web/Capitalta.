@@ -1,7 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -15,8 +18,16 @@ import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+
+import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import OtpInput from 'react-otp-input';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 const MONTO_MIN = 30000;
 const MONTO_MAX = 10000000;
@@ -49,6 +60,10 @@ function formatoMoneda(valor) {
 }
 
 export default function RegistroWizardPage() {
+  const router = useRouter();
+  const theme = useTheme();
+  const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [paso, setPaso] = useState(0);
 
   const [monto, setMonto] = useState(250000);
@@ -63,7 +78,21 @@ export default function RegistroWizardPage() {
   const [empresa, setEmpresa] = useState('');
   const [rfc, setRfc] = useState('');
 
+  // Password fields
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // OTP fields
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [timer, setTimer] = useState(60);
+  const [canResend, setCanResend] = useState(false);
+
   const [errorPaso, setErrorPaso] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -83,12 +112,25 @@ export default function RegistroWizardPage() {
 
   const pagoMensual = useMemo(() => calcularPagoMensual(montoAjustado, plazoAjustado, TASA_ANUAL), [montoAjustado, plazoAjustado]);
 
-  const pasos = ['Monto y plazo', 'Tipo de cliente', 'Datos personales', 'Verificación', 'Confirmación'];
+  // Timer effect
+  useEffect(() => {
+    let interval;
+    if (otpSent && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setCanResend(true);
+    }
+    return () => clearInterval(interval);
+  }, [otpSent, timer]);
 
-  const puedeVolver = paso > 0;
+  const pasos = ['Monto y plazo', 'Tipo de cliente', 'Datos personales', 'Verificación OTP', 'Confirmación'];
+
+  const puedeVolver = paso > 0 && !loading;
   const esUltimoPaso = paso === pasos.length - 1;
 
-  const manejarSiguiente = () => {
+  const manejarSiguiente = async () => {
     setErrorPaso('');
 
     if (paso === 0) {
@@ -110,9 +152,79 @@ export default function RegistroWizardPage() {
         setErrorPaso('Nombre, apellido, email y teléfono son obligatorios.');
         return;
       }
+      // Basic email validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        setErrorPaso('Ingresa un email válido.');
+        return;
+      }
 
       if (tipoCliente === 'persona_moral' && (!empresa || !rfc)) {
         setErrorPaso('Empresa y RFC son obligatorios para Persona Moral.');
+        return;
+      }
+
+      // Password validation
+      if (!password || !confirmPassword) {
+        setErrorPaso('Debes establecer una contraseña.');
+        return;
+      }
+      if (password.length < 6) {
+        setErrorPaso('La contraseña debe tener al menos 6 caracteres.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setErrorPaso('Las contraseñas no coinciden.');
+        return;
+      }
+
+      // Send OTP
+      setLoading(true);
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      setLoading(false);
+
+      if (error) {
+        setErrorPaso(error.message);
+        return;
+      }
+      
+      setOtpSent(true);
+      setTimer(60);
+      setCanResend(false);
+    }
+
+    if (paso === 3) {
+      if (!otp || otp.length < 6) {
+        setErrorPaso('Ingresa el código de 6 dígitos.');
+        return;
+      }
+
+      setLoading(true);
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+
+      if (error) {
+        setLoading(false);
+        setErrorPaso('Código inválido o expirado.');
+        return;
+      }
+
+      // Set Password and Update Profile
+      const { error: updateError } = await supabase.auth.updateUser({ 
+        password,
+        data: {
+            full_name: `${nombre} ${apellido}`,
+            tipo_persona: tipoCliente,
+            empresa: empresa || null,
+            rfc: rfc || null,
+            telefono: telefono || null
+        }
+      });
+
+      setLoading(false);
+
+      if (updateError) {
+        setErrorPaso('Error al actualizar perfil: ' + updateError.message);
         return;
       }
     }
@@ -126,6 +238,46 @@ export default function RegistroWizardPage() {
     setErrorPaso('');
     if (paso > 0) {
       setPaso((valor) => valor - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setSubmitError('');
+
+    try {
+      // User is already authenticated from Step 4
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) throw new Error('No hay sesión activa. Por favor recarga la página.');
+
+      const { error } = await supabase
+        .from('solicitudes_credito')
+        .insert({
+          cliente_id: user.id,
+          monto_solicitado: montoAjustado,
+          plazo_meses: plazoAjustado,
+          tipo_credito: 'simple', 
+          detalles: {
+            pago_mensual: pagoMensual,
+            tasa_anual: TASA_ANUAL
+          },
+          estatus: 'pendiente' // Explicit status
+        });
+
+      if (error) throw error;
+
+      setSubmitError('¡Cuenta creada y solicitud enviada con éxito! Redirigiendo...');
+      setTimeout(() => {
+        router.push('/dashboard/client');
+      }, 2000);
+
+    } catch (err) {
+      console.error(err);
+      setSubmitError(err.message || 'Ocurrió un error inesperado');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -257,6 +409,7 @@ export default function RegistroWizardPage() {
             onChange={(event) => setEmpresa(event.target.value)}
             required={tipoCliente === 'persona_moral'}
             fullWidth
+            helperText={tipoCliente === 'persona_moral' ? 'Requerido' : 'Opcional'}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -266,36 +419,129 @@ export default function RegistroWizardPage() {
             onChange={(event) => setRfc(event.target.value)}
             required={tipoCliente === 'persona_moral'}
             fullWidth
+            helperText={tipoCliente === 'persona_moral' ? 'Requerido' : 'Opcional'}
           />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Contraseña"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    {showPassword ? <IconEyeOff size={20} /> : <IconEye size={20} />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Confirmar Contraseña"
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            fullWidth
+            required
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end">
+                    {showConfirmPassword ? <IconEyeOff size={20} /> : <IconEye size={20} />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            La contraseña debe tener al menos 6 caracteres.
+          </Typography>
         </Grid>
       </Grid>
     </Stack>
   );
 
+  const handleResend = async () => {
+    setLoading(true);
+    const supabase = createSupabaseBrowserClient();
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    setLoading(false);
+    
+    if (error) {
+      setErrorPaso(error.message);
+    } else {
+      setOtpSent(true);
+      setTimer(60);
+      setCanResend(false);
+    }
+  };
+
   const renderPaso4 = () => (
     <Stack spacing={3}>
-      <Typography variant="h5">Paso 4: Verificación de seguridad</Typography>
+      <Typography variant="h5">Paso 4: Verificación OTP</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 600 }}>
-        Hemos enviado un código de verificación al correo registrado {email || '(correo pendiente)'}. Ingresa el código para confirmar tu
-        identidad y proteger tu información.
+        Hemos enviado un código de verificación de 6 dígitos al correo <strong>{email}</strong>. Por favor ingrésalo para continuar.
       </Typography>
-      <Stack spacing={2}>
-        <TextField label="Código OTP" placeholder="Ingresa los 6 dígitos" inputProps={{ maxLength: 6, inputMode: 'numeric' }} />
-        <Button variant="text" sx={{ alignSelf: 'flex-start' }}>
-          Reenviar código
+      
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+        <OtpInput
+          value={otp}
+          onChange={setOtp}
+          numInputs={6}
+          inputType="tel"
+          shouldAutoFocus
+          containerStyle={{ gap: downSM ? 8 : 12, justifyContent: 'center' }}
+          inputStyle={{
+            width: downSM ? 40 : 50,
+            height: downSM ? 40 : 56,
+            fontSize: 16,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderStyle: 'solid',
+            outline: 'none',
+            borderColor: theme.vars.palette.divider
+          }}
+          renderInput={(props) => <input {...props} />}
+        />
+      </Box>
+
+      <Box sx={{ textAlign: 'center' }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          ¿No recibiste el código?
+        </Typography>
+        <Button 
+            disabled={!canResend || loading} 
+            onClick={handleResend}
+            variant="text"
+            sx={{ mt: 1 }}
+        >
+            {canResend ? 'Reenviar código' : `Reenviar en ${timer}s`}
         </Button>
-      </Stack>
+      </Box>
     </Stack>
   );
 
   const renderPaso5 = () => (
     <Stack spacing={3}>
       <Typography variant="h5">Paso 5: Confirmación</Typography>
-      <Typography variant="h4">¡Bienvenido a Capitalta!</Typography>
+      <Typography variant="h4">¡Todo listo para crear tu cuenta!</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 640 }}>
-        Hemos recibido tu solicitud con los datos proporcionados. Un asesor revisará tu información y te contactará para los siguientes
-        pasos, incluyendo la coordinación de tu cita presencial para firma y entrega de garantías.
+        Revisa los detalles de tu solicitud. Al confirmar, se creará tu cuenta y un asesor revisará tu información.
       </Typography>
+
+      {submitError && (
+        <Alert severity={submitError.includes('éxito') ? 'success' : 'error'} sx={{ mb: 2 }}>
+          {submitError}
+        </Alert>
+      )}
 
       <Box
         sx={{
@@ -343,12 +589,16 @@ export default function RegistroWizardPage() {
         </Grid>
       </Box>
 
-      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
-        <Button variant="contained" color="primary" href="/mi-cuenta">
-          Ir a mi cuenta
-        </Button>
-        <Button variant="outlined" color="primary" href="/calculadoras/calculadora-simple">
-          Descargar cotización
+      <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', mt: 2 }}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleSubmit}
+          disabled={loading}
+          size="large"
+          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+        >
+          {loading ? 'Procesando...' : 'Finalizar y Crear Cuenta'}
         </Button>
       </Stack>
     </Stack>

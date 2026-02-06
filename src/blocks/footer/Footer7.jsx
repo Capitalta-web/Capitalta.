@@ -79,7 +79,15 @@ const data = [
       },
       {
         label: 'Términos y Condiciones',
-        link: { href: '/terminos-y-condiciones' }
+        link: { href: '/legales/terminos-y-condiciones' }
+      },
+      {
+        label: 'Aviso UNE',
+        link: { href: '/assets/docs/AVISO_UNE.pdf', target: '_blank', rel: 'noopener noreferrer' }
+      },
+      {
+        label: 'REDECO',
+        link: { href: '/assets/docs/REDECO_ACUSE.pdf', target: '_blank', rel: 'noopener noreferrer' }
       }
     ]
   }

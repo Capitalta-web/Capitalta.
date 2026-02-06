@@ -6,6 +6,25 @@ export let SocialTypes;
   SocialTypes['VERTICAL'] = 'vertical';
 })(SocialTypes || (SocialTypes = {}));
 
+export let AuthType;
+
+(function (AuthType) {
+  AuthType['JWT'] = 'jwt';
+  AuthType['FIREBASE'] = 'firebase';
+  AuthType['AWS'] = 'aws';
+  AuthType['AUTH0'] = 'auth0';
+  AuthType['SUPABASE'] = 'supabase';
+})(AuthType || (AuthType = {}));
+
+export let AuthRole;
+
+(function (AuthRole) {
+  AuthRole['ADMIN'] = 'admin';
+  AuthRole['USER'] = 'user';
+  AuthRole['CLIENTE'] = 'cliente';
+  AuthRole['ANALISTA'] = 'analista';
+})(AuthRole || (AuthRole = {}));
+
 //@faq.ts
 export let ListBadgeColors;
 
@@ -50,3 +69,20 @@ export let DynamicComponentType;
   DynamicComponentType['ICON'] = 'icons';
   DynamicComponentType['IMAGE'] = 'images';
 })(DynamicComponentType || (DynamicComponentType = {}));
+
+// Added missing enums
+export let AvatarSize;
+(function (AvatarSize) {
+    AvatarSize["BADGE"] = "badge";
+    AvatarSize["XS"] = "xs";
+    AvatarSize["SM"] = "sm";
+    AvatarSize["MD"] = "md";
+    AvatarSize["LG"] = "lg";
+    AvatarSize["XL"] = "xl";
+})(AvatarSize || (AvatarSize = {}));
+
+export let ChipIconPosition;
+(function (ChipIconPosition) {
+    ChipIconPosition["LEFT"] = "left";
+    ChipIconPosition["RIGHT"] = "right";
+})(ChipIconPosition || (ChipIconPosition = {}));

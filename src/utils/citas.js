@@ -28,18 +28,11 @@ export const horasDisponibles = ['09:00', '10:00', '11:00', '14:00', '15:00', '1
 export const sucursalesMock = [
   {
     id: 'reforma',
-    nombre: 'Sucursal Reforma',
-    direccion: 'Paseo de la Reforma 123, CDMX',
+    nombre: 'Oficinas Centrales',
+    direccion: 'Torre Cuarzo, Piso 33, Av. Paseo de la Reforma 26, Col. Juárez',
     ciudad: 'Ciudad de México',
     estado: 'CDMX',
-    telefono: '+52 (55) 0000 0001'
-  },
-  {
-    id: 'polanco',
-    nombre: 'Sucursal Polanco',
-    direccion: 'Av. Presidente Masaryk 45, CDMX',
-    ciudad: 'Ciudad de México',
-    estado: 'CDMX',
-    telefono: '+52 (55) 0000 0002'
+    cp: '06600',
+    telefono: '+52 (55) 0000 0001' // TODO: Actualizar con teléfono real si está disponible
   }
 ];

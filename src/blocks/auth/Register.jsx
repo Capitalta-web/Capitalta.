@@ -30,7 +30,7 @@ import Circles from '@/images/Circles';
  * - [Register API](https://capitalta.gitbook.io/Capitalta/ui-kit/development/components/auth/register#props-details)
  */
 
-export default function Register({ heading, caption }) {
+export default function Register({ heading, caption, loginLink }) {
   return (
     <ContainerWrapper sx={{ position: 'relative', overflowX: 'hidden' }}>
       <Stack sx={{ minHeight: { md: 800 }, justifyContent: 'space-between', gap: { xs: 3, sm: 4 }, py: SECTION_COMMON_PY }}>
@@ -62,10 +62,10 @@ export default function Register({ heading, caption }) {
                 component={NextLink}
                 underline="hover"
                 variant="subtitle1"
-                href=""
+                href={loginLink || '/auth/login'}
                 sx={{ '&:hover': { color: 'primary.dark' } }}
                 rel="noopener noreferrer"
-                aria-label="sign up"
+                aria-label="sign in"
               >
                 Sign In
               </Link>
@@ -86,4 +86,4 @@ export default function Register({ heading, caption }) {
   );
 }
 
-Register.propTypes = { heading: PropTypes.string, caption: PropTypes.string };
+Register.propTypes = { heading: PropTypes.string, caption: PropTypes.string, loginLink: PropTypes.string };

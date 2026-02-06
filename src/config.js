@@ -13,6 +13,7 @@ import {
   Heebo
 } from 'next/font/google';
 import localFont from 'next/font/local';
+import { AuthType } from '@/enum';
 
 export let Themes;
 
@@ -43,8 +44,32 @@ export let ThemeDirection;
   ThemeDirection['RTL'] = 'rtl';
 })(ThemeDirection || (ThemeDirection = {}));
 
+export let ThemeI18n;
+
+(function (ThemeI18n) {
+  ThemeI18n['EN'] = 'en';
+  ThemeI18n['FR'] = 'fr';
+  ThemeI18n['RO'] = 'ro';
+  ThemeI18n['ZH'] = 'zh';
+})(ThemeI18n || (ThemeI18n = {}));
+
+export const AUTH_CONFIG_KEY = 'auth-config';
+export const AUTH_USER_KEY = 'auth-user';
+export const AUTH_PROVIDER = AuthType.SUPABASE;
+export const SOCIAL_AUTH_PROVIDER = AuthType.SUPABASE;
+
+export const defaultAuthConfig = {
+  isLoggedIn: false,
+  isInitialized: false,
+  user: null
+};
+
 export const CSS_VAR_PREFIX = '';
 export const DEFAULT_THEME_MODE = ThemeMode.SYSTEM;
+export const APP_DEFAULT_PATH = '/dashboard';
+export const DRAWER_WIDTH = 260;
+export const MINI_DRAWER_WIDTH = 60;
+export const HEADER_HEIGHT = 74;
 
 /***************************  CONFIG  ***************************/
 
@@ -78,36 +103,42 @@ const fontClashDisplay = localFont({
   variable: '--font-clash-display'
 });
 
-//HRM
-const fontSatoshi = localFont({ src: '../public/assets/fonts/satoshi/Satoshi-Variable.ttf', variable: '--font-satoshi' });
-const fontUncutSanaVF = localFont({ src: '../public/assets/fonts/uncut-sans/Uncut-Sans-VF.ttf', variable: '--font-uncut' });
+// @hrm
+const fontUncutSans = localFont({
+  src: '../public/assets/fonts/uncut-sans/Uncut-Sans-VF.ttf',
+  variable: '--font-uncut-sans'
+});
+const fontSatoshi = localFont({
+  src: '../public/assets/fonts/satoshi/Satoshi-Variable.ttf',
+  variable: '--font-satoshi'
+});
 
-//@plugin
-const fontGeneralSans = localFont({ src: '../public/assets/fonts/general-sana/GeneralSans-Variable.ttf', variable: '--font-general-sans' });
+// @plugin
+const fontGeneralSans = localFont({
+  src: '../public/assets/fonts/general-sana/GeneralSans-Variable.ttf',
+  variable: '--font-general-sans'
+});
 
-//@crypto
-const fontUrbanist = Urbanist({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
+// @lms
+const fontManrope = Manrope({ subsets: ['latin'] });
+const fontInter = Inter({ subsets: ['latin'] });
 
-//@lms
-const fontManrope = Manrope({ subsets: ['latin'], weight: ['400', '500', '700'] });
-const fontInter = Inter({ subsets: ['latin'], weight: ['400', '500', '700'] });
+export const FONT_ROBOTO = fontRobot;
+export const FONT_SYNE = fontSyne;
+export const FONT_HEEBO = fontHeebo;
+export const FONT_ARCHIVO = fontArchivo;
+export const FONT_FIGTREE = fontFigtree;
+export const FONT_SPACE_GROTESK = fontSpaceGrotesk;
+export const FONT_DM_SANS = fontDMSans;
+export const FONT_DMSANS = fontDMSans; // Alias for compatibility
+export const FONT_URBANIST = Urbanist({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
+export const FONT_PLUS_JAKARTA = fontPlusJakarta;
+export const FONT_SATOSHI = fontSatoshi;
+export const FONT_CLASH_DISPLAY = fontClashDisplay;
+export const FONT_UNCUT_SANS_VF = fontUncutSans;
+export const FONT_GENERAL_SANS = fontGeneralSans;
+export const FONT_MANROPE = fontManrope;
+export const FONT_INTER = fontInter;
 
-//@capitalta
-const fontAlta = localFont({ src: '../public/assets/fonts/alta-regular.otf', variable: '--font-alta' });
-
-export const FONT_SYNE = fontSyne.style.fontFamily;
-export const FONT_HEEBO = fontHeebo.style.fontFamily;
-export const FONT_ROBOTO = fontRobot.style.fontFamily;
-export const FONT_ARCHIVO = fontArchivo.style.fontFamily;
-export const FONT_FIGTREE = fontFigtree.style.fontFamily;
-export const FONT_SPACE_GROTESK = fontSpaceGrotesk.style.fontFamily;
-export const FONT_DMSANS = fontDMSans.style.fontFamily;
-export const FONT_PLUS_JAKARTA = fontPlusJakarta.style.fontFamily;
-export const FONT_CLASH_DISPLAY = fontClashDisplay.style.fontFamily;
-export const FONT_SATOSHI = fontSatoshi.style.fontFamily;
-export const FONT_UNCUT_SANS_VF = fontUncutSanaVF.style.fontFamily;
-export const FONT_GENERAL_SANS = fontGeneralSans.style.fontFamily;
-export const FONT_URBANIST = fontUrbanist.style.fontFamily;
-export const FONT_MANROPE = fontManrope.style.fontFamily;
-export const FONT_INTER = fontInter.style.fontFamily;
-export const FONT_ALTA = fontAlta.style.fontFamily;
+export const FONT_ALTA = fontSyne; // Capitalta primary
+export const FONT_GENERAL = fontHeebo; // Capitalta body

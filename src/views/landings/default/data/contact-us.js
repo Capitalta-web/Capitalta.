@@ -20,7 +20,7 @@ export const contactUS = {
     {
       icon: 'tabler-map-pin',
       title: 'Ubicación',
-      content: 'Ciudad de México, México',
+      content: 'Torre Cuarzo, Piso 33, Av. Paseo de la Reforma 26, Col. Juárez, Alcaldía Cuauhtémoc, CDMX, C.P. 06600',
       link: { children: 'Ver mapa', href: '#', target: '_blank', rel: 'noopener noreferrer' }
     }
   ]

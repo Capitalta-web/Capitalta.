@@ -144,6 +144,7 @@ export const feature20 = {
       plazo: '12–120 meses',
       href: '/productos/credito-empresarial'
     },
+    /*
     {
       icon: 'tabler-refresh',
       title: 'Crédito Revolvente',
@@ -160,6 +161,7 @@ export const feature20 = {
       plazo: 'Plazos flexibles',
       href: '/productos/credito-venta-key'
     }
+    */
   ]
 };
 

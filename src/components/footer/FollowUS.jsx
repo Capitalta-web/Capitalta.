@@ -16,28 +16,20 @@ import { IconType } from '@/enum';
 const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 const socialIcons = [
   {
-    icon: 'tabler-filled-linkedin',
-    link: { href: `${branding.company.socialLink.linkedin}`, ...linkProps }
-  },
-  // {
-  //   icon: 'tabler-filled-instagram',
-  //   link: { href: `${branding.company.socialLink.instagram}` }
-  // },
-  {
-    icon: 'tabler-filled-facebook',
+    icon: 'tabler-brand-facebook',
     link: { href: `${branding.company.socialLink.facebook}`, ...linkProps }
   },
   {
-    icon: 'tabler-filled-youtube',
-    link: { href: `${branding.company.socialLink.youtube}`, ...linkProps }
+    icon: 'tabler-brand-instagram',
+    link: { href: `${branding.company.socialLink.instagram}`, ...linkProps }
   },
   {
-    icon: 'tabler-filled-brand-github',
-    link: { href: `${branding.company.socialLink.github}`, ...linkProps }
+    icon: 'tabler-brand-tiktok',
+    link: { href: `${branding.company.socialLink.tiktok}`, ...linkProps }
   },
   {
-    icon: 'tabler-filled-dribble',
-    link: { href: `${branding.company.socialLink.dribble}`, ...linkProps }
+    icon: 'tabler-brand-linkedin',
+    link: { href: `${branding.company.socialLink.linkedin}`, ...linkProps }
   }
 ];
 

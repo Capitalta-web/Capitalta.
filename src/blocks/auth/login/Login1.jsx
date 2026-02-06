@@ -52,7 +52,7 @@ const buttonStyle = { borderRadius: '50%' };
  * - [Login1 API](https://capitalta.gitbook.io/Capitalta/ui-kit/development/components/auth/login/login1#props-details)
  */
 
-export default function Login1({ heading, caption, testimonials, image }) {
+export default function Login1({ heading, caption, testimonials, image, signupLink }) {
   const sliderRef = useRef(null);
 
   return (
@@ -78,7 +78,7 @@ export default function Login1({ heading, caption, testimonials, image }) {
                   component={NextLink}
                   variant="subtitle1"
                   underline="hover"
-                  href=""
+                  href={signupLink || '/auth/signup'}
                   sx={{ '&:hover': { color: 'primary.dark' } }}
                   rel="noopener noreferrer"
                   aria-label="sign up"
@@ -154,4 +154,4 @@ export default function Login1({ heading, caption, testimonials, image }) {
   );
 }
 
-Login1.propTypes = { heading: PropTypes.string, caption: PropTypes.string, testimonials: PropTypes.array, image: PropTypes.any };
+Login1.propTypes = { heading: PropTypes.string, caption: PropTypes.string, testimonials: PropTypes.array, image: PropTypes.any, signupLink: PropTypes.string };

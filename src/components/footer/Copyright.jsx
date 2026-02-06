@@ -51,14 +51,20 @@ export default function Copyright({ type = CopyrightType.TYPE1, textProps, isDiv
             direction={downSM && type !== CopyrightType.TYPE2 ? 'column' : 'row'}
             sx={{ gap: { xs: downSM && type === CopyrightType.TYPE2 ? 3 : 1.5, sm: isDivider ? 1.5 : 3 }, alignItems: 'center' }}
           >
-            <Link {...linkProps} href="/privacy-policy">
-              Privacy Policy
+            <Link {...linkProps} href="/legales/terminos-y-condiciones">
+              Términos y Condiciones
             </Link>
             {isDivider && (
               <Divider {...dividerProps} {...(downSM && type === CopyrightType.TYPE2 && { orientation: 'vertical', sx: { my: 0 } })} />
             )}
-            <Link {...linkProps} href="/terms-condition">
-              Terms & Conditions
+            <Link {...linkProps} href="/assets/docs/AVISO_UNE.pdf">
+              Aviso UNE
+            </Link>
+            {isDivider && (
+              <Divider {...dividerProps} {...(downSM && type === CopyrightType.TYPE2 && { orientation: 'vertical', sx: { my: 0 } })} />
+            )}
+            <Link {...linkProps} href="/assets/docs/REDECO_ACUSE.pdf">
+              REDECO
             </Link>
           </Stack>
         </>

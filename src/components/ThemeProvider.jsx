@@ -15,28 +15,20 @@ import { DEFAULT_THEME_MODE, Themes } from '@/config';
 import useConfig from '@/hooks/useConfig';
 
 import defaultTheme from '@/views/landings/default/theme';
-import crmTheme from '@/views/landings/crm/theme';
-import aiTheme from '@/views/landings/ai/theme';
-import cryptoTheme from '@/views/landings/crypto/theme';
-import hostingTheme from '@/views/landings/hosting/theme';
-import pmsTheme from '@/views/landings/pms/theme';
-import hrmTheme from '@/views/landings/hrm/theme';
-import pluginTheme from '@/views/landings/plugin/theme';
-import lmsTheme from '@/views/landings/lms/theme';
 
 const modeStorageKey = 'theme-mode';
 
 // Theme Map
 const themeMap = {
   [Themes.THEME_DEFAULT]: defaultTheme,
-  [Themes.THEME_CRM]: crmTheme,
-  [Themes.THEME_AI]: aiTheme,
-  [Themes.THEME_CRYPTO]: cryptoTheme,
-  [Themes.THEME_HOSTING]: hostingTheme,
-  [Themes.THEME_PMS]: pmsTheme,
-  [Themes.THEME_HRM]: hrmTheme,
-  [Themes.THEME_PLUGIN]: pluginTheme,
-  [Themes.THEME_LMS]: lmsTheme
+  [Themes.THEME_CRM]: defaultTheme,
+  [Themes.THEME_AI]: defaultTheme,
+  [Themes.THEME_CRYPTO]: defaultTheme,
+  [Themes.THEME_HOSTING]: defaultTheme,
+  [Themes.THEME_PMS]: defaultTheme,
+  [Themes.THEME_HRM]: defaultTheme,
+  [Themes.THEME_PLUGIN]: defaultTheme,
+  [Themes.THEME_LMS]: defaultTheme
 };
 
 /***************************  COMMON - THEME PROVIDER  ***************************/
