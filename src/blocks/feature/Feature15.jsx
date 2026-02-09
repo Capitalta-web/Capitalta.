@@ -188,7 +188,8 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 description: blockData1.description,
                 icon: blockData1.icon,
                 list: blockData1.list,
-                actionBtn: blockData1.actionBtn
+                actionBtn: blockData1.actionBtn,
+                imageSx: blockData1.imageSx
               }}
             />
           </Grid>
@@ -201,6 +202,7 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 icon: blockData2.icon,
                 description2: blockData2.description2,
                 actionBtn2: blockData2.actionBtn2,
+                imageSx: blockData2.imageSx,
                 inlineImage: true
               }}
             />
@@ -214,6 +216,7 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 icon: blockData3.icon,
                 description2: blockData3.description2,
                 actionBtn2: blockData3.actionBtn2,
+                imageSx: blockData3.imageSx,
                 inlineImage: true
               }}
             />
@@ -227,6 +230,7 @@ export default function Feature15({ heading, caption, blockData1, blockData2, bl
                 icon: blockData4.icon,
                 list: blockData4.list,
                 actionBtn: blockData4.actionBtn,
+                imageSx: blockData4.imageSx,
                 imagePosition: 'right'
               }}
             />

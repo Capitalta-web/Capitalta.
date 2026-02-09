@@ -104,7 +104,7 @@ export const aboutCapitalta = {
     description: 'Ser el socio financiero preferido de emprendedores, inversionistas y empresas que buscan crecer con orden y claridad.',
     description2: 'Queremos construir relaciones duraderas basadas en confianza y resultados.',
     imageSx: {
-      objectPosition: 'center 20%'
+      objectPosition: 'top center'
     }
   },
   blockData4: {
