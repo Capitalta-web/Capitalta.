@@ -152,46 +152,47 @@ export default function RegistroWizardPage() {
     }
 
     if (paso === 2) {
-      if (!nombre || !apellido || !email || !telefono) {
-        setErrorPaso('Nombre, apellido, email y teléfono son obligatorios.');
-        return;
-      }
-      // Basic email validation
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setErrorPaso('Ingresa un email válido.');
+      if (!nombre || !apellido || !email || !telefono || !password || !confirmPassword) {
+        setErrorPaso('Por favor completa todos los campos requeridos (Nombre, Apellido, Email, Teléfono, Contraseña).');
         return;
       }
 
-      if (tipoCliente === 'persona_moral' && (!empresa || !rfc)) {
-        setErrorPaso('Empresa y RFC son obligatorios para Persona Moral.');
-        return;
-      }
-
-      // Password validation
-      if (!password || !confirmPassword) {
-        setErrorPaso('Debes establecer una contraseña.');
-        return;
-      }
       if (password.length < 6) {
         setErrorPaso('La contraseña debe tener al menos 6 caracteres.');
         return;
       }
+
       if (password !== confirmPassword) {
-        setErrorPaso('Las contraseñas no coinciden.');
+        setErrorPaso('Las contraseñas no coinciden. Por favor verifícalas.');
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setErrorPaso('Ingresa un correo electrónico válido.');
         return;
       }
 
-      // Send OTP
       setLoading(true);
+      
+      // Enviamos todos los datos necesarios para crear el usuario en el paso de OTP
       const cleanEmail = email.trim().toLowerCase();
-      // const supabase = createSupabaseBrowserClient();
-      // const { error } = await supabase.auth.signInWithOtp({ email: cleanEmail });
       
       try {
-        const { error } = await sendOtpAction(cleanEmail);
+        const { error } = await sendOtpAction(
+          cleanEmail, 
+          password, 
+          {
+            full_name: `${nombre} ${apellido}`,
+            tipo_persona: tipoCliente,
+            empresa: empresa || null,
+            rfc: rfc || null,
+            telefono: telefono || null
+          }
+        );
         
         if (error) {
-          setErrorPaso(error.message);
+          setErrorPaso(error);
           setLoading(false);
           return;
         }
@@ -726,9 +727,9 @@ export default function RegistroWizardPage() {
               <Stack spacing={3}>
                 {contenidoPaso}
                 {errorPaso && (
-                  <Typography variant="caption" sx={{ color: 'error.main' }}>
+                  <Alert severity="error" sx={{ mt: 2 }}>
                     {errorPaso}
-                  </Typography>
+                  </Alert>
                 )}
                 <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', pt: 1 }}>
                   <Button variant="text" disabled={!puedeVolver} onClick={manejarAtras}>

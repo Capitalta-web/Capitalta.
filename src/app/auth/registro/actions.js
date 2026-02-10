@@ -131,7 +131,7 @@ export async function verifyOtpAction({ email, token, type }) {
         result = emailResult;
       } else {
         // 3. Si falla email, intentar recovery (por si acaso es un reset de password)
-        console.warn('Verificación como signup falló, intentando como recovery...', signupResult.error.message);
+        console.warn('Verificación como signup falló, intentando como recovery...', emailResult.error.message);
         const recoveryResult = await supabase.auth.verifyOtp({ 
           email: cleanEmail, 
           token: cleanToken, 
