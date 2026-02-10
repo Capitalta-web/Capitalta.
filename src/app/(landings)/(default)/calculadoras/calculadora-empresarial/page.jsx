@@ -19,6 +19,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
+import { submitLeadAction, submitCotizacionAction } from '../actions';
 
 // export const metadata = {
 //   title: 'Calculadora Crédito Empresarial | Capitalta'
@@ -179,20 +180,14 @@ export default function CalculadoraEmpresarialPage() {
         tipo_credito: 'empresarial'
       };
 
-      const respuesta = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      const leadResult = await submitLeadAction(payload);
 
-      if (!respuesta.ok) {
-        const data = await respuesta.json().catch(() => ({}));
-        setLeadError(data.error || 'No pudimos guardar tu simulación. Intenta de nuevo más tarde.');
+      if (!leadResult.success) {
+        setLeadError(leadResult.error || 'No pudimos guardar tu simulación. Intenta de nuevo más tarde.');
         return;
       }
 
-      const leadRespuesta = await respuesta.json().catch(() => null);
-      const leadId = leadRespuesta && leadRespuesta.lead && leadRespuesta.lead.id;
+      const leadId = leadResult.lead?.id;
 
       if (leadId && tablaCompleta.length) {
         const cotizacionPayload = {
@@ -206,23 +201,25 @@ export default function CalculadoraEmpresarialPage() {
           tabla_amortizacion: tablaCompleta
         };
 
-        const respuestaCotizacion = await fetch('/api/cotizaciones', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(cotizacionPayload)
-        });
+        const cotizacionResult = await submitCotizacionAction(cotizacionPayload);
 
-        if (!respuestaCotizacion.ok) {
-          const dataCotizacion = await respuestaCotizacion.json().catch(() => ({}));
+        if (!cotizacionResult.success) {
+          // No bloqueamos el éxito general si falla la cotización, pero podríamos mostrar un warning
+          // O simplemente dejamos el lead guardado.
+          // En este caso, mostraremos el error si es crítico, pero el lead ya se guardó.
+          console.error('Error guardando cotización:', cotizacionResult.error);
           setLeadError(
-            dataCotizacion.error || 'Guardamos tus datos, pero no pudimos registrar la cotización. Intenta nuevamente más tarde.'
+            cotizacionResult.error || 'Guardamos tus datos, pero no pudimos registrar la cotización detallada.'
           );
+          // Si queremos que el usuario sepa que al menos sus datos se guardaron, podríamos poner leadEnviado a true de todos modos,
+          // pero el código original mostraba error. Mantendremos el comportamiento de mostrar error.
           return;
         }
       }
 
       setLeadEnviado(true);
     } catch (error) {
+      console.error('Error en handleLeadSubmit:', error);
       setLeadError('Ocurrió un error al guardar tu simulación. Intenta nuevamente.');
     } finally {
       setLeadCargando(false);

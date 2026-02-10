@@ -28,6 +28,7 @@ import OtpInput from 'react-otp-input';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { sendOtpAction, verifyOtpAction, updateUserAndCreateRequestAction, resendOtpAction } from './actions';
 
 const MONTO_MIN = 30000;
 const MONTO_MAX = 10000000;
@@ -93,6 +94,8 @@ export default function RegistroWizardPage() {
   const [errorPaso, setErrorPaso] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  // Guardamos el userId obtenido en la verificación OTP para evitar llamadas a getUser() que puedan fallar por red
+  const [verifiedUserId, setVerifiedUserId] = useState(null);
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -131,6 +134,7 @@ export default function RegistroWizardPage() {
   const esUltimoPaso = paso === pasos.length - 1;
 
   const manejarSiguiente = async () => {
+    if (loading) return;
     setErrorPaso('');
 
     if (paso === 0) {
@@ -179,54 +183,59 @@ export default function RegistroWizardPage() {
 
       // Send OTP
       setLoading(true);
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.signInWithOtp({ email });
-      setLoading(false);
-
-      if (error) {
-        setErrorPaso(error.message);
-        return;
-      }
+      const cleanEmail = email.trim().toLowerCase();
+      // const supabase = createSupabaseBrowserClient();
+      // const { error } = await supabase.auth.signInWithOtp({ email: cleanEmail });
       
-      setOtpSent(true);
-      setTimer(60);
-      setCanResend(false);
+      try {
+        const { error } = await sendOtpAction(cleanEmail);
+        
+        if (error) {
+          setErrorPaso(error.message);
+          setLoading(false);
+          return;
+        }
+        
+        setOtpSent(true);
+        setTimer(60);
+        setCanResend(false);
+      } catch (err) {
+        console.error(err);
+        setErrorPaso('Ocurrió un error al enviar el código. Inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
     }
 
     if (paso === 3) {
       if (!otp || otp.length < 6) {
-        setErrorPaso('Ingresa el código de 6 dígitos.');
+        setErrorPaso('Ingresa el código completo.');
         return;
       }
 
       setLoading(true);
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+      // const supabase = createSupabaseBrowserClient();
+      // const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
+      
+      const { success, session, user, error } = await verifyOtpAction({ email, token: otp, type: 'signup' });
 
-      if (error) {
+      if (error || !success) {
         setLoading(false);
         setErrorPaso('Código inválido o expirado.');
         return;
       }
 
-      // Set Password and Update Profile
-      const { error: updateError } = await supabase.auth.updateUser({ 
-        password,
-        data: {
-            full_name: `${nombre} ${apellido}`,
-            tipo_persona: tipoCliente,
-            empresa: empresa || null,
-            rfc: rfc || null,
-            telefono: telefono || null
-        }
-      });
-
-      setLoading(false);
-
-      if (updateError) {
-        setErrorPaso('Error al actualizar perfil: ' + updateError.message);
-        return;
+      // Guardamos la sesión en el cliente para mantener el estado de autenticación
+      const supabase = createSupabaseBrowserClient();
+      await supabase.auth.setSession(session);
+      
+      // Guardamos el ID verificado para usarlo en el paso final sin depender de la red
+      if (user && user.id) {
+        setVerifiedUserId(user.id);
       }
+
+      // NO actualizamos perfil aquí para evitar errores de red.
+      // Lo haremos en el paso final (handleSubmit) usando Server Action.
     }
 
     if (paso < pasos.length - 1) {
@@ -246,27 +255,44 @@ export default function RegistroWizardPage() {
     setSubmitError('');
 
     try {
-      // User is already authenticated from Step 4
-      const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      // Usamos el ID verificado en el paso anterior si está disponible
+      let targetUserId = verifiedUserId;
 
-      if (!user) throw new Error('No hay sesión activa. Por favor recarga la página.');
+      if (!targetUserId) {
+        // Fallback: Intentar obtener usuario de la sesión (puede fallar si hay problemas de red)
+        const supabase = createSupabaseBrowserClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) targetUserId = user.id;
+      }
 
-      const { error } = await supabase
-        .from('solicitudes_credito')
-        .insert({
-          cliente_id: user.id,
-          monto_solicitado: montoAjustado,
-          plazo_meses: plazoAjustado,
-          tipo_credito: 'simple', 
-          detalles: {
-            pago_mensual: pagoMensual,
-            tasa_anual: TASA_ANUAL
+      if (!targetUserId) throw new Error('No se pudo identificar al usuario. Por favor recarga la página.');
+
+      // Usamos Server Action para actualizar perfil y crear solicitud (evita CORS/Fetch errors)
+      const { error: actionError } = await updateUserAndCreateRequestAction({
+          userId: targetUserId,
+          userData: {
+            password,
+            metadata: {
+                full_name: `${nombre} ${apellido}`,
+                tipo_persona: tipoCliente,
+                empresa: empresa || null,
+                rfc: rfc || null,
+                telefono: telefono || null
+            }
           },
-          estatus: 'pendiente' // Explicit status
-        });
+          requestData: {
+            monto_solicitado: montoAjustado,
+            plazo_meses: plazoAjustado,
+            tipo_credito: 'simple', 
+            detalles: {
+                pago_mensual: pagoMensual,
+                tasa_anual: TASA_ANUAL
+            },
+            estatus: 'pendiente'
+          }
+      });
 
-      if (error) throw error;
+      if (actionError) throw new Error(actionError);
 
       setSubmitError('¡Cuenta creada y solicitud enviada con éxito! Redirigiendo...');
       setTimeout(() => {
@@ -461,9 +487,19 @@ export default function RegistroWizardPage() {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            La contraseña debe tener al menos 6 caracteres.
-          </Typography>
+           {/* Dynamic Password Feedback */}
+           <Typography 
+             variant="caption" 
+             sx={{ 
+               color: password && password.length >= 6 ? 'success.main' : 'text.secondary',
+               display: 'flex',
+               alignItems: 'center',
+               gap: 0.5
+             }}
+           >
+             {password && password.length >= 6 ? '✓ ' : '• '} 
+             Mínimo 6 caracteres
+           </Typography>
         </Grid>
       </Grid>
     </Stack>
@@ -471,16 +507,19 @@ export default function RegistroWizardPage() {
 
   const handleResend = async () => {
     setLoading(true);
-    const supabase = createSupabaseBrowserClient();
-    const { error } = await supabase.auth.signInWithOtp({ email });
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Usamos acción específica de reenvío
+    const { error, message } = await resendOtpAction(cleanEmail);
     setLoading(false);
     
     if (error) {
-      setErrorPaso(error.message);
+      setErrorPaso(error); // error is a string
     } else {
       setOtpSent(true);
       setTimer(60);
       setCanResend(false);
+      // Opcional: mostrar mensaje de éxito
     }
   };
 
@@ -488,19 +527,19 @@ export default function RegistroWizardPage() {
     <Stack spacing={3}>
       <Typography variant="h5">Paso 4: Verificación OTP</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 600 }}>
-        Hemos enviado un código de verificación de 6 dígitos al correo <strong>{email}</strong>. Por favor ingrésalo para continuar.
+        Hemos enviado un código de verificación al correo <strong>{email}</strong>. Por favor ingrésalo para continuar.
       </Typography>
       
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
         <OtpInput
           value={otp}
           onChange={setOtp}
-          numInputs={6}
+          numInputs={8}
           inputType="tel"
           shouldAutoFocus
-          containerStyle={{ gap: downSM ? 8 : 12, justifyContent: 'center' }}
+          containerStyle={{ gap: downSM ? 4 : 8, justifyContent: 'center' }}
           inputStyle={{
-            width: downSM ? 40 : 50,
+            width: downSM ? 32 : 45,
             height: downSM ? 40 : 56,
             fontSize: 16,
             borderRadius: 8,
@@ -696,8 +735,14 @@ export default function RegistroWizardPage() {
                     Atrás
                   </Button>
                   {!esUltimoPaso && (
-                    <Button variant="contained" color="primary" onClick={manejarSiguiente}>
-                      Siguiente
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={manejarSiguiente}
+                      disabled={loading}
+                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+                    >
+                      {loading ? 'Procesando...' : 'Siguiente'}
                     </Button>
                   )}
                 </Stack>
