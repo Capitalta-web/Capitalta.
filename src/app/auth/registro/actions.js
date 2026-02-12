@@ -201,6 +201,7 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
         nombre_completo: userData.metadata.full_name,
         telefono: userData.metadata.telefono,
         rfc: userData.metadata.rfc,
+        email: cleanEmail, // Aseguramos que el email también se guarde/actualice
         role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
         updated_at: new Date().toISOString()
       });
