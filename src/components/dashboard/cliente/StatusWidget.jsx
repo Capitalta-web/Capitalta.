@@ -1,7 +1,8 @@
 'use client';
 import PropTypes from 'prop-types';
 
-import { Card, CardContent, Typography, Box, Chip, Button, Stepper, Step, StepLabel, StepIcon, useMediaQuery, useTheme } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip, Button, Stepper, Step, StepLabel, StepIcon, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/navigation';
 
 // Icons
