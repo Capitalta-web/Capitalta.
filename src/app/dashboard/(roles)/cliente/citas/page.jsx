@@ -25,6 +25,8 @@ export default function CitasPage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [citas, setCitas] = useState([]);
+  const [user, setUser] = useState(null);
+  const [activeApplication, setActiveApplication] = useState(null);
   const [formData, setFormData] = useState({
     sucursal: '',
     fecha: '',
@@ -35,15 +37,34 @@ export default function CitasPage() {
   const proximasFechas = obtenerProximasFechas();
 
   useEffect(() => {
-    fetchCitas();
+    fetchData();
   }, []);
 
-  const fetchCitas = async () => {
+  const fetchData = async () => {
     try {
+      setFetching(true);
       const supabase = createSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
 
-      if (!user) return;
+      if (!user) {
+        setFetching(false);
+        return;
+      }
+      setUser(user);
+
+      // Fetch active application
+      const { data: applications, error: appError } = await supabase
+        .from('solicitudes_credito')
+        .select('*')
+        .eq('cliente_id', user.id)
+        .neq('estado', 'cancelado')
+        .neq('estado', 'rechazado')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (applications && applications.length > 0) {
+        setActiveApplication(applications[0]);
+      }
 
       // Since we don't have a direct relation in schema yet, we search by email
       const { data, error } = await supabase
@@ -55,7 +76,7 @@ export default function CitasPage() {
       if (error) throw error;
       setCitas(data || []);
     } catch (error) {
-      console.error('Error fetching citas:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setFetching(false);
     }
@@ -67,9 +88,6 @@ export default function CitasPage() {
     setMessage({ type: '', text: '' });
 
     try {
-      const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) throw new Error('Debes iniciar sesión para agendar.');
 
       const codigo = generarCodigoCita(new Date(formData.fecha), formData.hora);
@@ -81,7 +99,9 @@ export default function CitasPage() {
         nombre_cliente: user.user_metadata?.full_name || 'Usuario',
         email: user.email,
         telefono: user.user_metadata?.telefono || '',
-        codigo_cita: codigo
+        codigo_cita: codigo,
+        cliente_id: user.id,
+        solicitud_id: activeApplication?.id
       };
 
       const res = await fetch('/api/citas', {
@@ -96,7 +116,7 @@ export default function CitasPage() {
 
       setMessage({ type: 'success', text: `¡Cita agendada con éxito! Código: ${codigo}` });
       setFormData({ sucursal: '', fecha: '', hora: '' });
-      fetchCitas(); // Refresh list
+      fetchData(); // Refresh list
 
     } catch (error) {
       setMessage({ type: 'error', text: error.message });
@@ -122,6 +142,11 @@ export default function CitasPage() {
         <Typography variant="body1" color="text.secondary">
           Reserva una cita con nuestros asesores en sucursal para revisar tu solicitud.
         </Typography>
+        {activeApplication && (
+           <Alert severity="info" sx={{ mt: 2 }}>
+             Agendando cita para solicitud de crédito {activeApplication.tipo_credito.replace('_', ' ')} (${activeApplication.monto_solicitado})
+           </Alert>
+        )}
       </Grid>
 
       <Grid item xs={12} md={5}>
@@ -225,6 +250,9 @@ export default function CitasPage() {
                           <Typography variant="caption" component="span" display="block">
                             Sucursal: {sucursalesMock.find(s => s.id === cita.sucursal_id)?.nombre || cita.sucursal_id}
                           </Typography>
+                          {cita.solicitud_id && (
+                             <Chip label="Vinculada a solicitud" size="small" variant="outlined" sx={{ mt: 0.5, fontSize: '0.7rem' }} />
+                          )}
                         </Stack>
                       }
                     />

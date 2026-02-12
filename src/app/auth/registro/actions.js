@@ -11,7 +11,9 @@ export async function resendOtpAction(email) {
   }
   
   try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { persistSession: false }
+    });
     const cleanEmail = email.trim().toLowerCase();
     
     const { error } = await supabase.auth.resend({
@@ -45,7 +47,9 @@ export async function sendOtpAction(email, password, metadata) {
   }
   
   try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { persistSession: false }
+    });
     const cleanEmail = email.trim().toLowerCase();
     
     // Check if user exists (optional, but good for UX)
@@ -100,17 +104,24 @@ export async function sendOtpAction(email, password, metadata) {
 export async function verifyOtpAction({ email, token, type }) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return { error: 'Error de configuración del servidor' };
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanToken = token.trim();
+    // Usamos persistSession: false porque en una Server Action no necesitamos persistir la sesión en el servidor
+    // Solo queremos verificar y obtener los tokens para devolverlos al cliente
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { persistSession: false }
+    });
     
+    const cleanEmail = email.trim().toLowerCase();
+    // Eliminar cualquier espacio en blanco del token (ej. "123 456" -> "123456")
+    const cleanToken = token.toString().replace(/\s+/g, '');
+    
+    console.log(`Verificando OTP para ${cleanEmail} con tipo inicial: ${type || 'signup'}`);
+
     // 1. Intentar primero como 'signup' (lo más probable en registro)
     let result = await supabase.auth.verifyOtp({ 
       email: cleanEmail, 
@@ -146,7 +157,7 @@ export async function verifyOtpAction({ email, token, type }) {
 
     if (result.error) {
       console.error('Supabase verifyOtp Error:', result.error);
-      return { error: result.error.message };
+      return { error: result.error.message || 'Código inválido o expirado' };
     }
 
     // Si la verificación es exitosa, devolvemos la sesión

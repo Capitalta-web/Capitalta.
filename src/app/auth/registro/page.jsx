@@ -179,7 +179,7 @@ export default function RegistroWizardPage() {
       const cleanEmail = email.trim().toLowerCase();
       
       try {
-        const { error } = await sendOtpAction(
+        const response = await sendOtpAction(
           cleanEmail, 
           password, 
           {
@@ -191,9 +191,21 @@ export default function RegistroWizardPage() {
           }
         );
         
-        if (error) {
-          setErrorPaso(error);
+        if (response.error) {
+          setErrorPaso(response.error);
           setLoading(false);
+          return;
+        }
+
+        // Si la respuesta incluye una sesión, el usuario fue auto-confirmado (o "Confirm Email" está desactivado)
+        if (response.data?.session) {
+          console.log('Usuario auto-confirmado, saltando OTP');
+          const supabase = createSupabaseBrowserClient();
+          await supabase.auth.setSession(response.data.session);
+          setVerifiedUserId(response.data.user.id);
+          setLoading(false);
+          // Saltamos el paso de OTP (índice 3) y vamos directo a confirmación (índice 4)
+          setPaso(4);
           return;
         }
         

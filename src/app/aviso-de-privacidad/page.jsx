@@ -146,6 +146,16 @@ export default function AvisoPrivacidadPage() {
               <Typography color="text.secondary">
                 Última actualización: Febrero 2026
               </Typography>
+              
+              <Button 
+                variant="contained" 
+                startIcon={<DownloadIcon />} 
+                href="/assets/docs/Aviso_Privacidad.pdf" 
+                target="_blank"
+                sx={{ mt: 2 }}
+              >
+                Descargar Aviso de Privacidad (PDF)
+              </Button>
             </Box>
             
             {menuItems.map((item) => (

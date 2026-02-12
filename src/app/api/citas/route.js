@@ -25,7 +25,9 @@ export async function POST(request) {
     nombre_cliente, 
     email, 
     telefono, 
-    codigo_cita
+    codigo_cita,
+    cliente_id,
+    solicitud_id
   } = body;
 
   if (!sucursal_id || !fecha || !hora || !nombre_cliente || !codigo_cita) {
@@ -50,7 +52,8 @@ export async function POST(request) {
       telefono,
       codigo_cita,
       status: 'programada',
-      // Eliminamos campos cliente_id y credito_id ya que no existen en el schema actual de 'citas'
+      cliente_id,
+      solicitud_id
     })
     .select()
     .single();
