@@ -192,6 +192,25 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
       return { error: 'Error al actualizar perfil: ' + updateError.message };
     }
 
+    // 1.5. Asegurar que el perfil público existe y está actualizado
+    // Esto es crucial porque el trigger puede no haber corrido o no tener todos los datos
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .upsert({
+        id: userId,
+        nombre_completo: userData.metadata.full_name,
+        telefono: userData.metadata.telefono,
+        rfc: userData.metadata.rfc,
+        role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
+        updated_at: new Date().toISOString()
+      });
+
+    if (profileError) {
+      console.error('Error updating public profile:', profileError);
+      // No bloqueamos el flujo si falla el perfil público, pero lo logueamos
+      // Opcional: return { error: 'Error al actualizar datos del perfil' };
+    }
+
     // 2. Crear solicitud de crédito
     // Insertamos directamente con service role para asegurar que se cree
     const { error: insertError } = await supabase
