@@ -11,19 +11,18 @@ import {
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import MainCard from '@/components/MainCard';
 
-// Icons
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-import PendingIcon from '@mui/icons-material/Pending';
+import SolicitudDetailDialog from './SolicitudDetailDialog';
 
 const getStatusColor = (status) => {
   switch(status) {
     case 'solicitud_iniciada': return 'info';
     case 'en_revision': return 'warning';
+    case 'en_comite': return 'secondary';
     case 'aprobada': return 'success';
     case 'rechazada': return 'error';
     case 'requiere_informacion': return 'warning';
+    case 'validado': return 'success';
+    case 'fondeado': return 'success';
     default: return 'default';
   }
 };
@@ -32,9 +31,12 @@ const getStatusLabel = (status) => {
   switch(status) {
     case 'solicitud_iniciada': return 'Iniciada';
     case 'en_revision': return 'En Revisión';
+    case 'en_comite': return 'En Comité';
     case 'aprobada': return 'Aprobada';
     case 'rechazada': return 'Rechazada';
     case 'requiere_informacion': return 'Req. Información';
+    case 'validado': return 'Validado';
+    case 'fondeado': return 'Fondeado';
     default: return status;
   }
 };
@@ -43,7 +45,7 @@ const formatCurrency = (amount) => {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 };
 
-export default function SolicitudesList({ limit = null }) {
+export default function SolicitudesList({ limit = null, filterStatus = null }) {
   const [loading, setLoading] = useState(true);
   const [solicitudes, setSolicitudes] = useState([]);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null);
@@ -61,6 +63,14 @@ export default function SolicitudesList({ limit = null }) {
 
       if (limit) {
         query = query.limit(limit);
+      }
+
+      if (filterStatus) {
+        if (Array.isArray(filterStatus)) {
+          query = query.in('estado', filterStatus);
+        } else {
+          query = query.eq('estado', filterStatus);
+        }
       }
 
       const { data: solicitudesData, error } = await query;
@@ -202,98 +212,12 @@ export default function SolicitudesList({ limit = null }) {
       </MainCard>
 
       {/* Detail Dialog */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          Detalle de Solicitud
-          <Chip 
-            label={selectedSolicitud ? getStatusLabel(selectedSolicitud.estado) : ''} 
-            color={selectedSolicitud ? getStatusColor(selectedSolicitud.estado) : 'default'}
-          />
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          {selectedSolicitud && (
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Typography variant="subtitle2" color="text.secondary">Cliente</Typography>
-                <Typography variant="h6">{selectedSolicitud.cliente_nombre}</Typography>
-                <Typography variant="body2">{selectedSolicitud.cliente_email}</Typography>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography variant="subtitle2" color="text.secondary">Fecha de Solicitud</Typography>
-                <Typography variant="body1">{new Date(selectedSolicitud.created_at).toLocaleString()}</Typography>
-              </Grid>
-              
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Typography variant="subtitle2" color="text.secondary">Tipo de Crédito</Typography>
-                <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
-                  {selectedSolicitud.tipo_credito?.replace('_', ' ')}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Typography variant="subtitle2" color="text.secondary">Monto Solicitado</Typography>
-                <Typography variant="h6" color="primary.main">
-                  {formatCurrency(selectedSolicitud.monto_solicitado)}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Typography variant="subtitle2" color="text.secondary">Plazo</Typography>
-                <Typography variant="body1">{selectedSolicitud.plazo_meses} meses</Typography>
-              </Grid>
-
-              {selectedSolicitud.detalles && (
-                <>
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Información Adicional</Typography>
-                    <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50' }}>
-                      <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
-                        {JSON.stringify(selectedSolicitud.detalles, null, 2)}
-                      </pre>
-                    </Paper>
-                  </Grid>
-                </>
-              )}
-            </Grid>
-          )}
-        </DialogContent>
-        <Divider />
-        <DialogActions sx={{ p: 2.5 }}>
-          <Button onClick={handleCloseDialog} color="inherit">
-            Cerrar
-          </Button>
-          <Button 
-            variant="outlined" 
-            color="warning" 
-            startIcon={<PendingIcon />}
-            onClick={() => handleUpdateStatus('en_revision')}
-            disabled={actionLoading}
-          >
-            En Revisión
-          </Button>
-          <Button 
-            variant="contained" 
-            color="error" 
-            startIcon={<CancelIcon />}
-            onClick={() => handleUpdateStatus('rechazada')}
-            disabled={actionLoading}
-          >
-            Rechazar
-          </Button>
-          <Button 
-            variant="contained" 
-            color="success" 
-            startIcon={<CheckCircleIcon />}
-            onClick={() => handleUpdateStatus('aprobada')}
-            disabled={actionLoading}
-          >
-            Aprobar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SolicitudDetailDialog 
+        open={dialogOpen} 
+        onClose={handleCloseDialog} 
+        solicitud={selectedSolicitud}
+        onStatusUpdate={handleUpdateStatus}
+      />
     </>
   );
 }
