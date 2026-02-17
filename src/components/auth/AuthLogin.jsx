@@ -69,8 +69,12 @@ export default function AuthLogin({ inputSx }) {
         router.refresh();
       }
     } catch (err) {
-      setErrorMsg('Ocurrió un error inesperado.');
-      console.error(err);
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        setErrorMsg('No se pudo conectar con el servicio de autenticación. Revisa tu conexión o configuración de Supabase.');
+      } else {
+        setErrorMsg('Ocurrió un error inesperado.');
+      }
+      console.error('Error en login Supabase:', err);
     } finally {
       setIsLoading(false);
     }

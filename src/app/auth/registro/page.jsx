@@ -128,7 +128,7 @@ export default function RegistroWizardPage() {
     return () => clearInterval(interval);
   }, [otpSent, timer]);
 
-  const pasos = ['Monto y plazo', 'Tipo de cliente', 'Datos personales', 'Verificación OTP', 'Confirmación'];
+  const pasos = ['Monto y plazo', 'Tipo de cliente', 'Datos personales', 'Verificación de correo', 'Confirmación'];
 
   const puedeVolver = paso > 0 && !loading;
   const esUltimoPaso = paso === pasos.length - 1;
@@ -538,9 +538,9 @@ export default function RegistroWizardPage() {
 
   const renderPaso4 = () => (
     <Stack spacing={3}>
-      <Typography variant="h5">Paso 4: Verificación OTP</Typography>
+      <Typography variant="h5">Paso 4: Verificación de correo</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 600 }}>
-        Hemos enviado un código de verificación al correo <strong>{email}</strong>. Por favor ingrésalo para continuar.
+        Te enviamos un correo a <strong>{email}</strong> con un enlace de acceso y un código de verificación. Puedes hacer clic en el enlace para ir directo a tu panel o ingresar el código aquí si lo prefieres.
       </Typography>
       
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>

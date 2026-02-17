@@ -40,6 +40,7 @@ export async function resendOtpAction(email) {
 export async function sendOtpAction(email, password, metadata) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Supabase URL or Key missing in Server Action');
@@ -59,9 +60,10 @@ export async function sendOtpAction(email, password, metadata) {
     // Switch to signUp to use "Confirm Email" template and set password immediately
     const { data, error } = await supabase.auth.signUp({
       email: cleanEmail,
-      password: password,
+      password,
       options: {
-        data: metadata
+        data: metadata,
+        emailRedirectTo: siteUrl ? `${siteUrl}/dashboard` : undefined
       }
     });
     
@@ -73,6 +75,12 @@ export async function sendOtpAction(email, password, metadata) {
     
     if (error) {
       console.error('Supabase signUp Error:', error);
+
+      // Handle rate limit specifically for signUp
+      if (error.status === 429) {
+        return { error: 'Has excedido el límite de intentos de registro. Por favor espera unos minutos o contacta soporte.' };
+      }
+
       // If user exists, we might want to try resending the OTP (signup type)
       if (error.message.includes('already registered')) {
           // If already registered, we try to resend the signup OTP.
