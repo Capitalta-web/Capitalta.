@@ -187,6 +187,14 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Obtener el email del usuario desde Supabase Auth
+    const { data: { user }, error: getUserError } = await supabase.auth.admin.getUserById(userId);
+    if (getUserError || !user) {
+      console.error('Error getting user:', getUserError);
+      return { error: 'Error al obtener información del usuario' };
+    }
+    const cleanEmail = user.email;
+
     // 1. Actualizar usuario (password y metadata)
     // Nota: update user password requiere ser el usuario autenticado o admin. 
     // Como estamos en servidor con service role, somos admin.
@@ -209,7 +217,7 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
         nombre_completo: userData.metadata.full_name,
         telefono: userData.metadata.telefono,
         rfc: userData.metadata.rfc,
-        email: cleanEmail, // Aseguramos que el email también se guarde/actualice
+        email: cleanEmail, // Email obtenido del usuario autenticado
         role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
         updated_at: new Date().toISOString()
       });
