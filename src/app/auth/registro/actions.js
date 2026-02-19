@@ -187,12 +187,16 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Obtener email del usuario vía Admin (evita depender del cliente)
-    const { data: adminUserData, error: getUserError } = await supabase.auth.admin.getUserById(userId);
-    if (getUserError) {
-      console.error('Error obteniendo usuario admin:', getUserError);
+    // Obtener el email del usuario desde Supabase Auth (Admin)
+    const {
+      data: { user },
+      error: getUserError
+    } = await supabase.auth.admin.getUserById(userId);
+    if (getUserError || !user) {
+      console.error('Error getting user:', getUserError);
+      return { error: 'Error al obtener información del usuario' };
     }
-    const resolvedEmail = adminUserData?.user?.email ? adminUserData.user.email.trim().toLowerCase() : null;
+    const cleanEmail = user.email ? user.email.trim().toLowerCase() : null;
 
     // 1. Actualizar usuario (password y metadata)
     // Nota: update user password requiere ser el usuario autenticado o admin. 
@@ -216,7 +220,7 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
         nombre_completo: userData.metadata.full_name,
         telefono: userData.metadata.telefono,
         rfc: userData.metadata.rfc,
-        email: resolvedEmail, // Guardar/actualizar email si está disponible
+        email: cleanEmail, // Email obtenido del usuario autenticado
         role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
         updated_at: new Date().toISOString()
       });
