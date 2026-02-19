@@ -547,7 +547,7 @@ export default function RegistroWizardPage() {
         <OtpInput
           value={otp}
           onChange={setOtp}
-          numInputs={8}
+          numInputs={6}
           inputType="tel"
           shouldAutoFocus
           containerStyle={{ gap: downSM ? 4 : 8, justifyContent: 'center' }}

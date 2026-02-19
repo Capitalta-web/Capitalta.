@@ -125,8 +125,8 @@ export async function verifyOtpAction({ email, token, type }) {
     });
     
     const cleanEmail = email.trim().toLowerCase();
-    // Eliminar cualquier espacio en blanco del token (ej. "123 456" -> "123456")
-    const cleanToken = token.toString().replace(/\s+/g, '');
+    // Normalizar token: eliminar cualquier carácter no numérico (espacios, guiones, etc.)
+    const cleanToken = token.toString().replace(/\D+/g, '');
     
     console.log(`Verificando OTP para ${cleanEmail} con tipo inicial: ${type || 'signup'}`);
 
@@ -187,6 +187,13 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Obtener email del usuario vía Admin (evita depender del cliente)
+    const { data: adminUserData, error: getUserError } = await supabase.auth.admin.getUserById(userId);
+    if (getUserError) {
+      console.error('Error obteniendo usuario admin:', getUserError);
+    }
+    const resolvedEmail = adminUserData?.user?.email ? adminUserData.user.email.trim().toLowerCase() : null;
+
     // 1. Actualizar usuario (password y metadata)
     // Nota: update user password requiere ser el usuario autenticado o admin. 
     // Como estamos en servidor con service role, somos admin.
@@ -209,7 +216,7 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
         nombre_completo: userData.metadata.full_name,
         telefono: userData.metadata.telefono,
         rfc: userData.metadata.rfc,
-        email: cleanEmail, // Aseguramos que el email también se guarde/actualice
+        email: resolvedEmail, // Guardar/actualizar email si está disponible
         role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
         updated_at: new Date().toISOString()
       });
