@@ -1,15 +1,15 @@
 // @project
-import { FONT_ALTA, FONT_HEEBO, FONT_ROBOTO } from '@/config';
+import { FONT_PLUS_JAKARTA } from '@/config';
 
 /***************************  DEFAULT / AI THEME - TYPOGRAPHY  ***************************/
 
 export default function typography(theme) {
   return {
-    fontFamily: FONT_ALTA,
+    fontFamily: FONT_PLUS_JAKARTA,
 
     // heading - large
     h1: {
-      fontWeight: 400,
+      fontWeight: 600,
       fontSize: 57,
 
       // lineHeight = lineHeight in figma / fontSize. i.e 1.123 = 64/57
@@ -27,7 +27,7 @@ export default function typography(theme) {
 
     // heading - medium
     h2: {
-      fontWeight: 400,
+      fontWeight: 600,
       fontSize: 45,
       lineHeight: 1.156,
       letterSpacing: 0,
@@ -43,7 +43,7 @@ export default function typography(theme) {
 
     // display - medium
     h3: {
-      fontWeight: 400,
+      fontWeight: 600,
       fontSize: 28,
       lineHeight: 1.286,
       letterSpacing: 0,
@@ -59,7 +59,7 @@ export default function typography(theme) {
 
     // display - small
     h4: {
-      fontWeight: 400,
+      fontWeight: 600,
       fontSize: 24,
       lineHeight: 1.333,
       letterSpacing: 0,
@@ -75,8 +75,8 @@ export default function typography(theme) {
 
     // label - large
     h5: {
-      fontFamily: FONT_ROBOTO,
-      fontWeight: 500,
+      fontFamily: FONT_PLUS_JAKARTA,
+      fontWeight: 600,
       fontSize: 22,
       lineHeight: 1.273,
       letterSpacing: 0,
@@ -89,8 +89,8 @@ export default function typography(theme) {
 
     // paragraph - large
     h6: {
-      fontFamily: FONT_ROBOTO,
-      fontWeight: 400,
+      fontFamily: FONT_PLUS_JAKARTA,
+      fontWeight: 500,
       fontSize: 22,
       lineHeight: 1.364,
       letterSpacing: 0,
@@ -103,7 +103,7 @@ export default function typography(theme) {
 
     // paragraph - medium
     body1: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: 1.5,
@@ -117,7 +117,7 @@ export default function typography(theme) {
 
     // paragraph - small
     body2: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 400,
       fontSize: 14,
       lineHeight: 1.429,
@@ -130,7 +130,7 @@ export default function typography(theme) {
 
     // label - medium
     subtitle1: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 500,
       fontSize: 16,
       lineHeight: 1.5,
@@ -145,7 +145,7 @@ export default function typography(theme) {
 
     // label - small
     subtitle2: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 600,
       fontSize: 14,
       lineHeight: 1.429,
@@ -158,8 +158,8 @@ export default function typography(theme) {
 
     // hyperlink - small
     caption: {
-      fontFamily: FONT_HEEBO,
-      fontWeight: 600,
+      fontFamily: FONT_PLUS_JAKARTA,
+      fontWeight: 500,
       fontSize: 12,
       lineHeight: 1.333,
       letterSpacing: 0
@@ -167,7 +167,7 @@ export default function typography(theme) {
 
     // hyperlink - large
     caption1: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: 1.5,
@@ -176,7 +176,7 @@ export default function typography(theme) {
 
     // hyperlink - medium
     caption2: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 500,
       fontSize: 14,
       lineHeight: 1.429,
@@ -185,7 +185,7 @@ export default function typography(theme) {
 
     // button
     button: {
-      fontFamily: FONT_HEEBO,
+      fontFamily: FONT_PLUS_JAKARTA,
       textTransform: 'capitalize'
     }
   };

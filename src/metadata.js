@@ -24,6 +24,11 @@ export const mainMetadata = {
   keywords: ['Crédito', `${branding.brandName}`, 'Financiamiento', 'Crédito Empresarial', 'Crédito Simple', 'México'],
   creator: `${branding.company.name}`,
   metadataBase: new URL(process.env.NEXT_PUBLIC_METADATA_BASE || 'http://localhost:3000'),
+  icons: {
+    icon: '/assets/images/LOGO/favicon.ico',
+    shortcut: '/assets/images/LOGO/favicon.ico',
+    apple: '/assets/images/LOGO/favicon.ico'
+  },
   alternates: {
     canonical: '/'
   },

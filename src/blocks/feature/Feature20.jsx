@@ -103,7 +103,14 @@ export default function Feature20({ heading, caption, image, features, actionBtn
             delay: 0.4
           }}
         >
-          <GraphicsCard sx={{ position: 'relative', overflow: 'visible' }}>
+          <GraphicsCard
+            sx={{
+              position: 'relative',
+              overflow: 'visible',
+              bgcolor: 'primary.main',
+              color: 'background.default'
+            }}
+          >
             {image && (
               <GraphicsCard
                 sx={{
@@ -132,19 +139,40 @@ export default function Feature20({ heading, caption, image, features, actionBtn
                     size={{ xs: 12 / partitionInExtraSmall, sm: 12 / partitionInSmall, md: 12 / partitionInLarge }}
                     sx={{
                       position: 'relative',
-                      ...(index < indexOfFirstElementInLastRow && { borderBottom: `1px solid ${theme.vars.palette.grey[300]}` }),
-                      ...(!indicesOfLastElements.includes(index) && { borderRight: `1px solid ${theme.vars.palette.grey[300]}` })
+                      ...(index < indexOfFirstElementInLastRow && {
+                        borderBottom: `1px solid ${withAlpha(theme.vars.palette.common.white, 0.18)}`
+                      }),
+                      ...(!indicesOfLastElements.includes(index) && {
+                        borderRight: `1px solid ${withAlpha(theme.vars.palette.common.white, 0.18)}`
+                      })
                     }}
                   >
-                    <Stack sx={{ gap: { xs: 3, sm: 4 }, height: 1, py: { xs: 1.5, sm: 3, md: 4 }, px: { xs: 0, sm: 3, md: 4 } }}>
-                      <Avatar sx={{ width: 60, height: 60, bgcolor: 'grey.300' }}>
+                    <Stack
+                      sx={{
+                        gap: { xs: 3, sm: 4 },
+                        height: 1,
+                        py: { xs: 1.5, sm: 3, md: 4 },
+                        px: { xs: 0, sm: 3, md: 4 }
+                      }}
+                    >
+                      <Avatar
+                        sx={{
+                          width: 60,
+                          height: 60,
+                          bgcolor: withAlpha(theme.vars.palette.common.white, 0.14),
+                          color: 'background.default'
+                        }}
+                      >
                         <motion.div
                           initial={{ opacity: 0, scale: 0.6 }}
                           whileInView={{ opacity: 1, scale: 1 }}
                           viewport={{ once: true }}
                           transition={{ duration: 2, delay: index * 0.1 }}
                         >
-                          <SvgIcon {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} />
+                          <SvgIcon
+                            {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })}
+                            color="background.default"
+                          />
                         </motion.div>
                       </Avatar>
                       <Stack sx={{ gap: { xs: 0.5, md: 1 } }}>
@@ -154,7 +182,11 @@ export default function Feature20({ heading, caption, image, features, actionBtn
                           viewport={{ once: true }}
                           transition={{ duration: 0.5, delay: index * 0.2 }}
                         >
-                          {item.title && <Typography variant="h4">{item.title}</Typography>}
+                          {item.title && (
+                            <Typography variant="h4" sx={{ color: 'background.default' }}>
+                              {item.title}
+                            </Typography>
+                          )}
                         </motion.div>
                         <motion.div
                           initial={{ opacity: 0, y: 25 }}
@@ -162,10 +194,27 @@ export default function Feature20({ heading, caption, image, features, actionBtn
                           viewport={{ once: true }}
                           transition={{ duration: 0.5, delay: index * 0.3 }}
                         >
-                          {item.content && <Typography sx={{ color: 'text.secondary' }}>{item.content}</Typography>}
+                          {item.content && (
+                            <Typography sx={{ color: withAlpha(theme.vars.palette.common.white, 0.86) }}>
+                              {item.content}
+                            </Typography>
+                          )}
                         </motion.div>
                         {item.href && (
-                          <Button variant="text" color="primary" size="small" href={item.href} sx={{ alignSelf: 'flex-start', mt: 0.5 }}>
+                          <Button
+                            variant="text"
+                            size="small"
+                            href={item.href}
+                            sx={{
+                              alignSelf: 'flex-start',
+                              mt: 0.5,
+                              px: 0,
+                              color: 'background.default',
+                              '&:hover': {
+                                color: 'background.default'
+                              }
+                            }}
+                          >
                             Ver Detalles
                           </Button>
                         )}
