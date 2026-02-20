@@ -56,16 +56,18 @@ export default function FeatureProducts({ heading, caption, features }) {
                     gap: 3,
                     transition: 'all 0.3s ease-in-out',
                     border: '1px solid',
-                    borderColor: 'divider',
+                    borderColor: 'primary.main',
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
                     '&:hover': {
                       transform: 'translateY(-8px)',
-                      boxShadow: theme.shadows[8], // Matched with Hero7 cards
-                      borderColor: 'success.main', // Matched with Hero7 green tone
+                      boxShadow: theme.shadows[10],
+                      borderColor: 'primary.dark',
                       borderWidth: 2,
                       '& .MuiButton-root': {
-                         color: 'success.main',
-                         borderColor: 'success.main',
-                         bgcolor: alpha(theme.palette.success.main, 0.08)
+                        color: 'common.white',
+                        borderColor: alpha(theme.palette.common.white, 0.9),
+                        bgcolor: alpha(theme.palette.common.white, 0.16)
                       }
                     }
                   }}
@@ -76,8 +78,8 @@ export default function FeatureProducts({ heading, caption, features }) {
                       sx={{
                         width: 56,
                         height: 56,
-                        bgcolor: alpha(theme.palette.success.main, 0.1), // Matched with Hero7 green tone
-                        color: 'success.main',
+                        bgcolor: alpha(theme.palette.common.white, 0.18),
+                        color: 'common.white',
                         borderRadius: 2
                       }}
                     >
@@ -89,7 +91,7 @@ export default function FeatureProducts({ heading, caption, features }) {
                     <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
                       {item.title}
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2, minHeight: { md: 48 } }}>
+                    <Typography variant="body1" sx={{ mb: 2, minHeight: { md: 48 }, opacity: 0.92 }}>
                       {item.description || item.content}
                     </Typography>
 
@@ -97,7 +99,7 @@ export default function FeatureProducts({ heading, caption, features }) {
                       <Stack spacing={1.5} sx={{ mt: 2 }}>
                         {item.monto && (
                           <Stack direction="row" alignItems="center" spacing={1}>
-                            <SvgIcon name="tabler-currency-dollar" size={18} color="text.secondary" />
+                            <SvgIcon name="tabler-currency-dollar" size={18} />
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                               Monto:{' '}
                               <Typography component="span" variant="body2">
@@ -108,7 +110,7 @@ export default function FeatureProducts({ heading, caption, features }) {
                         )}
                         {item.plazo && (
                           <Stack direction="row" alignItems="center" spacing={1}>
-                            <SvgIcon name="tabler-calendar-time" size={18} color="text.secondary" />
+                            <SvgIcon name="tabler-calendar-time" size={18} />
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                               Plazo:{' '}
                               <Typography component="span" variant="body2">
@@ -125,9 +127,17 @@ export default function FeatureProducts({ heading, caption, features }) {
                     {item.href && (
                       <Button
                         variant="outlined"
-                        color="primary"
+                        color="inherit"
                         fullWidth
                         href={item.href}
+                        sx={{
+                          borderColor: alpha(theme.palette.common.white, 0.7),
+                          color: 'common.white',
+                          '&:hover': {
+                            borderColor: 'common.white',
+                            bgcolor: alpha(theme.palette.common.white, 0.18)
+                          }
+                        }}
                         endIcon={<SvgIcon name="tabler-arrow-right" size={16} />}
                       >
                         Ver Detalles

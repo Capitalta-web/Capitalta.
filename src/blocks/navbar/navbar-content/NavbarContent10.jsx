@@ -2,10 +2,11 @@
 import PropTypes from 'prop-types';
 
 // @mui
-import { useTheme } from '@mui/material/styles';
+import { useTheme, useColorScheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 
 // @third-party
 import { motion } from 'motion/react';
@@ -17,6 +18,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import Logo from '@/components/logo';
 import { Customization, MenuPopper, NavMenu, NavMenuDrawer, NavPrimaryButton, NavSecondaryButton } from '@/components/navbar';
 import SvgIcon from '@/components/SvgIcon';
+import { ThemeMode } from '@/config';
 import { withAlpha } from '@/utils/colorUtils';
 
 /***************************  NAVBAR - CONTENT 10  ***************************/
@@ -32,9 +34,15 @@ import { withAlpha } from '@/utils/colorUtils';
 
 export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, secondaryBtn, customization, selectedTheme, animated }) {
   const theme = useTheme();
+  const { mode, setMode } = useColorScheme();
 
   const downMD = useMediaQuery(theme.breakpoints.down('md'));
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const toggleMode = () => {
+    const nextMode = mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK;
+    setMode(nextMode);
+  };
 
   return (
     <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', width: 1 }}>
@@ -44,7 +52,27 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
           <NavMenu {...{ navItems }} />
         </Box>
       )}
-      <Stack direction="row" sx={{ gap: { xs: 1, md: 1.5 } }}>
+      <Stack direction="row" sx={{ gap: { xs: 1, md: 1.5 }, alignItems: 'center' }}>
+        <IconButton
+          size="small"
+          aria-label="Cambiar tema claro/oscuro"
+          onClick={toggleMode}
+          sx={{
+            width: 36,
+            height: 36,
+            bgcolor: 'grey.100',
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: 'grey.300',
+            '&:hover': { borderColor: 'grey.600', bgcolor: 'grey.100' }
+          }}
+        >
+          {mode === ThemeMode.DARK ? (
+            <SvgIcon name="tabler-sun" size={18} color="text.primary" />
+          ) : (
+            <SvgIcon name="tabler-moon" size={18} color="text.primary" />
+          )}
+        </IconButton>
         {customization && <Customization selectedTheme={selectedTheme} />}
         {!downSM && (
           <>

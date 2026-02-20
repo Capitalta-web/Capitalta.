@@ -63,7 +63,7 @@ export async function sendOtpAction(email, password, metadata) {
       password,
       options: {
         data: metadata,
-        emailRedirectTo: siteUrl ? `${siteUrl}/dashboard` : undefined
+        emailRedirectTo: siteUrl ? `${siteUrl}/auth/callback` : undefined
       }
     });
     

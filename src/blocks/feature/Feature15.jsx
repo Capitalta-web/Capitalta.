@@ -65,7 +65,13 @@ function CardBlock({
 
   if (inlineImage) {
     return (
-      <GraphicsCard sx={{ height: 1, position: 'relative' }}>
+      <GraphicsCard
+        sx={{
+          height: 1,
+          position: 'relative',
+          bgcolor: withAlpha(theme.vars.palette.primary.main, 0.08)
+        }}
+      >
         <Stack sx={{ p: boxPadding, height: 1, justifyContent: 'space-between', gap: 3 }}>
           <BoxContent {...{ icon, title, description }} />
           <Box
@@ -92,7 +98,13 @@ function CardBlock({
   const isImageRight = imagePosition === 'right';
 
   return (
-    <GraphicsCard sx={{ height: 1, overflow: 'hidden' }}>
+    <GraphicsCard
+      sx={{
+        height: 1,
+        overflow: 'hidden',
+        bgcolor: withAlpha(theme.vars.palette.primary.main, 0.08)
+      }}
+    >
       <Grid container sx={{ height: 1 }}>
         {/* Content Section */}
         <Grid
