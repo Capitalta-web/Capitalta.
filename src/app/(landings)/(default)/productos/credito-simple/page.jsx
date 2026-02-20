@@ -20,7 +20,7 @@ import Typography from '@mui/material/Typography';
 import ContainerWrapper from '@/components/ContainerWrapper';
 
 // export const metadata = {
-//   title: 'Crédito Simple | Capitalta'
+//   title: 'Crédito Revolvente | Capitalta'
 // };
 
 const MONTO_MIN = 30000;
@@ -143,13 +143,13 @@ export default function CreditoSimplePage() {
                 <Typography variant="overline" sx={{ letterSpacing: 1 }}>
                   Producto
                 </Typography>
-                <Typography variant="h2">Crédito Simple</Typography>
+                <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 600 }}>
-                  Impulsa tus ideas o capital de trabajo con un solo desembolso, plazos definidos y condiciones claras desde el inicio.
+                  Impulsa tus ideas o capital de trabajo con un solo desembolso, plazos definidos y una tasa fija del 36% anual desde el inicio.
                 </Typography>
                 <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', pt: 1 }}>
                   <Button variant="contained" color="secondary" href="/auth/registro">
-                    Solicitar Crédito Simple
+                    Solicitar Crédito Revolvente
                   </Button>
                   <Button variant="outlined" color="inherit" href="/contacto">
                     Contactar asesor
@@ -192,7 +192,7 @@ export default function CreditoSimplePage() {
         <Grid container spacing={4} sx={{ mb: { xs: 4, sm: 6 } }}>
           <Grid item xs={12} md={7}>
             <Stack spacing={2}>
-              <Typography variant="h4">¿Qué es el Crédito Simple?</Typography>
+              <Typography variant="h4">¿Qué es el Crédito Revolvente?</Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 Es un crédito con un solo desembolso inicial que te permite financiar proyectos específicos, consolidar pasivos o fortalecer
                 tu capital de trabajo con pagos mensuales fijos durante toda la vida del crédito.
@@ -382,7 +382,7 @@ export default function CreditoSimplePage() {
         <Grid container spacing={4} sx={{ mb: { xs: 4, sm: 6 } }}>
           <Grid item xs={12} md={5}>
             <Stack spacing={2.5}>
-              <Typography variant="h4">Calcula tu Crédito Simple</Typography>
+              <Typography variant="h4">Calcula tu Crédito Revolvente</Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary' }}>
                 Ingresa un monto, plazo y una tasa anual estimada para conocer un pago mensual aproximado. Los resultados son informativos y
                 pueden variar según el análisis de Capitalta.
@@ -411,7 +411,7 @@ export default function CreditoSimplePage() {
                 InputProps={{
                   readOnly: true,
                 }}
-                helperText="La tasa de interés para este producto es fija del 24% anual."
+                helperText="La tasa de interés para este producto es fija del 36% anual."
               />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>
@@ -448,7 +448,7 @@ export default function CreditoSimplePage() {
               </Stack>
               <Stack direction="row" spacing={2}>
                 <Button variant="contained" color="primary" href="/auth/registro">
-                  Solicitar Crédito Simple
+                  Solicitar Crédito Revolvente
                 </Button>
                 <Button variant="outlined" color="primary" href="/calculadoras/calculadora-simple">
                   Ver calculadora completa
@@ -507,7 +507,7 @@ export default function CreditoSimplePage() {
                 </Table>
               </TableContainer>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Para una simulación detallada, con tabla completa y descarga en PDF, utiliza la calculadora avanzada de Crédito Simple.
+                Para una simulación detallada, con tabla completa y descarga en PDF, utiliza la calculadora avanzada de Crédito Revolvente.
               </Typography>
             </Stack>
           </Grid>
@@ -530,7 +530,7 @@ export default function CreditoSimplePage() {
               <Stack spacing={1}>
                 <Typography variant="h5">¿Listo para impulsar tu próximo proyecto?</Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  Comparte algunos datos básicos y un asesor de Capitalta te acompañará para estructurar el Crédito Simple que mejor se
+                  Comparte algunos datos básicos y un asesor de Capitalta te acompañará para estructurar el Crédito Revolvente que mejor se
                   adapte a tu capacidad de pago.
                 </Typography>
               </Stack>
@@ -538,7 +538,7 @@ export default function CreditoSimplePage() {
             <Grid item xs={12} md={4}>
               <Stack direction="row" spacing={2} sx={{ justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
                 <Button variant="contained" color="primary" href="/auth/registro">
-                  Solicitar Crédito Simple ahora
+                  Solicitar Crédito Revolvente ahora
                 </Button>
                 <Button variant="outlined" color="primary" href="/contacto">
                   Hablar con un asesor

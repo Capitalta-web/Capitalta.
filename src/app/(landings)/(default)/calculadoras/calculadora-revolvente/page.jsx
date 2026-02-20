@@ -30,8 +30,8 @@ const LINEA_MIN = 10000;
 const LINEA_MAX = 50000000;
 const PLAZO_MIN = 1;
 const PLAZO_MAX = 120;
-const TASA_MIN = 24;
-const TASA_MAX = 24;
+const TASA_MIN = 36;
+const TASA_MAX = 36;
 
 function formatoMoneda(valor) {
   if (!valor || Number.isNaN(valor)) {
@@ -104,7 +104,7 @@ export default function CalculadoraRevolventePage() {
   const [linea, setLinea] = useState(1000000);
   const [porcentajeUso, setPorcentajeUso] = useState(50);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const [tasaAnual, setTasaAnual] = useState(36);
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -539,11 +539,11 @@ export default function CalculadoraRevolventePage() {
                 </Box>
                 <Box>
                   <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="subtitle2">Tasa anual estimada</Typography>
+                    <Typography variant="subtitle2">Tasa anual</Typography>
                     <Typography variant="body2">{tasaAjustada}% (Fija)</Typography>
                   </Stack>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                    La tasa de interés para este producto es fija del 24% anual.
+                    La tasa de interés para este producto es fija del 36% anual.
                   </Typography>
                 </Box>
               </Stack>

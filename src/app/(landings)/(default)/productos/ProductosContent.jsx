@@ -19,9 +19,9 @@ import { IconType } from '@/enum';
 const productos = [
   {
     key: 'simple',
-    title: 'Crédito Simple',
+    title: 'Crédito Revolvente',
     icon: 'tabler-currency-dollar',
-    resumen: 'Un solo desembolso para impulsar proyectos específicos o capital de trabajo.',
+    resumen: 'Crédito amortizable con un solo desembolso y tasa fija del 36% anual.',
     monto: '$30,000 - $10,000,000 MXN',
     plazo: '3 a 60 meses',
     href: '/calculadoras/calculadora-simple',

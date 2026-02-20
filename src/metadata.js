@@ -21,7 +21,7 @@ export const mainMetadata = {
   },
   description,
   applicationName: title,
-  keywords: ['Crédito', `${branding.brandName}`, 'Financiamiento', 'Crédito Empresarial', 'Crédito Simple', 'México'],
+  keywords: ['Crédito', `${branding.brandName}`, 'Financiamiento', 'Crédito Empresarial', 'Crédito Revolvente', 'México'],
   creator: `${branding.company.name}`,
   metadataBase: new URL(process.env.NEXT_PUBLIC_METADATA_BASE || 'http://localhost:3000'),
   icons: {

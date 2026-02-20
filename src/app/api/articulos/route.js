@@ -34,6 +34,7 @@ export async function GET(request) {
     .from('articulos_blog')
     .select('id, slug, title, excerpt, image_url, category, published_at, author_id, tags', { count: 'exact' })
     .eq('is_published', true)
+    .neq('slug', 'inversion-inmobiliaria-venta-key')
     .order('published_at', { ascending: false })
     .range(from, to);
 

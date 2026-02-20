@@ -326,9 +326,9 @@ export default function Main() {
                         onChange={(event) => setTipoCredito(event.target.value)}
                         variant="outlined"
                       >
-                        <MenuItem value="simple">Crédito Simple</MenuItem>
+                        <MenuItem value="simple">Crédito Revolvente</MenuItem>
                         <MenuItem value="empresarial">Crédito Empresarial</MenuItem>
-                        <MenuItem value="revolvente">Crédito Revolvente</MenuItem>
+                        <MenuItem value="revolvente">Crédito Revolvente Línea</MenuItem>
                         <MenuItem value="venta-key">Crédito Venta Key</MenuItem>
                       </TextField>
                     </Grid>

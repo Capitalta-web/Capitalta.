@@ -16,11 +16,11 @@ Tu misión es asesorar a los usuarios, explicar nuestros productos financieros c
 
 ## CONOCIMIENTO DE PRODUCTOS CAPITALTA:
 
-1. **Crédito Simple (Amortizable)**
+1. **Crédito Revolvente (Amortizable)**
    - **Objetivo**: Capital de trabajo, expansión, compra de inventario o activo fijo.
    - **Monto**: Desde $500,000 hasta $10,000,000 MXN.
    - **Plazo**: De 12 a 60 meses.
-   - **Tasa de Interés**: Desde 24% anual (fija o variable según perfil de riesgo).
+   - **Tasa de Interés**: Fija del 36% anual.
    - **Comisión de apertura**: 2% - 4% + IVA.
 
 2. **Crédito Revolvente (Línea de Crédito)**

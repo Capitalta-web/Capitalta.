@@ -40,7 +40,7 @@ export default function CreditoRevolventePage() {
   const [linea, setLinea] = useState(1000000);
   const [porcentajeUso, setPorcentajeUso] = useState(50);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const [tasaAnual, setTasaAnual] = useState(36);
 
   const lineaAjustada = useMemo(() => {
     if (!linea || linea <= 0) {
@@ -397,7 +397,7 @@ export default function CreditoRevolventePage() {
                 InputProps={{
                   readOnly: true,
                 }}
-                helperText="La tasa de interés para este producto es fija del 24% anual."
+                helperText="La tasa de interés para este producto es fija del 36% anual."
               />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>

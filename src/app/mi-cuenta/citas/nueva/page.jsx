@@ -40,7 +40,7 @@ export default function NuevaCitaPage() {
   const [errorPaso, setErrorPaso] = useState('');
 
   const montoAprobado = 500000;
-  const tipoCredito = 'Crédito Simple';
+  const tipoCredito = 'Crédito Revolvente';
 
   const esElegible = true;
 

@@ -22,15 +22,15 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import { submitLeadAction, submitCotizacionAction } from '../actions';
 
 // export const metadata = {
-//   title: 'Calculadora Crédito Simple | Capitalta'
+//   title: 'Calculadora Crédito Revolvente | Capitalta'
 // };
 
 const MONTO_MIN = 30000;
 const MONTO_MAX = 10000000;
 const PLAZO_MIN = 3;
 const PLAZO_MAX = 60;
-const TASA_MIN = 24;
-const TASA_MAX = 24;
+const TASA_MIN = 36;
+const TASA_MAX = 36;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -102,7 +102,7 @@ function formatearFecha(fecha) {
 export default function CalculadoraSimplePage() {
   const [monto, setMonto] = useState(250000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const [tasaAnual, setTasaAnual] = useState(36);
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -255,13 +255,13 @@ export default function CalculadoraSimplePage() {
       <html lang="es">
         <head>
           <meta charSet="utf-8" />
-          <title>Cotización Crédito Simple - Capitalta</title>
+          <title>Cotización Crédito Revolvente - Capitalta</title>
         </head>
         <body style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
             <div style="display:flex;align-items:center;gap:12px;">
               <img src="/assets/logos/capitalta-logo.svg" alt="Capitalta" style="height:40px;" />
-              <h1 style="margin:0;font-size:20px;">Cotización Crédito Simple</h1>
+              <h1 style="margin:0;font-size:20px;">Cotización Crédito Revolvente</h1>
             </div>
             <div style="text-align:right;font-size:12px;color:#555;">
               <div>${formatearFecha(fecha)}</div>
@@ -373,9 +373,9 @@ export default function CalculadoraSimplePage() {
                 <Typography variant="overline" sx={{ letterSpacing: 1 }}>
                   Calculadora avanzada
                 </Typography>
-                <Typography variant="h2">Crédito Simple</Typography>
+                <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 640 }}>
-                  Simula tu Crédito Simple con rangos reales de monto, plazo y tasa, revisa la tabla de amortización completa y descarga una
+                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del 36% anual, revisa la tabla de amortización completa y descarga una
                   cotización en PDF para compartirla o analizarla con tu equipo.
                 </Typography>
               </Stack>
@@ -470,11 +470,11 @@ export default function CalculadoraSimplePage() {
                 </Box>
                 <Box>
                   <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="subtitle2">Tasa anual estimada</Typography>
+                    <Typography variant="subtitle2">Tasa anual</Typography>
                     <Typography variant="body2">{tasaAjustada}% (Fija)</Typography>
                   </Stack>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                    La tasa de interés para este producto es fija del 24% anual.
+                    La tasa de interés para este producto es fija del 36% anual.
                   </Typography>
                 </Box>
               </Stack>

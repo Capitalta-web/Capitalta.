@@ -21,9 +21,9 @@ import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 const steps = ['Tipo de Crédito', 'Detalles del Préstamo', 'Información Adicional', 'Confirmación'];
 
 const CREDIT_TYPES = [
-  { value: 'simple', label: 'Crédito Simple' },
+  { value: 'simple', label: 'Crédito Revolvente' },
   { value: 'empresarial', label: 'Crédito Empresarial' },
-  { value: 'revolvente', label: 'Crédito Revolvente' },
+  { value: 'revolvente', label: 'Crédito Revolvente Línea' },
   { value: 'venta_key', label: 'Venta Key' }
 ];
 

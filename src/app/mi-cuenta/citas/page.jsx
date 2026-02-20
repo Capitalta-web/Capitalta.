@@ -97,14 +97,14 @@ export default function MisCitasPage() {
 
       if (!error && data) {
         // Enriquecer datos con nombre de sucursal
-        const citasEnriquecidas = data.map(cita => {
+          const citasEnriquecidas = data.map(cita => {
           const sucursalInfo = sucursalesMock.find(s => s.id === cita.sucursal_id);
           return {
             ...cita,
             id: cita.codigo_cita || cita.id, // Preferir codigo_cita
             sucursal: sucursalInfo ? sucursalInfo.nombre : cita.sucursal_id,
             direccion: sucursalInfo ? sucursalInfo.direccion : '',
-            tipoCredito: 'Crédito Simple', // Placeholder, podría venir de DB si existiera columna
+            tipoCredito: 'Crédito Revolvente', // Placeholder, podría venir de DB si existiera columna
             monto: 0 // Placeholder
           };
         });

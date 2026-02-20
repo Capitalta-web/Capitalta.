@@ -149,10 +149,10 @@ export default function AvisoPrivacidadPage() {
                 Última actualización: Febrero 2026
               </Typography>
               
-              <Button 
-                variant="contained" 
-                startIcon={<DownloadIcon />} 
-                href="/assets/docs/Aviso_Privacidad.pdf" 
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                href="/AVISO%20DE%20PRIVACIDAD%20%282%29.pdf"
                 target="_blank"
                 sx={{ mt: 2 }}
               >

@@ -8,6 +8,10 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Slug es requerido' }, { status: 400 });
   }
 
+  if (slug === 'inversion-inmobiliaria-venta-key') {
+    return NextResponse.json({ error: 'Artículo no encontrado' }, { status: 404 });
+  }
+
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {

@@ -11,6 +11,12 @@ export async function generateMetadata({ params }) {
     };
   }
 
+  if (slug === 'inversion-inmobiliaria-venta-key') {
+    return {
+      title: 'Artículo no encontrado | Capitalta'
+    };
+  }
+
   const { data: article } = await supabase.from('articulos_blog').select('title, excerpt, image_url').eq('slug', slug).single();
 
   if (!article) {
