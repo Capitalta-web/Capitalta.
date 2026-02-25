@@ -15,6 +15,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import SectionHero from '@/components/SectionHero';
 import SvgIcon from '@/components/SvgIcon';
 import { IconType } from '@/enum';
+import { ProcessTimeline } from '@/blocks/process';
 
 const productos = [
   {
@@ -22,141 +23,161 @@ const productos = [
     title: 'Crédito Revolvente',
     icon: 'tabler-currency-dollar',
     resumen: 'Crédito amortizable con un solo desembolso y tasa fija del 36% anual.',
-    monto: '$30,000 - $10,000,000 MXN',
-    plazo: '3 a 60 meses',
+    monto: '$500,000 - $10,000,000 MXN',
+    plazo: '12 a 60 meses',
     href: '/calculadoras/calculadora-simple',
     productoHref: '/productos/credito-simple'
   },
   {
     key: 'empresarial',
     title: 'Crédito Empresarial',
-    icon: 'tabler-building-skyscraper',
+    icon: 'tabler-building-bank',
     resumen: 'Estructuras de financiamiento a medida para crecimiento, expansión o refinanciamientos.',
     monto: '$500,000 - $50,000,000 MXN',
     plazo: '12 a 120 meses',
     href: '/calculadoras/calculadora-empresarial',
     productoHref: '/productos/credito-empresarial'
-  },
-  {
-    key: 'revolvente',
-    title: 'Crédito Revolvente',
-    icon: 'tabler-refresh',
-    resumen: 'Línea de crédito renovable para acompañar el ciclo operativo de tu negocio.',
-    monto: '$300,000 - $50,000,000 MXN',
-    plazo: 'Línea renovable con revisiones periódicas',
-    href: '/calculadoras/calculadora-revolvente',
-    productoHref: '/productos/credito-revolvente'
-  },
-  {
-    key: 'venta-key',
-    title: 'Crédito Venta Key',
-    icon: 'tabler-home-dollar',
-    resumen: 'Liquidez a partir de tu inmueble, manteniendo claridad en condiciones y plazos.',
-    monto: '30% - 40% del valor del inmueble',
-    plazo: 'Plazos flexibles según el proyecto',
-    href: '/calculadoras/calculadora-venta-key',
-    productoHref: '/productos/credito-venta-key'
   }
 ];
 
 export default function ProductosContent() {
-  const theme = useTheme();
+  const capitaltaProcess = {
+    heading: 'Proceso operativo Capitalta en 7 pasos',
+    caption:
+      'Desde la solicitud inicial hasta el seguimiento posterior al desembolso, te acompañamos con un flujo claro, incluyendo la cita presencial para firma y entrega de garantía.',
+    defaultExpanded: 'panel0',
+    cards: [
+      {
+        title: '1. Solicitud inicial',
+        description: 'Inicias tu proceso de crédito compartiendo datos básicos y el objetivo del financiamiento.',
+        icon: 'tabler-file-plus',
+        list: [{ primary: 'Llenado de solicitud y definición del tipo de crédito' }, { primary: 'Identificación del monto y plazo que estás buscando' }]
+      },
+      {
+        title: '2. Integración de expediente',
+        description: 'Reunimos la documentación necesaria para analizar tu operación con detalle.',
+        icon: 'tabler-folder',
+        list: [
+          { primary: 'Documentación personal, financiera y legal del solicitante' },
+          { primary: 'Validación de que el expediente esté completo y actualizado' }
+        ]
+      },
+      {
+        title: '3. Avalúo y verificación de garantía',
+        description: 'Evaluamos el inmueble o garantía ofrecida para respaldar el crédito.',
+        icon: 'tabler-building-skyscraper',
+        list: [
+          { primary: 'Coordinación de avalúo profesional de la garantía' },
+          { primary: 'Revisión de situación legal y valor de referencia del inmueble' }
+        ]
+      },
+      {
+        title: '4. Revisión y aprobación por comité de crédito',
+        description: 'Nuestro comité analiza la operación para tomar una decisión informada.',
+        icon: 'tabler-checkup-list',
+        list: [{ primary: 'Análisis de capacidad de pago y riesgos de la operación' }, { primary: 'Emisión de resolución por parte del comité de crédito' }]
+      },
+      {
+        title: '5. Formalización notarial',
+        description: 'Preparamos la documentación legal y coordinamos la firma del crédito.',
+        icon: 'tabler-signature',
+        list: [
+          { primary: 'Elaboración y revisión de contratos y escrituras correspondientes' },
+          { primary: 'Generación de cita presencial para firma y entrega de garantía' }
+        ]
+      },
+      {
+        title: '6. Fondeo o disposición de crédito',
+        description: 'Liberamos los recursos conforme a lo acordado para que puedas ejecutar tu plan.',
+        icon: 'tabler-credit-card',
+        list: [{ primary: 'Verificación de condiciones previas al fondeo' }, { primary: 'Confirmación de la recepción de los recursos por parte del cliente' }]
+      },
+      {
+        title: '7. Seguimiento y cobranza',
+        description: 'Te acompañamos durante la vida del crédito y damos seguimiento a tus pagos.',
+        icon: 'tabler-handshake',
+        list: [
+          { primary: 'Monitoreo de pagos y desempeño del crédito' },
+          { primary: 'Posibilidad de reestructuras o nuevos créditos según tus necesidades' }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
-      <SectionHero heading="Productos de crédito Capitalta" search={false} offer />
+      <SectionHero heading="Nuestros Productos Financieros" caption="Soluciones diseñadas para impulsar el crecimiento de tu negocio." />
       <ContainerWrapper>
-        <Stack sx={{ gap: 4, py: { xs: 4, sm: 6 } }}>
-          <Stack sx={{ gap: 1.5, maxWidth: 720, mx: 'auto', textAlign: 'center' }}>
-            <Typography variant="h3">Elige el crédito que mejor se adapta a tu proyecto</Typography>
-            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              Capitalta diseña estructuras de financiamiento claras y responsables para cada etapa de crecimiento. Revisa las
-              características de cada producto y utiliza nuestras calculadoras para estimar pagos y plazos.
-            </Typography>
-          </Stack>
-
-          <Grid container spacing={3}>
-            {productos.map((producto, index) => (
-              <Grid size={{ xs: 12, md: 6 }} key={producto.key}>
+        <Stack spacing={8} sx={{ py: { xs: 6, md: 10 } }}>
+          <Grid container spacing={4}>
+            {productos.map((producto) => (
+              <Grid item xs={12} md={6} key={producto.key}>
                 <Box
-                  component={motion.div}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ translateY: -8 }}
                   sx={{
+                    p: 4,
                     height: '100%',
-                    p: 3,
-                    borderRadius: 4,
-                    border: '1px solid',
-                    borderColor: 'grey.200',
-                    bgcolor: 'background.paper',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 2.5,
-                    transition: 'all 0.3s ease-in-out',
-                    boxShadow: theme.customShadows ? theme.customShadows.z1 : '0 2px 8px rgba(0,0,0,0.05)',
+                    transition: 'all 0.3s ease',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
                     '&:hover': {
                       borderColor: 'primary.main',
-                      boxShadow: theme.customShadows ? theme.customShadows.z8 : '0 8px 24px rgba(0,0,0,0.1)',
+                      boxShadow: (theme) => `0 0 20px ${theme.palette.primary.light}40`,
+                      transform: 'translateY(-4px)'
                     }
                   }}
                 >
-                  <Stack direction="row" spacing={2} alignItems="flex-start">
-                    <Box
-                      sx={{
-                        p: 1.5,
-                        borderRadius: 2,
-                        bgcolor: 'primary.lighter',
-                        color: 'primary.main',
-                        display: 'flex'
-                      }}
-                    >
-                      <SvgIcon name={producto.icon} type={IconType.STROKE} size={32} stroke={1.5} />
-                    </Box>
-                    <Stack sx={{ gap: 1 }}>
-                      <Typography variant="h5" sx={{ fontWeight: 600 }}>{producto.title}</Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                        {producto.resumen}
+                  <Stack spacing={3} sx={{ height: '100%' }}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Box
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 2,
+                          bgcolor: 'primary.lighter',
+                          color: 'primary.main',
+                          display: 'flex'
+                        }}
+                      >
+                        <SvgIcon name={producto.icon} type={IconType.STROKE} size={32} />
+                      </Box>
+                      <Typography variant="h4" fontWeight={700}>
+                        {producto.title}
                       </Typography>
                     </Stack>
-                  </Stack>
 
-                  <Stack sx={{ gap: 1.5, mt: 1, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                    <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                        Monto
-                      </Typography>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{producto.monto}</Typography>
-                    </Stack>
-                    <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-                        Plazo
-                      </Typography>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{producto.plazo}</Typography>
-                    </Stack>
-                  </Stack>
+                    <Typography variant="body1" color="text.secondary">
+                      {producto.resumen}
+                    </Typography>
 
-                  <Stack direction="row" sx={{ gap: 1.5, mt: 'auto' }}>
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
-                      href={producto.href}
-                      fullWidth
-                      startIcon={<SvgIcon name="tabler-calculator" size={18} />}
-                    >
-                      Calculadora
-                    </Button>
-                    <Button 
-                      variant="outlined" 
-                      color="primary" 
-                      href={producto.productoHref}
-                      fullWidth
-                      endIcon={<SvgIcon name="tabler-arrow-right" size={18} />}
-                    >
-                      Detalles
-                    </Button>
+                    <Stack spacing={1.5} sx={{ mt: 'auto', pt: 2 }}>
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Monto:
+                        </Typography>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {producto.monto}
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Plazo:
+                        </Typography>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {producto.plazo}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+
+                    <Stack direction="row" spacing={2} sx={{ pt: 2 }}>
+                      <Button variant="contained" fullWidth href={producto.href}>
+                        Calcular
+                      </Button>
+                      <Button variant="outlined" fullWidth href={producto.productoHref}>
+                        Detalles
+                      </Button>
+                    </Stack>
                   </Stack>
                 </Box>
               </Grid>
@@ -164,6 +185,7 @@ export default function ProductosContent() {
           </Grid>
         </Stack>
       </ContainerWrapper>
+      <ProcessTimeline {...capitaltaProcess} />
     </>
   );
 }

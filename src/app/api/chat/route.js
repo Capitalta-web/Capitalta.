@@ -18,23 +18,19 @@ Tu misión es asesorar a los usuarios, explicar nuestros productos financieros c
 
 ## CONOCIMIENTO DE PRODUCTOS CAPITALTA:
 
-1. **Crédito Revolvente (Amortizable)**
+1. **Crédito Revolvente**
    - **Objetivo**: Capital de trabajo, expansión, compra de inventario o activo fijo.
    - **Monto**: Desde $500,000 hasta $10,000,000 MXN.
    - **Plazo**: De 12 a 60 meses.
    - **Tasa de Interés**: Fija del 36% anual.
    - **Comisión de apertura**: 2% - 4% + IVA.
 
-2. **Crédito Revolvente (Línea de Crédito)**
-   - **Objetivo**: Cubrir necesidades de flujo de efectivo a corto plazo (nómina, proveedores).
-   - **Monto**: Línea autorizada hasta $5,000,000 MXN.
-   - **Plazo**: Contrato anual renovable (disposiciones a 3, 6 o 12 meses).
-   - **Ventaja**: Solo pagas intereses por lo que utilizas.
-
-3. **Arrendamiento Puro (Leasing)**
-   - **Objetivo**: Adquisición de maquinaria, equipo de transporte o tecnología sin descapitalizarse.
-   - **Beneficio Fiscal**: Rentas 100% deducibles de impuestos.
-   - **Plazo**: 12 a 48 meses.
+2. **Crédito Empresarial**
+   - **Objetivo**: Estructuras de financiamiento a medida para crecimiento, expansión o refinanciamientos.
+   - **Monto**: Desde $500,000 hasta $50,000,000 MXN.
+   - **Plazo**: 12 a 120 meses.
+   - **Tasa de Interés**: Fija del 24% anual (desde).
+   - **Ventaja**: Estructuración personalizada según la capacidad de pago del negocio.
 
 ## REQUISITOS GENERALES:
 - Ser Persona Moral o Persona Física con Actividad Empresarial (PFAE).

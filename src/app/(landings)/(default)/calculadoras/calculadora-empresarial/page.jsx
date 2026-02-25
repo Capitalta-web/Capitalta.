@@ -25,9 +25,9 @@ import { submitLeadAction, submitCotizacionAction } from '../actions';
 //   title: 'Calculadora Crédito Empresarial | Capitalta'
 // };
 
-const MONTO_MIN = 20000;
+const MONTO_MIN = 500000;
 const MONTO_MAX = 50000000;
-const PLAZO_MIN = 1;
+const PLAZO_MIN = 12;
 const PLAZO_MAX = 120;
 const TASA_MIN = 24;
 const TASA_MAX = 24;

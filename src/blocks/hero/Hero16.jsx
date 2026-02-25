@@ -11,7 +11,6 @@ import Stack from '@mui/material/Stack';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import GetImagePath from '@/utils/GetImagePath';
 import { GraphicsCard } from '@/components/cards';
-import { ProfileGroup2 } from '@/components/cards/profile-card';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 import Typeset from '@/components/Typeset';
 
@@ -26,7 +25,7 @@ import Typeset from '@/components/Typeset';
  * - [Hero16 API](https://capitalta.gitbook.io/Capitalta/ui-kit/development/components/hero/hero16#props-details)
  */
 
-export default function Hero16({ reviewData, heading, caption, secondaryBtn, poster, videoSrc }) {
+export default function Hero16({ heading, caption, secondaryBtn, poster, videoSrc }) {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -77,7 +76,6 @@ export default function Hero16({ reviewData, heading, caption, secondaryBtn, pos
   return (
     <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
       <Stack sx={{ justifyContent: 'center', gap: 3 }}>
-        <ProfileGroup2 {...reviewData} starColor="primary.main" />
         <Stack direction={{ md: 'row' }} sx={{ width: 1, justifyContent: 'space-between', alignItems: { xs: 'start', md: 'end' }, gap: 3 }}>
           <Typeset
             {...{
@@ -112,7 +110,6 @@ export default function Hero16({ reviewData, heading, caption, secondaryBtn, pos
 }
 
 Hero16.propTypes = {
-  reviewData: PropTypes.object,
   heading: PropTypes.string,
   caption: PropTypes.string,
   secondaryBtn: PropTypes.any,

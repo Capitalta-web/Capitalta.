@@ -23,9 +23,9 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 //   title: 'Crédito Revolvente | Capitalta'
 // };
 
-const MONTO_MIN = 30000;
+const MONTO_MIN = 500000;
 const MONTO_MAX = 10000000;
-const PLAZO_MIN = 3;
+const PLAZO_MIN = 12;
 const PLAZO_MAX = 60;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
@@ -88,9 +88,9 @@ function formatoMoneda(valor) {
 }
 
 export default function CreditoSimplePage() {
-  const [monto, setMonto] = useState(250000);
+  const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const [tasaAnual, setTasaAnual] = useState(36);
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {

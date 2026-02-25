@@ -98,13 +98,13 @@ export const aboutCapitalta = {
     description2: 'Creemos en el crédito como una herramienta estratégica, no solo táctica.'
   },
   blockData3: {
-    image: '/assets/images/capitalta/executive-portrait.jpeg',
+    image: '/assets/images/capitalta/mirada.jpeg',
     icon: 'tabler-eye',
     title: 'Nuestra visión',
     description: 'Ser el socio financiero preferido de emprendedores, inversionistas y empresas que buscan crecer con orden y claridad.',
     description2: 'Queremos construir relaciones duraderas basadas en confianza y resultados.',
     imageSx: {
-      objectPosition: 'top center'
+      objectPosition: 'center'
     }
   },
   blockData4: {
@@ -143,25 +143,7 @@ export const feature20 = {
       monto: '$500,000–$50,000,000',
       plazo: '12–120 meses',
       href: '/productos/credito-empresarial'
-    },
-    /*
-    {
-      icon: 'tabler-refresh',
-      title: 'Crédito Revolvente',
-      description: 'Línea renovable para tu flujo de efectivo.',
-      monto: '$300,000–$50,000,000',
-      plazo: 'Línea revisable',
-      href: '/productos/credito-revolvente'
-    },
-    {
-      icon: 'tabler-key',
-      title: 'Crédito Venta Key',
-      description: 'Liquidez usando tu inmueble como garantía.',
-      monto: '30–40% del valor',
-      plazo: 'Plazos flexibles',
-      href: '/productos/credito-venta-key'
     }
-    */
   ]
 };
 

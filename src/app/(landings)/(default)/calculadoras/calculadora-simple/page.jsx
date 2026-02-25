@@ -25,9 +25,9 @@ import { submitLeadAction, submitCotizacionAction } from '../actions';
 //   title: 'Calculadora Crédito Revolvente | Capitalta'
 // };
 
-const MONTO_MIN = 30000;
+const MONTO_MIN = 500000;
 const MONTO_MAX = 10000000;
-const PLAZO_MIN = 3;
+const PLAZO_MIN = 12;
 const PLAZO_MAX = 60;
 const TASA_MIN = 36;
 const TASA_MAX = 36;
@@ -100,7 +100,7 @@ function formatearFecha(fecha) {
 }
 
 export default function CalculadoraSimplePage() {
-  const [monto, setMonto] = useState(250000);
+  const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
   const [tasaAnual, setTasaAnual] = useState(36);
 
