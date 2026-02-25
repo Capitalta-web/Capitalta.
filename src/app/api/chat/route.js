@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { obtenerProximasFechas, generarCodigoCita, horasDisponibles, sucursalesMock } from '@/utils/citas';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { sendAppointmentConfirmation } from '@/utils/email';
+import { sendSMS } from '@/utils/sms';
 
 // Configuración del cliente OpenAI para x.ai (Grok)
 // Si no hay XAI_API_KEY, intentará usar OPENAI_API_KEY o fallará controladamente.
@@ -224,8 +226,26 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
               return JSON.stringify({ success: false, error: 'No se pudo guardar la cita en la base de datos.' });
             }
             
-            // TODO: Integrar servicio de email real (ej. Resend, SendGrid)
-            console.log(`[MOCK EMAIL] Enviando confirmación de cita a ${email} para el ${fecha} a las ${hora}`);
+            // Enviar confirmación por correo si hay email disponible
+            if (email) {
+              await sendAppointmentConfirmation({
+                nombre_cliente: nombre,
+                email,
+                fecha,
+                hora,
+                codigo_cita: codigo,
+                sucursal_id: sucursalId
+              });
+            }
+
+            // Enviar notificación SMS si hay teléfono disponible
+            if (telefono) {
+              const sucursalNombre = sucursalId === 'reforma' ? 'Torre Cuarzo' : 'Polanco';
+              await sendSMS({
+                to: telefono,
+                body: `Capitalta: Cita confirmada para el ${fecha} a las ${hora} en ${sucursalNombre}. Codigo: ${codigo}`
+              });
+            }
           }
 
           return JSON.stringify({ 

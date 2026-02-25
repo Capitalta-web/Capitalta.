@@ -25,6 +25,7 @@
     "@mui/material": "7.3.6",
     "@mui/material-nextjs": "7.3.6",
     "@mui/x-date-pickers": "^8.27.0",
+    "@sendgrid/mail": "^8.1.6",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
     "@tabler/icons-react": "^3.36.1",
@@ -56,6 +57,7 @@
     "stylis": "4.3.6",
     "stylis-plugin-rtl": "2.1.1",
     "swr": "^2.4.0",
+    "twilio": "^5.12.2",
     "yet-another-react-lightbox": "3.28.0"
   },
   "devDependencies": {
