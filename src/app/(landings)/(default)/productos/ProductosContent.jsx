@@ -111,73 +111,87 @@ export default function ProductosContent() {
         <Stack spacing={8} sx={{ py: { xs: 6, md: 10 } }}>
           <Grid container spacing={4} justifyContent="center">
             {productos.map((producto) => (
-              <Grid item xs={12} sm={6} key={producto.key}>
+              <Grid item xs={12} md={6} key={producto.key} sx={{ display: 'flex' }}>
                 <Box
                   sx={{
                     p: 4,
-                    height: '100%',
+                    width: 1,
                     display: 'flex',
                     flexDirection: 'column',
+                    bgcolor: 'primary.main',
+                    color: 'common.white',
+                    borderRadius: 4,
                     transition: 'all 0.3s ease',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 2,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
                     '&:hover': {
-                      borderColor: 'primary.main',
-                      boxShadow: (theme) => `0 0 20px ${theme.palette.primary.light}40`,
-                      transform: 'translateY(-4px)'
+                      transform: 'translateY(-8px)',
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
                     }
                   }}
                 >
                   <Stack spacing={3} sx={{ height: '100%' }}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Box
-                        sx={{
-                          p: 1.5,
-                          borderRadius: 2,
-                          bgcolor: 'primary.lighter',
-                          color: 'primary.main',
-                          display: 'flex'
-                        }}
-                      >
-                        <SvgIcon name={producto.icon} type={IconType.STROKE} size={32} />
-                      </Box>
-                      <Typography variant="h4" fontWeight={700}>
-                        {producto.title}
-                      </Typography>
-                    </Stack>
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        width: 'fit-content',
+                        borderRadius: 2,
+                        bgcolor: 'rgba(255, 255, 255, 0.1)',
+                        color: 'common.white',
+                        display: 'flex'
+                      }}
+                    >
+                      <SvgIcon name={producto.icon} type={IconType.STROKE} size={32} />
+                    </Box>
 
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="h4" fontWeight={700} sx={{ color: 'common.white' }}>
+                      {producto.title}
+                    </Typography>
+
+                    <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.8)', minHeight: 60 }}>
                       {producto.resumen}
                     </Typography>
 
                     <Stack spacing={1.5} sx={{ mt: 'auto', pt: 2 }}>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="subtitle2" color="text.secondary">
+                      <Stack direction="row" spacing={1}>
+                        <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 700 }}>
                           Monto:
                         </Typography>
-                        <Typography variant="subtitle2" fontWeight={600}>
+                        <Typography variant="subtitle2" sx={{ color: 'common.white', fontWeight: 700 }}>
                           {producto.monto}
                         </Typography>
                       </Stack>
-                      <Stack direction="row" justifyContent="space-between">
-                        <Typography variant="subtitle2" color="text.secondary">
+                      <Stack direction="row" spacing={1}>
+                        <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 700 }}>
                           Plazo:
                         </Typography>
-                        <Typography variant="subtitle2" fontWeight={600}>
+                        <Typography variant="subtitle2" sx={{ color: 'common.white', fontWeight: 700 }}>
                           {producto.plazo}
                         </Typography>
                       </Stack>
                     </Stack>
 
-                    <Stack direction="row" spacing={2} sx={{ pt: 2 }}>
-                      <Button variant="contained" fullWidth href={producto.href}>
-                        Calcular
-                      </Button>
-                      <Button variant="outlined" fullWidth href={producto.productoHref}>
-                        Detalles
-                      </Button>
-                    </Stack>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      href={producto.productoHref}
+                      endIcon={<SvgIcon name="tabler-arrow-right" size={18} />}
+                      sx={{
+                        mt: 2,
+                        color: 'common.white',
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderRadius: 10,
+                        py: 1.5,
+                        textTransform: 'none',
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        '&:hover': {
+                          borderColor: 'common.white',
+                          bgcolor: 'rgba(255, 255, 255, 0.1)'
+                        }
+                      }}
+                    >
+                      Ver Detalles
+                    </Button>
                   </Stack>
                 </Box>
               </Grid>
