@@ -1,46 +1,53 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 /**
- * Utilidad para envío de correos usando Resend.
- * Requiere RESEND_API_KEY en .env.
+ * Utilidad para envío de correos usando SMTP (Google Workspace).
+ * Requiere SMTP_USER y SMTP_PASS (App Password) en .env.
  */
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
 
 /**
  * Envía un correo electrónico genérico.
  */
 export async function sendEmail({ to, subject, html, text }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  
-  if (!apiKey) {
-    console.warn('[Resend] API Key no configurada en .env. El correo no se enviará.');
-    return { success: false, error: 'API Key no configurada' };
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (!user || !pass) {
+    console.warn('[Nodemailer] SMTP no configurado en .env. El correo no se enviará.');
+    console.log('[Mock Email] To:', to, '| Subject:', subject);
+    return { success: false, error: 'SMTP no configurado' };
   }
 
-  // Inicializar cliente dentro de la función para asegurar que tome el env actualizado
-  const resend = new Resend(apiKey);
-  
-  // Si no tienes un dominio verificado en Resend, DEBES usar onboarding@resend.dev
-  // Intentamos usar el de Capitalta, pero si falla, Resend nos avisará.
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+  // Usamos el alias para el remitente si está configurado, si no el usuario principal
+  const fromEmail = "capitalta@abdev.click";
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to: [to],
+    const info = await transporter.sendMail({
+      from: `"Capitalta" <${fromEmail}>`,
+      to,
       subject,
+      text: text || '',
       html: html || `<p>${text}</p>`,
     });
 
-    if (error) {
-      console.error('[Resend Error Detail]:', JSON.stringify(error, null, 2));
-      return { success: false, error: error.message || error };
-    }
-
-    console.log('[Resend Success]: Correo enviado id:', data.id);
-    return { success: true, id: data.id };
+    console.log('[Nodemailer Success]: Correo enviado id:', info.messageId);
+    return { success: true, id: info.messageId };
   } catch (error) {
-    console.error('[Resend Exception]:', error);
-    return { success: false, error: error.message || 'Error inesperado' };
+    console.error('[Nodemailer Error]:', error);
+    return { success: false, error: error.message || error };
   }
 }
 
@@ -67,7 +74,7 @@ export async function sendVerificationCode(email, code) {
 }
 
 /**
- * Envía una confirmación de cita (Versión Resend).
+ * Envía una confirmación de cita.
  */
 export async function sendAppointmentConfirmation(cita) {
   const { nombre_cliente, email, fecha, hora, codigo_cita, sucursal_id } = cita;

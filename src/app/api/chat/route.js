@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { obtenerProximasFechas, generarCodigoCita, horasDisponibles, sucursalesMock } from '@/utils/citas';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
-import { sendAppointmentConfirmation, sendVerificationCode } from '@/utils/resend';
+import { sendAppointmentConfirmation, sendVerificationCode } from '@/utils/nodemailer';
 import { sendSMS } from '@/utils/sms';
 
 // Configuración del cliente OpenAI para x.ai (Grok)
