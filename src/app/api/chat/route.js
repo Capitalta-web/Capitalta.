@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { obtenerProximasFechas, generarCodigoCita, horasDisponibles, sucursalesMock } from '@/utils/citas';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
-import { sendAppointmentConfirmation } from '@/utils/email';
+import { sendAppointmentConfirmation, sendVerificationCode } from '@/utils/resend';
 import { sendSMS } from '@/utils/sms';
 
 // Configuración del cliente OpenAI para x.ai (Grok)
@@ -45,7 +45,8 @@ Tu misión es asesorar a los usuarios, explicar nuestros productos financieros c
 3. **Citas**: Si el usuario muestra interés real o pide hablar con alguien, invítalo proactivamente a agendar una cita en nuestras sucursales (Reforma o Polanco) usando la herramienta 'bookAppointment'.
    - Antes de reservar, SIEMPRE verifica disponibilidad con 'getAvailableDates'.
    - Pide confirmación de: Nombre, Fecha, Hora y Sucursal.
-4. **Contacto Humano**: Si el usuario pide hablar con un humano o se frustra, sugiérele usar el botón de WhatsApp que aparece en el chat.
+4. **Seguridad y Verificación**: Antes de confirmar una cita o revelar datos sensibles, debes verificar la identidad del usuario enviando un código a su correo con 'sendVerificationCode'. Una vez que el usuario te dé el código, verifícalo con 'verifyCode'.
+5. **Contacto Humano**: Si el usuario pide hablar con un humano o se frustra, sugiérele usar el botón de WhatsApp que aparece en el chat.
 5. **Límites**: No prometas aprobaciones de crédito. Todo está sujeto a análisis de riesgo.
 6. **Formato**: Usa listas (markdown) para presentar requisitos o características.
 
@@ -80,6 +81,35 @@ const tools = [
           telefono: { type: 'string', description: 'Teléfono del cliente (opcional)' }
         },
         required: ['fecha', 'hora', 'sucursalId', 'nombre'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'sendVerificationCode',
+      description: 'Envía un código de verificación de 6 dígitos al correo del usuario.',
+      parameters: {
+        type: 'object',
+        properties: {
+          email: { type: 'string', description: 'Email del destinatario' }
+        },
+        required: ['email'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'verifyCode',
+      description: 'Verifica si el código ingresado por el usuario es válido.',
+      parameters: {
+        type: 'object',
+        properties: {
+          email: { type: 'string', description: 'Email del usuario' },
+          code: { type: 'string', description: 'Código de 6 dígitos a verificar' }
+        },
+        required: ['email', 'code'],
       },
     },
   },
@@ -199,6 +229,57 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         },
         getBranchInfo: async () => {
           return JSON.stringify(sucursalesMock);
+        },
+        sendVerificationCode: async (args) => {
+          const { email } = args;
+          const code = Math.floor(100000 + Math.random() * 900000).toString();
+          
+          const supabase = createSupabaseServerClient();
+          if (supabase) {
+            // Guardar código en Supabase
+            const { error } = await supabase
+              .from('temp_verification_codes')
+              .insert({ email, code });
+
+            if (error) {
+              console.error('Error guardando código:', error);
+              return JSON.stringify({ success: false, error: 'Error interno al generar código' });
+            }
+
+            // Enviar por Resend
+            const result = await sendVerificationCode(email, code);
+            if (result.success) {
+              return JSON.stringify({ success: true, message: `Código enviado a ${email}. Por favor ingrésalo para continuar.` });
+            }
+          }
+          return JSON.stringify({ success: false, error: 'No se pudo enviar el código' });
+        },
+        verifyCode: async (args) => {
+          const { email, code } = args;
+          const supabase = createSupabaseServerClient();
+          if (supabase) {
+            const { data, error } = await supabase
+              .from('temp_verification_codes')
+              .select('*')
+              .eq('email', email)
+              .eq('code', code)
+              .eq('is_used', false)
+              .gt('expires_at', new Date().toISOString())
+              .single();
+
+            if (error || !data) {
+              return JSON.stringify({ success: false, error: 'Código inválido o expirado' });
+            }
+
+            // Marcar como usado
+            await supabase
+              .from('temp_verification_codes')
+              .update({ is_used: true })
+              .eq('id', data.id);
+
+            return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente.' });
+          }
+          return JSON.stringify({ success: false, error: 'Error de conexión' });
         },
         bookAppointment: async (args) => {
           const { fecha, hora, nombre, sucursalId, email, telefono } = args;
