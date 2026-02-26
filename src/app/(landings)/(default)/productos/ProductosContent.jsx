@@ -109,9 +109,9 @@ export default function ProductosContent() {
       <SectionHero heading="Nuestros Productos Financieros" caption="Soluciones diseñadas para impulsar el crecimiento de tu negocio." />
       <ContainerWrapper>
         <Stack spacing={8} sx={{ py: { xs: 6, md: 10 } }}>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} justifyContent="center">
             {productos.map((producto) => (
-              <Grid item xs={12} md={6} key={producto.key}>
+              <Grid item xs={12} sm={6} key={producto.key}>
                 <Box
                   sx={{
                     p: 4,
