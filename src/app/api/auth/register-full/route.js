@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { sendVerificationCode } from '@/utils/nodemailer';
 
+/**
+ * Endpoint de registro completo
+ * 1. Crea usuario en Supabase (email_confirm: false)
+ * 2. Crea solicitud de crédito
+ * 3. Envía código de verificación por email
+ */
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -17,21 +24,15 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
     }
 
-    // 1. Crear usuario (Admin privileges, auto-confirm email)
+    // 1. Crear usuario SIN confirmar email
     let userId;
     let authData;
-
-    // Check if user already exists first
-    const { data: existingUsers } = await supabase.auth.admin.listUsers();
-    // Note: listUsers is paginated, but for now we assume email check works via createUser error or specific search
-    // Better: use listUsers with filter if possible, but admin.listUsers doesn't support email filter directly in all versions.
-    // However, we can just try createUser and handle the error.
 
     const { data: createdData, error: createError } = await supabase.auth.admin.createUser({
       email,
       password,
       user_metadata: userData,
-      email_confirm: true
+      email_confirm: false // Usuario debe verificar email
     });
 
     if (createError) {
@@ -82,9 +83,33 @@ export async function POST(request) {
       );
     }
 
+    // 3. Generar código de verificación de 6 dígitos
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 4. Enviar código por email
+    const emailResult = await sendVerificationCode(email, verificationCode);
+
+    if (!emailResult.success) {
+      console.error('Email sending failed:', emailResult.error);
+      // Nota: Usuario y solicitud fueron creados pero no se envió email.
+      // El usuario puede intenta verificar después.
+      return NextResponse.json(
+        {
+          error: 'Usuario y solicitud creados, pero no se pudo enviar el código de verificación. Intenta nuevamente.',
+          userCreated: true,
+          solicitudCreated: true
+        },
+        { status: 500 }
+      );
+    }
+
+    console.log(`[Auth Register-Full] Usuario creado: ${email}, solicitud creada, código enviado: ${verificationCode}`);
+
     return NextResponse.json({
       success: true,
-      user: authData.user
+      message: 'Usuario registrado. Verifica tu email para el código de 6 dígitos.',
+      user: authData.user,
+      email: email
     });
   } catch (err) {
     console.error('API Route Error:', err);
