@@ -45,40 +45,45 @@ export default function AuthRegister({ inputSx }) {
   // Handle form submission
   const onSubmit = async (data) => {
     if (data.password !== data.confirmPassword) {
-      setErrorMsg('Passwords do not match');
+      setErrorMsg('Las contraseñas no coinciden');
       return;
     }
 
     setIsLoading(true);
     setErrorMsg('');
 
-    const supabase = createSupabaseBrowserClient();
-    if (!supabase) {
-      setErrorMsg('Supabase configuration error');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            full_name: `${data.firstname} ${data.lastname}`,
-            avatar_url: ''
+      // Llamar a nuestro endpoint /api/auth/signup (que envía email con OTP)
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          options: {
+            data: {
+              full_name: `${data.firstname} ${data.lastname}`,
+              avatar_url: ''
+            }
           }
-        }
+        })
       });
 
-      if (error) {
-        setErrorMsg(error.message);
-      } else {
-        router.push('/auth/login?registered=true');
-        reset();
+      const result = await response.json();
+
+      if (!response.ok) {
+        setErrorMsg(result.error || 'Error al registrarse');
+        return;
       }
+
+      // Si el signup fue exitoso, ir a página de verificación OTP
+      // Pasar el email para que se muestre en el formulario de verificación
+      router.push(`/auth/otp-verification?email=${encodeURIComponent(data.email)}`);
+      reset();
     } catch (err) {
-      setErrorMsg('Unexpected error occurred');
+      setErrorMsg('Ocurrió un error inesperado');
       console.error(err);
     } finally {
       setIsLoading(false);

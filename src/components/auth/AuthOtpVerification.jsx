@@ -1,7 +1,11 @@
 'use client';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -19,6 +23,20 @@ import { otpSchema } from '@/utils/validationSchema';
 export default function AuthOtpVerification() {
   const theme = useTheme();
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = useState('');
+
+  // Obtener email del query param
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    if (emailParam) {
+      setEmail(decodeURIComponent(emailParam));
+    }
+  }, [searchParams]);
 
   // Initialize react-hook-form
   const {
@@ -29,59 +47,100 @@ export default function AuthOtpVerification() {
   } = useForm();
 
   // Handle form submission
-  const onSubmit = (data) => {
-    console.log(data);
-    reset();
+  const onSubmit = async (data) => {
+    if (!email) {
+      setErrorMsg('Email no encontrado');
+      return;
+    }
 
-    // reset focus after submission
-    const activeElement = document.activeElement;
-    if (activeElement) {
-      activeElement.blur(); // blur the currently focused element
+    setIsLoading(true);
+    setErrorMsg('');
+
+    try {
+      // Llamar a endpoint de verificación OTP
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          code: data.otp
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setErrorMsg(result.error || 'Error al verificar código');
+        return;
+      }
+
+      // Éxito - redirigir a login
+      router.push('/auth/login?verified=true');
+      reset();
+    } catch (err) {
+      setErrorMsg('Ocurrió un error inesperado');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack sx={{ gap: 0.5 }}>
-        <Box
-          sx={{ '& input:focus-visible': { borderColor: `${theme.vars.palette.primary.main} !important`, borderWidth: '2px !important' } }}
-        >
-          <Controller
-            control={control}
-            name="otp"
-            rules={otpSchema}
-            render={({ field: { value, onChange } }) => (
-              <OtpInput
-                value={value}
-                onChange={onChange}
-                numInputs={6}
-                inputType="tel"
-                shouldAutoFocus
-                containerStyle={{ gap: downSM ? 8 : 12, justifyContent: 'center' }}
-                inputStyle={{
-                  width: '100%',
-                  maxWidth: 66,
-                  height: 56,
-                  fontSize: 16,
-                  borderRadius: 16,
-                  borderWidth: 1,
-                  borderStyle: 'solid',
-                  outline: 'none',
-                  borderColor: theme.vars.palette.divider
-                }}
-                renderInput={(props) => <input {...props} aria-label="otp" />}
-              />
-            )}
-          />
-        </Box>
-        {errors.otp?.message && (
-          <Typography variant="caption" sx={{ color: 'error.main' }}>
-            {errors.otp?.message}
-          </Typography>
-        )}
+      <Stack sx={{ gap: 2.5 }}>
+        {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+        <Stack sx={{ gap: 0.5 }}>
+          <Box
+            sx={{ '& input:focus-visible': { borderColor: `${theme.vars.palette.primary.main} !important`, borderWidth: '2px !important' } }}
+          >
+            <Controller
+              control={control}
+              name="otp"
+              rules={otpSchema}
+              render={({ field: { value, onChange } }) => (
+                <OtpInput
+                  value={value}
+                  onChange={onChange}
+                  numInputs={6}
+                  inputType="tel"
+                  shouldAutoFocus
+                  disabled={isLoading}
+                  containerStyle={{ gap: downSM ? 8 : 12, justifyContent: 'center' }}
+                  inputStyle={{
+                    width: '100%',
+                    maxWidth: 66,
+                    height: 56,
+                    fontSize: 16,
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    outline: 'none',
+                    borderColor: theme.vars.palette.divider,
+                    opacity: isLoading ? 0.5 : 1
+                  }}
+                  renderInput={(props) => <input {...props} aria-label="otp" />}
+                />
+              )}
+            />
+          </Box>
+          {errors.otp?.message && (
+            <Typography variant="caption" sx={{ color: 'error.main' }}>
+              {errors.otp?.message}
+            </Typography>
+          )}
+        </Stack>
       </Stack>
-      <Button fullWidth type="submit" color="primary" variant="contained" sx={{ mt: { xs: 3, sm: 4 } }}>
-        Verify
+      <Button
+        fullWidth
+        type="submit"
+        color="primary"
+        variant="contained"
+        disabled={isLoading}
+        sx={{ mt: { xs: 3, sm: 4 } }}
+      >
+        {isLoading ? 'Verificando...' : 'Verificar'}
       </Button>
     </form>
   );
