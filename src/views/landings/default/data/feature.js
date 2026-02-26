@@ -1,5 +1,8 @@
 // @project
+import branding from '@/branding.json';
 import { IconType } from '@/enum';
+
+const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 
 export const feature2 = {
   heading: 'Culture of inovation',
