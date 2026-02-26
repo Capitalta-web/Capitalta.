@@ -234,6 +234,8 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
           const { email } = args;
           const code = Math.floor(100000 + Math.random() * 900000).toString();
           
+          console.log(`[Verification Code Flow]: Generando código para ${email}`);
+          
           const supabase = createSupabaseServerClient();
           if (supabase) {
             // Guardar código en Supabase
@@ -242,15 +244,22 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
               .insert({ email, code });
 
             if (error) {
-              console.error('Error guardando código:', error);
+              console.error('[Supabase Error]: Error al guardar código de verificación:', error);
               return JSON.stringify({ success: false, error: 'Error interno al generar código' });
             }
 
-            // Enviar por Resend
+            console.log(`[Verification Code Flow]: Código guardado en Supabase para ${email}. Procediendo a enviar email...`);
+
+            // Enviar por Nodemailer
             const result = await sendVerificationCode(email, code);
             if (result.success) {
+              console.log(`[Verification Code Flow]: Email enviado exitosamente a ${email}`);
               return JSON.stringify({ success: true, message: `Código enviado a ${email}. Por favor ingrésalo para continuar.` });
+            } else {
+              console.error('[Verification Code Flow]: Falló el envío de email:', result.error);
             }
+          } else {
+            console.error('[Supabase Error]: No se pudo inicializar el cliente de Supabase.');
           }
           return JSON.stringify({ success: false, error: 'No se pudo enviar el código' });
         },

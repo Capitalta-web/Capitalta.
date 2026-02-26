@@ -26,15 +26,29 @@ export async function sendEmail({ to, subject, html, text }) {
   const pass = process.env.SMTP_PASS;
 
   if (!user || !pass) {
-    console.warn('[Nodemailer] SMTP no configurado en .env. El correo no se enviará.');
-    console.log('[Mock Email] To:', to, '| Subject:', subject);
-    return { success: false, error: 'SMTP no configurado' };
+    console.error('[Nodemailer Config Error]: Faltan variables SMTP_USER o SMTP_PASS en el entorno.');
+    return { success: false, error: 'Configuración SMTP incompleta' };
   }
 
-  // Usamos el alias para el remitente si está configurado, si no el usuario principal
+  // Re-inicializar transporter para asegurar que tome las variables de entorno actuales
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: user,
+      pass: pass,
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  // Usamos el alias para el remitente
   const fromEmail = "capitalta@abdev.click";
 
   try {
+    console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail}...`);
     const info = await transporter.sendMail({
       from: `"Capitalta" <${fromEmail}>`,
       to,
@@ -43,10 +57,10 @@ export async function sendEmail({ to, subject, html, text }) {
       html: html || `<p>${text}</p>`,
     });
 
-    console.log('[Nodemailer Success]: Correo enviado id:', info.messageId);
+    console.log('[Nodemailer Success]: Correo enviado con ID:', info.messageId);
     return { success: true, id: info.messageId };
   } catch (error) {
-    console.error('[Nodemailer Error]:', error);
+    console.error('[Nodemailer Error Detail]:', error);
     return { success: false, error: error.message || error };
   }
 }
