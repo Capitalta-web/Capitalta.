@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { sendVerificationCode } from '@/utils/nodemailer';
 
 /**
  * Endpoint de signup
- * 1. Crea usuario en Supabase (email_confirm: false)
+ * 1. Crea usuario en Supabase usando signUp() (método público)
  * 2. Genera código de verificación de 6 dígitos
  * 3. Envía código por email con Nodemailer
  */
@@ -18,19 +18,22 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Email y contraseña son requeridos' }, { status: 400 });
     }
 
-    const supabase = createSupabaseServerClient();
+    // Usar cliente público (no necesita Service Role Key)
+    const supabase = createSupabaseBrowserClient();
 
     if (!supabase) {
       console.error('Supabase client could not be initialized on server.');
       return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
     }
 
-    // 1. Crear usuario SIN confirmar email
-    const { data, error } = await supabase.auth.admin.createUser({
+    // 1. Crear usuario usando signUp() - método público
+    // Nota: signUp() automáticamente establece email_confirm: false (usuario no confirmado)
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      user_metadata: options?.data,
-      email_confirm: false // Usuario debe verificar email
+      options: {
+        data: options?.data || {}
+      }
     });
 
     if (error) {
@@ -38,8 +41,15 @@ export async function POST(request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
+    if (!data.user) {
+      console.error('User not created');
+      return NextResponse.json({ error: 'No se pudo crear el usuario' }, { status: 400 });
+    }
+
     // 2. Generar código de verificación de 6 dígitos
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    console.log(`[Auth Signup] Enviando código ${verificationCode} a ${email}`);
 
     // 3. Enviar código por email
     const emailResult = await sendVerificationCode(email, verificationCode);
@@ -47,17 +57,17 @@ export async function POST(request) {
     if (!emailResult.success) {
       console.error('Email sending failed:', emailResult.error);
       // Nota: Usuario fue creado pero no se envió email.
-      // Podríamos borrarlo aquí o dejar que intente verificar después.
       return NextResponse.json(
         {
           error: 'Usuario creado pero no se pudo enviar el código de verificación. Intenta nuevamente.',
-          userCreated: true
+          userCreated: true,
+          details: emailResult.error
         },
         { status: 500 }
       );
     }
 
-    console.log(`[Auth Signup] Usuario creado: ${email}, código enviado: ${verificationCode}`);
+    console.log(`[Auth Signup Success] Usuario creado: ${email}, código enviado exitosamente`);
 
     return NextResponse.json({
       success: true,
@@ -66,7 +76,10 @@ export async function POST(request) {
       email: email
     });
   } catch (err) {
-    console.error('API Route Error:', err);
-    return NextResponse.json({ error: 'Ocurrió un error inesperado' }, { status: 500 });
+    console.error('API Route Error:', err.message || err);
+    return NextResponse.json({
+      error: 'Ocurrió un error inesperado',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    }, { status: 500 });
   }
 }

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { sendVerificationCode } from '@/utils/nodemailer';
 
 /**
  * Endpoint de registro completo
- * 1. Crea usuario en Supabase (email_confirm: false)
+ * 1. Crea usuario en Supabase usando signUp() (método público)
  * 2. Crea solicitud de crédito
  * 3. Envía código de verificación por email
  */
@@ -17,22 +17,24 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Faltan datos requeridos' }, { status: 400 });
     }
 
-    const supabase = createSupabaseServerClient();
+    // Usar cliente público (no necesita Service Role Key)
+    const supabase = createSupabaseBrowserClient();
 
     if (!supabase) {
       console.error('Supabase client could not be initialized on server.');
       return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
     }
 
-    // 1. Crear usuario SIN confirmar email
+    // 1. Crear usuario usando signUp() - método público
     let userId;
     let authData;
 
-    const { data: createdData, error: createError } = await supabase.auth.admin.createUser({
+    const { data: createdData, error: createError } = await supabase.auth.signUp({
       email,
       password,
-      user_metadata: userData,
-      email_confirm: false // Usuario debe verificar email
+      options: {
+        data: userData || {}
+      }
     });
 
     if (createError) {
