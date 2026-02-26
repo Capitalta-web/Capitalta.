@@ -111,7 +111,7 @@ export default function BlogDetail() {
           sx={{
             borderRadius: 4,
             overflow: 'hidden',
-            boxShadow: (theme) => theme.customShadows.z16,
+            boxShadow: 16,
             mb: 6
           }}
         >
