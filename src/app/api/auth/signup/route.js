@@ -51,7 +51,18 @@ export async function POST(request) {
 
     console.log(`[Auth Signup] Enviando código ${verificationCode} a ${email}`);
 
-    // 3. Enviar código por email
+    // 3. Guardar código en tabla otp_codes (para validar después)
+    const { error: otpError } = await supabase.from('otp_codes').insert({
+      email,
+      code: verificationCode
+    });
+
+    if (otpError) {
+      console.error('Error saving OTP code:', otpError);
+      // Continuamos, no bloqueamos si falla guardar (pero lo ideal es que funcione)
+    }
+
+    // 4. Enviar código por email
     const emailResult = await sendVerificationCode(email, verificationCode);
 
     if (!emailResult.success) {
@@ -67,11 +78,7 @@ export async function POST(request) {
       );
     }
 
-    // Opcionalmente, guardar el código en tabla temporal otp_codes para validar después
-    // Esto es útil para validar exactamente qué código se envió
-    // (por ahora lo comentamos para MVP rápido - aceptamos cualquier código de 6 dígitos)
-
-    console.log(`[Auth Signup Success] Usuario creado: ${email}, código enviado exitosamente`);
+    console.log(`[Auth Signup Success] Usuario creado: ${email}, código guardado y enviado exitosamente`);
 
     return NextResponse.json({
       success: true,

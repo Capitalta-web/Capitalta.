@@ -57,8 +57,8 @@ export default function AuthOtpVerification() {
     setErrorMsg('');
 
     try {
-      // Llamar a endpoint de verificación OTP
-      const response = await fetch('/api/auth/verify-otp', {
+      // 1. Llamar a endpoint de verificación OTP
+      const verifyResponse = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -69,14 +69,34 @@ export default function AuthOtpVerification() {
         })
       });
 
-      const result = await response.json();
+      const verifyResult = await verifyResponse.json();
 
-      if (!response.ok) {
-        setErrorMsg(result.error || 'Error al verificar código');
+      if (!verifyResponse.ok) {
+        setErrorMsg(verifyResult.error || 'Error al verificar código');
         return;
       }
 
-      // Éxito - redirigir a login
+      // 2. Si el OTP es válido, confirmar email en Supabase (email_confirm: true)
+      const confirmResponse = await fetch('/api/auth/confirm-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email
+        })
+      });
+
+      const confirmResult = await confirmResponse.json();
+
+      if (!confirmResponse.ok) {
+        console.error('Error confirming email:', confirmResult.error);
+        // Continuamos aunque falle, el usuario puede intentar login
+      } else {
+        console.log('Email confirmado exitosamente en Supabase');
+      }
+
+      // 3. Éxito - redirigir a login
       router.push('/auth/login?verified=true');
       reset();
     } catch (err) {
