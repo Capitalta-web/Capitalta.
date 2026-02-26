@@ -44,8 +44,8 @@ export async function sendEmail({ to, subject, html, text }) {
     }
   });
 
-  // Usamos el alias para el remitente
-  const fromEmail = "capitalta@abdev.click";
+  // Usamos el remitente que coincida con la cuenta SMTP para evitar rechazos de Google
+  const fromEmail = user;
 
   try {
     console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail}...`);

@@ -38,3 +38,6 @@ next-env.d.ts
 
 # Large files
 javascript_uikit_2.0.0-uexbfy.zip
+
+# Claude Code
+.claude/
