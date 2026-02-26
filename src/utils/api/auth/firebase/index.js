@@ -1,9 +1,4 @@
-// @third-party
-// import { signInWithEmailAndPassword } from 'firebase/auth';
-
-// @project
-import { attempt } from '@/utils/attempt';
-import { firebaseAuth } from '@/utils/auth-client/firebase-client';
+// Firebase implementation not currently used - using Supabase instead
 
 /***************************  FIREBASE - LOGIN  ***************************/
 

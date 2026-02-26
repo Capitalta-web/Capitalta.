@@ -1,6 +1,3 @@
-// @project
-import branding from '@/branding.json';
-
 export const contactUS = {
   heading: 'Hablemos de tu proyecto',
   caption: 'Estamos listos para escuchar tus necesidades y proponerte la mejor solución financiera.',

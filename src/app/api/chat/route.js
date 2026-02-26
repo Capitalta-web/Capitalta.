@@ -61,9 +61,9 @@ const tools = [
       description: 'Obtiene las próximas fechas disponibles para citas presenciales.',
       parameters: {
         type: 'object',
-        properties: {},
-      },
-    },
+        properties: {}
+      }
+    }
   },
   {
     type: 'function',
@@ -80,9 +80,9 @@ const tools = [
           email: { type: 'string', description: 'Email del cliente (opcional)' },
           telefono: { type: 'string', description: 'Teléfono del cliente (opcional)' }
         },
-        required: ['fecha', 'hora', 'sucursalId', 'nombre'],
-      },
-    },
+        required: ['fecha', 'hora', 'sucursalId', 'nombre']
+      }
+    }
   },
   {
     type: 'function',
@@ -94,9 +94,9 @@ const tools = [
         properties: {
           email: { type: 'string', description: 'Email del destinatario' }
         },
-        required: ['email'],
-      },
-    },
+        required: ['email']
+      }
+    }
   },
   {
     type: 'function',
@@ -109,9 +109,9 @@ const tools = [
           email: { type: 'string', description: 'Email del usuario' },
           code: { type: 'string', description: 'Código de 6 dígitos a verificar' }
         },
-        required: ['email', 'code'],
-      },
-    },
+        required: ['email', 'code']
+      }
+    }
   },
   {
     type: 'function',
@@ -120,9 +120,9 @@ const tools = [
       description: 'Obtiene información de las sucursales disponibles.',
       parameters: {
         type: 'object',
-        properties: {},
-      },
-    },
+        properties: {}
+      }
+    }
   }
 ];
 
@@ -151,36 +151,29 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
       try {
         // Buscar conversación existente por session_id
-        const { data: existing } = await supabase
-          .from('chat_conversaciones')
-          .select('id')
-          .eq('session_id', sessionId)
-          .single();
+        const { data: existing } = await supabase.from('chat_conversaciones').select('id').eq('session_id', sessionId).single();
 
-        const resumen = history.length > 0 
-          ? history[history.length - 1].content?.substring(0, 100) || 'Interacción compleja'
-          : 'Nuevo chat';
+        const resumen =
+          history.length > 0 ? history[history.length - 1].content?.substring(0, 100) || 'Interacción compleja' : 'Nuevo chat';
 
         if (existing) {
           await supabase
             .from('chat_conversaciones')
-            .update({ 
-              mensajes: history, 
+            .update({
+              mensajes: history,
               updated_at: new Date().toISOString(),
               usuario_id: userContext?.id || null,
               resumen
             })
             .eq('id', existing.id);
         } else {
-          await supabase
-            .from('chat_conversaciones')
-            .insert({
-              session_id: sessionId,
-              usuario_id: userContext?.id || null,
-              mensajes: history,
-              resumen,
-              estado: 'activa'
-            });
+          await supabase.from('chat_conversaciones').insert({
+            session_id: sessionId,
+            usuario_id: userContext?.id || null,
+            mensajes: history,
+            resumen,
+            estado: 'activa'
+          });
         }
       } catch (err) {
         console.error('Error guardando chat:', err);
@@ -190,32 +183,30 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
     if (!process.env.XAI_API_KEY && !process.env.OPENAI_API_KEY) {
       // Fallback Mock para demostración si no hay API Key configurada
       const lastMessage = messages[messages.length - 1].content.toLowerCase();
-      let mockResponse = "Lo siento, no tengo configurada mi API Key de IA en este momento. Por favor configura XAI_API_KEY en el archivo .env.";
-      
+      let mockResponse =
+        'Lo siento, no tengo configurada mi API Key de IA en este momento. Por favor configura XAI_API_KEY en el archivo .env.';
+
       if (lastMessage.includes('cita')) {
         mockResponse = "Para agendar una cita, por favor visita nuestra sección 'Mi Cuenta' o contáctanos por WhatsApp.";
       } else if (lastMessage.includes('hola')) {
-        mockResponse = "¡Hola! Bienvenido a Capitalta. ¿En qué puedo ayudarte hoy?";
+        mockResponse = '¡Hola! Bienvenido a Capitalta. ¿En qué puedo ayudarte hoy?';
       }
 
       const mockMessage = { role: 'assistant', content: mockResponse };
-      
+
       // Guardar en historial
       await saveChat([...messages, mockMessage]);
 
-      return NextResponse.json({ 
-        message: mockMessage 
+      return NextResponse.json({
+        message: mockMessage
       });
     }
 
     const response = await client.chat.completions.create({
       model: process.env.XAI_API_KEY ? 'grok-beta' : 'gpt-3.5-turbo',
-      messages: [
-        { role: 'system', content: currentSystemPrompt },
-        ...messages
-      ],
+      messages: [{ role: 'system', content: currentSystemPrompt }, ...messages],
       tools: tools,
-      tool_choice: 'auto',
+      tool_choice: 'auto'
     });
 
     const responseMessage = response.choices[0].message;
@@ -225,7 +216,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
       const availableFunctions = {
         getAvailableDates: async () => {
           const fechas = obtenerProximasFechas();
-          return JSON.stringify(fechas.map(f => f.toISOString().split('T')[0]));
+          return JSON.stringify(fechas.map((f) => f.toISOString().split('T')[0]));
         },
         getBranchInfo: async () => {
           return JSON.stringify(sucursalesMock);
@@ -233,15 +224,13 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         sendVerificationCode: async (args) => {
           const { email } = args;
           const code = Math.floor(100000 + Math.random() * 900000).toString();
-          
+
           console.log(`[Verification Code Flow]: Generando código para ${email}`);
-          
+
           const supabase = createSupabaseServerClient();
           if (supabase) {
             // Guardar código en Supabase
-            const { error } = await supabase
-              .from('temp_verification_codes')
-              .insert({ email, code });
+            const { error } = await supabase.from('temp_verification_codes').insert({ email, code });
 
             if (error) {
               console.error('[Supabase Error]: Error al guardar código de verificación:', error);
@@ -281,10 +270,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
             }
 
             // Marcar como usado
-            await supabase
-              .from('temp_verification_codes')
-              .update({ is_used: true })
-              .eq('id', data.id);
+            await supabase.from('temp_verification_codes').update({ is_used: true }).eq('id', data.id);
 
             return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente.' });
           }
@@ -293,7 +279,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         bookAppointment: async (args) => {
           const { fecha, hora, nombre, sucursalId, email, telefono } = args;
           const codigo = generarCodigoCita(new Date(fecha), hora);
-          
+
           const supabase = createSupabaseServerClient();
           if (supabase) {
             const { error } = await supabase.from('citas').insert({
@@ -311,7 +297,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
               console.error('Error guardando cita en Supabase:', error);
               return JSON.stringify({ success: false, error: 'No se pudo guardar la cita en la base de datos.' });
             }
-            
+
             // Enviar confirmación por correo si hay email disponible
             if (email) {
               await sendAppointmentConfirmation({
@@ -334,10 +320,10 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
             }
           }
 
-          return JSON.stringify({ 
-            success: true, 
-            codigo, 
-            mensaje: `Cita confirmada para ${nombre} el ${fecha} a las ${hora}. Tu código es ${codigo}.` 
+          return JSON.stringify({
+            success: true,
+            codigo,
+            mensaje: `Cita confirmada para ${nombre} el ${fecha} a las ${hora}. Tu código es ${codigo}.`
           });
         }
       };
@@ -350,7 +336,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         const functionName = toolCall.function.name;
         const functionToCall = availableFunctions[functionName];
         const functionArgs = JSON.parse(toolCall.function.arguments);
-        
+
         let functionResponse;
         try {
           functionResponse = await functionToCall(functionArgs);
@@ -362,17 +348,14 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
           tool_call_id: toolCall.id,
           role: 'tool',
           name: functionName,
-          content: functionResponse,
+          content: functionResponse
         });
       }
 
       // Segunda llamada al modelo con los resultados de las herramientas
       const secondResponse = await client.chat.completions.create({
         model: process.env.XAI_API_KEY ? 'grok-beta' : 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: currentSystemPrompt },
-          ...messagesWithTools
-        ],
+        messages: [{ role: 'system', content: currentSystemPrompt }, ...messagesWithTools]
       });
 
       const finalMessage = secondResponse.choices[0].message;
@@ -384,12 +367,8 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
     await saveChat([...messages, responseMessage]);
 
     return NextResponse.json({ message: responseMessage });
-
   } catch (error) {
     console.error('Error en API Chat:', error);
-    return NextResponse.json(
-      { error: 'Error interno del servidor', details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Error interno del servidor', details: error.message }, { status: 500 });
   }
 }

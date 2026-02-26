@@ -84,7 +84,7 @@ export default function RegistroWizardPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   // OTP fields
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
@@ -166,7 +166,7 @@ export default function RegistroWizardPage() {
         setErrorPaso('Las contraseñas no coinciden. Por favor verifícalas.');
         return;
       }
-      
+
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         setErrorPaso('Ingresa un correo electrónico válido.');
@@ -174,23 +174,19 @@ export default function RegistroWizardPage() {
       }
 
       setLoading(true);
-      
+
       // Enviamos todos los datos necesarios para crear el usuario en el paso de OTP
       const cleanEmail = email.trim().toLowerCase();
-      
+
       try {
-        const response = await sendOtpAction(
-          cleanEmail, 
-          password, 
-          {
-            full_name: `${nombre} ${apellido}`,
-            tipo_persona: tipoCliente,
-            empresa: empresa || null,
-            rfc: rfc || null,
-            telefono: telefono || null
-          }
-        );
-        
+        const response = await sendOtpAction(cleanEmail, password, {
+          full_name: `${nombre} ${apellido}`,
+          tipo_persona: tipoCliente,
+          empresa: empresa || null,
+          rfc: rfc || null,
+          telefono: telefono || null
+        });
+
         if (response.error) {
           setErrorPaso(response.error);
           setLoading(false);
@@ -208,7 +204,7 @@ export default function RegistroWizardPage() {
           setPaso(4);
           return;
         }
-        
+
         setOtpSent(true);
         setTimer(60);
         setCanResend(false);
@@ -229,7 +225,7 @@ export default function RegistroWizardPage() {
       setLoading(true);
       // const supabase = createSupabaseBrowserClient();
       // const { error } = await supabase.auth.verifyOtp({ email, token: otp, type: 'email' });
-      
+
       const { success, session, user, error } = await verifyOtpAction({ email, token: otp, type: 'signup' });
 
       if (error || !success) {
@@ -241,7 +237,7 @@ export default function RegistroWizardPage() {
       // Guardamos la sesión en el cliente para mantener el estado de autenticación
       const supabase = createSupabaseBrowserClient();
       await supabase.auth.setSession(session);
-      
+
       // Guardamos el ID verificado para usarlo en el paso final sin depender de la red
       if (user && user.id) {
         setVerifiedUserId(user.id);
@@ -274,7 +270,9 @@ export default function RegistroWizardPage() {
       if (!targetUserId) {
         // Fallback: Intentar obtener usuario de la sesión (puede fallar si hay problemas de red)
         const supabase = createSupabaseBrowserClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
         if (user) targetUserId = user.id;
       }
 
@@ -282,27 +280,27 @@ export default function RegistroWizardPage() {
 
       // Usamos Server Action para actualizar perfil y crear solicitud (evita CORS/Fetch errors)
       const { error: actionError } = await updateUserAndCreateRequestAction({
-          userId: targetUserId,
-          userData: {
-            password,
-            metadata: {
-                full_name: `${nombre} ${apellido}`,
-                tipo_persona: tipoCliente,
-                empresa: empresa || null,
-                rfc: rfc || null,
-                telefono: telefono || null
-            }
-          },
-          requestData: {
-            monto_solicitado: montoAjustado,
-            plazo_meses: plazoAjustado,
-            tipo_credito: 'simple', 
-            detalles: {
-                pago_mensual: pagoMensual,
-                tasa_anual: TASA_ANUAL
-            },
-            estatus: 'pendiente'
+        userId: targetUserId,
+        userData: {
+          password,
+          metadata: {
+            full_name: `${nombre} ${apellido}`,
+            tipo_persona: tipoCliente,
+            empresa: empresa || null,
+            rfc: rfc || null,
+            telefono: telefono || null
           }
+        },
+        requestData: {
+          monto_solicitado: montoAjustado,
+          plazo_meses: plazoAjustado,
+          tipo_credito: 'simple',
+          detalles: {
+            pago_mensual: pagoMensual,
+            tasa_anual: TASA_ANUAL
+          },
+          estatus: 'pendiente'
+        }
       });
 
       if (actionError) throw new Error(actionError);
@@ -311,7 +309,6 @@ export default function RegistroWizardPage() {
       setTimeout(() => {
         router.push('/dashboard/client');
       }, 2000);
-
     } catch (err) {
       console.error(err);
       setSubmitError(err.message || 'Ocurrió un error inesperado');
@@ -500,19 +497,19 @@ export default function RegistroWizardPage() {
           />
         </Grid>
         <Grid item xs={12}>
-           {/* Dynamic Password Feedback */}
-           <Typography 
-             variant="caption" 
-             sx={{ 
-               color: password && password.length >= 6 ? 'success.main' : 'text.secondary',
-               display: 'flex',
-               alignItems: 'center',
-               gap: 0.5
-             }}
-           >
-             {password && password.length >= 6 ? '✓ ' : '• '} 
-             Mínimo 6 caracteres
-           </Typography>
+          {/* Dynamic Password Feedback */}
+          <Typography
+            variant="caption"
+            sx={{
+              color: password && password.length >= 6 ? 'success.main' : 'text.secondary',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5
+            }}
+          >
+            {password && password.length >= 6 ? '✓ ' : '• '}
+            Mínimo 6 caracteres
+          </Typography>
         </Grid>
       </Grid>
     </Stack>
@@ -521,11 +518,11 @@ export default function RegistroWizardPage() {
   const handleResend = async () => {
     setLoading(true);
     const cleanEmail = email.trim().toLowerCase();
-    
+
     // Usamos acción específica de reenvío
     const { error, message } = await resendOtpAction(cleanEmail);
     setLoading(false);
-    
+
     if (error) {
       setErrorPaso(error); // error is a string
     } else {
@@ -540,9 +537,10 @@ export default function RegistroWizardPage() {
     <Stack spacing={3}>
       <Typography variant="h5">Paso 4: Verificación de correo</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 600 }}>
-        Te enviamos un correo a <strong>{email}</strong> con un enlace de acceso y un código de verificación. Puedes hacer clic en el enlace para ir directo a tu panel o ingresar el código aquí si lo prefieres.
+        Te enviamos un correo a <strong>{email}</strong> con un enlace de acceso y un código de verificación. Puedes hacer clic en el enlace
+        para ir directo a tu panel o ingresar el código aquí si lo prefieres.
       </Typography>
-      
+
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
         <OtpInput
           value={otp}
@@ -569,13 +567,8 @@ export default function RegistroWizardPage() {
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           ¿No recibiste el código?
         </Typography>
-        <Button 
-            disabled={!canResend || loading} 
-            onClick={handleResend}
-            variant="text"
-            sx={{ mt: 1 }}
-        >
-            {canResend ? 'Reenviar código' : `Reenviar en ${timer}s`}
+        <Button disabled={!canResend || loading} onClick={handleResend} variant="text" sx={{ mt: 1 }}>
+          {canResend ? 'Reenviar código' : `Reenviar en ${timer}s`}
         </Button>
       </Box>
     </Stack>
@@ -642,9 +635,9 @@ export default function RegistroWizardPage() {
       </Box>
 
       <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', mt: 2 }}>
-        <Button 
-          variant="contained" 
-          color="primary" 
+        <Button
+          variant="contained"
+          color="primary"
           onClick={handleSubmit}
           disabled={loading}
           size="large"
@@ -748,9 +741,9 @@ export default function RegistroWizardPage() {
                     Atrás
                   </Button>
                   {!esUltimoPaso && (
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
+                    <Button
+                      variant="contained"
+                      color="primary"
                       onClick={manejarSiguiente}
                       disabled={loading}
                       startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}

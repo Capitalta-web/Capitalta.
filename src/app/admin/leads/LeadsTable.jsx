@@ -75,22 +75,20 @@ export default function LeadsTable({ conversations }) {
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2" sx={{ 
-                    maxWidth: 300, 
-                    whiteSpace: 'nowrap', 
-                    overflow: 'hidden', 
-                    textOverflow: 'ellipsis' 
-                  }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      maxWidth: 300,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
                     {chat.resumen || 'Sin resumen'}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip 
-                    label={`${chat.mensajes?.length || 0} msgs`} 
-                    size="small" 
-                    color="primary" 
-                    variant="outlined" 
-                  />
+                  <Chip label={`${chat.mensajes?.length || 0} msgs`} size="small" color="primary" variant="outlined" />
                 </TableCell>
                 <TableCell>
                   <IconButton onClick={() => setSelectedChat(chat)} size="small" color="primary">
@@ -109,28 +107,28 @@ export default function LeadsTable({ conversations }) {
           {selectedChat && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {selectedChat.mensajes?.map((msg, idx) => (
-                <Box 
-                  key={idx} 
-                  sx={{ 
-                    display: 'flex', 
+                <Box
+                  key={idx}
+                  sx={{
+                    display: 'flex',
                     flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
                     gap: 1
                   }}
                 >
-                  <Avatar 
-                    sx={{ 
-                      width: 32, 
-                      height: 32, 
+                  <Avatar
+                    sx={{
+                      width: 32,
+                      height: 32,
                       bgcolor: msg.role === 'user' ? 'secondary.main' : 'primary.main',
                       fontSize: 14
                     }}
                   >
                     {msg.role === 'user' ? 'U' : 'AI'}
                   </Avatar>
-                  <Paper 
+                  <Paper
                     elevation={0}
-                    sx={{ 
-                      p: 2, 
+                    sx={{
+                      p: 2,
                       bgcolor: msg.role === 'user' ? 'secondary.light' : 'grey.100',
                       color: msg.role === 'user' ? 'secondary.contrastText' : 'text.primary',
                       maxWidth: '80%',
@@ -141,14 +139,14 @@ export default function LeadsTable({ conversations }) {
                       {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
                     </Typography>
                     {msg.role === 'tool' && (
-                       <Typography variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', opacity: 0.7 }}>
-                         Tool Output: {msg.name}
-                       </Typography>
+                      <Typography variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', opacity: 0.7 }}>
+                        Tool Output: {msg.name}
+                      </Typography>
                     )}
                     {msg.tool_calls && (
-                       <Typography variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', opacity: 0.7 }}>
-                         Tool Call: {msg.tool_calls[0].function.name}
-                       </Typography>
+                      <Typography variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', opacity: 0.7 }}>
+                        Tool Call: {msg.tool_calls[0].function.name}
+                      </Typography>
                     )}
                   </Paper>
                 </Box>

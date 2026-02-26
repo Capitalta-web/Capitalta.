@@ -13,23 +13,29 @@ export async function GET() {
     const result = await sendVerificationCode(testEmail, testCode);
 
     if (result.success) {
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         message: `Código de prueba (${testCode}) enviado correctamente a ${testEmail} vía Nodemailer (Google).`,
         id: result.id
       });
     } else {
-      return NextResponse.json({ 
-        success: false, 
-        error: result.error,
-        message: 'No se pudo enviar el correo con Nodemailer. Verifica SMTP_USER y SMTP_PASS en el archivo .env'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error,
+          message: 'No se pudo enviar el correo con Nodemailer. Verifica SMTP_USER y SMTP_PASS en el archivo .env'
+        },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Error en endpoint de prueba Nodemailer:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error.message 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message
+      },
+      { status: 500 }
+    );
   }
 }

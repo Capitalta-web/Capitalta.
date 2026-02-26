@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Grid, 
-  Typography, 
-  MenuItem, 
-  TextField, 
-  Button, 
-  Stack, 
+import {
+  Grid,
+  Typography,
+  MenuItem,
+  TextField,
+  Button,
+  Stack,
   Alert,
   List,
   ListItem,
@@ -33,7 +33,7 @@ export default function CitasPage() {
     hora: ''
   });
   const [message, setMessage] = useState({ type: '', text: '' });
-  
+
   const proximasFechas = obtenerProximasFechas();
 
   useEffect(() => {
@@ -44,7 +44,9 @@ export default function CitasPage() {
     try {
       setFetching(true);
       const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
 
       if (!user) {
         setFetching(false);
@@ -67,11 +69,7 @@ export default function CitasPage() {
       }
 
       // Since we don't have a direct relation in schema yet, we search by email
-      const { data, error } = await supabase
-        .from('citas')
-        .select('*')
-        .eq('email', user.email)
-        .order('fecha', { ascending: true });
+      const { data, error } = await supabase.from('citas').select('*').eq('email', user.email).order('fecha', { ascending: true });
 
       if (error) throw error;
       setCitas(data || []);
@@ -117,7 +115,6 @@ export default function CitasPage() {
       setMessage({ type: 'success', text: `¡Cita agendada con éxito! Código: ${codigo}` });
       setFormData({ sucursal: '', fecha: '', hora: '' });
       fetchData(); // Refresh list
-
     } catch (error) {
       setMessage({ type: 'error', text: error.message });
     } finally {
@@ -127,25 +124,33 @@ export default function CitasPage() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'programada': return 'primary';
-      case 'confirmada': return 'success';
-      case 'cancelada': return 'error';
-      case 'completada': return 'default';
-      default: return 'default';
+      case 'programada':
+        return 'primary';
+      case 'confirmada':
+        return 'success';
+      case 'cancelada':
+        return 'error';
+      case 'completada':
+        return 'default';
+      default:
+        return 'default';
     }
   };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h3" sx={{ mb: 1 }}>Agendar Cita Presencial</Typography>
+        <Typography variant="h3" sx={{ mb: 1 }}>
+          Agendar Cita Presencial
+        </Typography>
         <Typography variant="body1" color="text.secondary">
           Reserva una cita con nuestros asesores en sucursal para revisar tu solicitud.
         </Typography>
         {activeApplication && (
-           <Alert severity="info" sx={{ mt: 2 }}>
-             Agendando cita para solicitud de crédito {activeApplication.tipo_credito.replace('_', ' ')} (${activeApplication.monto_solicitado})
-           </Alert>
+          <Alert severity="info" sx={{ mt: 2 }}>
+            Agendando cita para solicitud de crédito {activeApplication.tipo_credito.replace('_', ' ')} ($
+            {activeApplication.monto_solicitado})
+          </Alert>
         )}
       </Grid>
 
@@ -206,13 +211,7 @@ export default function CitasPage() {
                 ))}
               </TextField>
 
-              <Button 
-                variant="contained" 
-                size="large" 
-                type="submit" 
-                disabled={loading}
-                fullWidth
-              >
+              <Button variant="contained" size="large" type="submit" disabled={loading} fullWidth>
                 {loading ? 'Agendando...' : 'Confirmar Cita'}
               </Button>
             </Stack>
@@ -237,7 +236,12 @@ export default function CitasPage() {
                       primary={
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
                           <Typography variant="subtitle1" component="span">
-                            {new Date(cita.fecha + 'T00:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                            {new Date(cita.fecha + 'T00:00:00').toLocaleDateString('es-MX', {
+                              weekday: 'long',
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric'
+                            })}
                           </Typography>
                           <Chip label={cita.status} color={getStatusColor(cita.status)} size="small" />
                         </Stack>
@@ -248,10 +252,10 @@ export default function CitasPage() {
                             Hora: {cita.hora} | Código: <strong>{cita.codigo_cita}</strong>
                           </Typography>
                           <Typography variant="caption" component="span" display="block">
-                            Sucursal: {sucursalesMock.find(s => s.id === cita.sucursal_id)?.nombre || cita.sucursal_id}
+                            Sucursal: {sucursalesMock.find((s) => s.id === cita.sucursal_id)?.nombre || cita.sucursal_id}
                           </Typography>
                           {cita.solicitud_id && (
-                             <Chip label="Vinculada a solicitud" size="small" variant="outlined" sx={{ mt: 0.5, fontSize: '0.7rem' }} />
+                            <Chip label="Vinculada a solicitud" size="small" variant="outlined" sx={{ mt: 0.5, fontSize: '0.7rem' }} />
                           )}
                         </Stack>
                       }

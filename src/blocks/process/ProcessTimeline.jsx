@@ -34,14 +34,14 @@ export default function ProcessTimeline({ heading, caption, cards }) {
     <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
       <Stack spacing={6}>
         <Typeset heading={heading} caption={caption} stackProps={{ sx: { textAlign: 'center' } }} />
-        
+
         <Box sx={{ width: '100%' }}>
           <Timeline
             position="alternate"
             sx={{
               p: 0,
               [`& .${timelineOppositeContentClasses.root}`]: {
-                flex: 0.2,
+                flex: 0.2
               },
               // En movil, cambiar a timeline alineado a la derecha o izquierda
               [theme.breakpoints.down('md')]: {
@@ -49,14 +49,14 @@ export default function ProcessTimeline({ heading, caption, cards }) {
                   flex: 0,
                   padding: 0,
                   display: 'none'
-                },
+                }
               }
             }}
           >
             {cards.map((card, index) => (
               <TimelineItem key={index}>
                 <TimelineOppositeContent
-                  sx={{ 
+                  sx={{
                     m: 'auto 0',
                     display: { xs: 'none', md: 'block' }
                   }}
@@ -66,7 +66,7 @@ export default function ProcessTimeline({ heading, caption, cards }) {
                 >
                   Paso {index + 1}
                 </TimelineOppositeContent>
-                
+
                 <TimelineSeparator>
                   <TimelineConnector sx={{ bgcolor: 'primary.lighter', height: 40 }} />
                   <motion.div
@@ -75,30 +75,25 @@ export default function ProcessTimeline({ heading, caption, cards }) {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <TimelineDot 
-                      color="primary" 
-                      variant={index === 4 ? "filled" : "outlined"} // Highlight step 5 (index 4)
-                      sx={{ 
-                        p: 2, 
+                    <TimelineDot
+                      color="primary"
+                      variant={index === 4 ? 'filled' : 'outlined'} // Highlight step 5 (index 4)
+                      sx={{
+                        p: 2,
                         borderColor: 'primary.main',
                         borderWidth: 2,
-                        ...(index === 4 && { 
+                        ...(index === 4 && {
                           bgcolor: 'primary.main',
                           boxShadow: '0 0 0 8px rgba(28, 124, 119, 0.15)'
                         })
                       }}
                     >
-                      <SvgIcon 
-                        name={card.icon} 
-                        type={IconType.STROKE} 
-                        size={24} 
-                        color={index === 4 ? 'common.white' : 'primary.main'} 
-                      />
+                      <SvgIcon name={card.icon} type={IconType.STROKE} size={24} color={index === 4 ? 'common.white' : 'primary.main'} />
                     </TimelineDot>
                   </motion.div>
                   <TimelineConnector sx={{ bgcolor: 'primary.lighter' }} />
                 </TimelineSeparator>
-                
+
                 <TimelineContent sx={{ py: '12px', px: 2 }}>
                   <motion.div
                     initial={{ opacity: 0, x: index % 2 === 0 ? 50 : -50 }}
@@ -128,7 +123,7 @@ export default function ProcessTimeline({ heading, caption, cards }) {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         {card.description}
                       </Typography>
-                      
+
                       {card.list && (
                         <Stack spacing={1}>
                           {card.list.map((item, i) => (

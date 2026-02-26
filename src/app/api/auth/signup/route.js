@@ -7,7 +7,7 @@ export async function POST(request) {
     const { email, password, options } = body;
 
     const supabase = createSupabaseServerClient();
-    
+
     if (!supabase) {
       console.error('Supabase client could not be initialized on server.');
       return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
@@ -20,7 +20,7 @@ export async function POST(request) {
       email,
       password,
       user_metadata: options?.data,
-      email_confirm: true 
+      email_confirm: true
     });
 
     if (error) {
@@ -29,7 +29,6 @@ export async function POST(request) {
     }
 
     return NextResponse.json({ data });
-
   } catch (err) {
     console.error('API Route Error:', err);
     return NextResponse.json({ error: 'Ocurrió un error inesperado' }, { status: 500 });

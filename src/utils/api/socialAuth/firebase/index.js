@@ -1,9 +1,4 @@
-// @third-party
-// import { FacebookAuthProvider, GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
-
-// @project
-import { AuthRole } from '@/enum';
-import { firebaseAuth } from '@/utils/auth-client/firebase-client';
+// Firebase implementation not currently used - using Supabase instead
 
 // const googleProvider = new GoogleAuthProvider();
 // const facebookProvider = new FacebookAuthProvider();

@@ -5,19 +5,6 @@ import nodemailer from 'nodemailer';
  * Requiere SMTP_USER y SMTP_PASS (App Password) en .env.
  */
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
-
 /**
  * Envía un correo electrónico genérico.
  */
@@ -37,7 +24,7 @@ export async function sendEmail({ to, subject, html, text }) {
     secure: true,
     auth: {
       user: user,
-      pass: pass,
+      pass: pass
     },
     tls: {
       rejectUnauthorized: false
@@ -54,7 +41,7 @@ export async function sendEmail({ to, subject, html, text }) {
       to,
       subject,
       text: text || '',
-      html: html || `<p>${text}</p>`,
+      html: html || `<p>${text}</p>`
     });
 
     console.log('[Nodemailer Success]: Correo enviado con ID:', info.messageId);
@@ -70,7 +57,7 @@ export async function sendEmail({ to, subject, html, text }) {
  */
 export async function sendVerificationCode(email, code) {
   const subject = `${code} es tu código de verificación de Capitalta`;
-  
+
   const html = `
     <div style="font-family: sans-serif; max-width: 500px; margin: auto; padding: 30px; border: 1px solid #eee; border-radius: 12px; text-align: center;">
       <h2 style="color: #008080; margin-bottom: 20px;">Verifica tu identidad</h2>
@@ -93,9 +80,9 @@ export async function sendVerificationCode(email, code) {
 export async function sendAppointmentConfirmation(cita) {
   const { nombre_cliente, email, fecha, hora, codigo_cita, sucursal_id } = cita;
   const sucursalNombre = sucursal_id === 'reforma' ? 'Torre Cuarzo (Reforma)' : 'Polanco';
-  
+
   const subject = `Confirmación de Cita - Capitalta (${codigo_cita})`;
-  
+
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
       <h2 style="color: #008080; text-align: center;">¡Cita Confirmada!</h2>

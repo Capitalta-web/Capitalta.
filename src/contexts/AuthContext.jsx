@@ -13,11 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async (userId) => {
     try {
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
 
       if (error) {
         console.error('Error fetching profile:', error);
@@ -33,8 +29,11 @@ export const AuthProvider = ({ children }) => {
   const refreshUser = async () => {
     setIsProcessing(true);
     try {
-      const { data: { user: authUser }, error } = await supabase.auth.getUser();
-      
+      const {
+        data: { user: authUser },
+        error
+      } = await supabase.auth.getUser();
+
       if (error || !authUser) {
         setUser(null);
       } else {
@@ -57,7 +56,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     refreshUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (session?.user) {
           const profile = await fetchProfile(session.user.id);

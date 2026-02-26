@@ -61,7 +61,7 @@ export async function GET(request, { params }) {
       console.warn(`Supabase error for slug ${slug}, returning mock data.`);
       return NextResponse.json({ article: mockDetails[slug] });
     }
-    
+
     // Si no se encuentra (código PGRST116 es 'The result contains 0 rows')
     if (error.code === 'PGRST116') {
       return NextResponse.json({ error: 'Artículo no encontrado' }, { status: 404 });

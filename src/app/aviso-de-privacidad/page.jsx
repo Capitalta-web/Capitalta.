@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -126,13 +125,13 @@ export default function AvisoPrivacidadPage() {
                     })
                   }}
                 >
-                  <ListItemText 
-                    primary={item.heading} 
-                    primaryTypographyProps={{ 
-                      variant: 'body2', 
+                  <ListItemText
+                    primary={item.heading}
+                    primaryTypographyProps={{
+                      variant: 'body2',
                       color: activeId === item.id ? 'text.primary' : 'text.secondary',
                       fontWeight: activeId === item.id ? 600 : 400
-                    }} 
+                    }}
                   />
                 </ListItemButton>
               ))}
@@ -145,10 +144,8 @@ export default function AvisoPrivacidadPage() {
               <Typography variant="h3" gutterBottom>
                 Aviso de Privacidad
               </Typography>
-              <Typography color="text.secondary">
-                Última actualización: Febrero 2026
-              </Typography>
-              
+              <Typography color="text.secondary">Última actualización: Febrero 2026</Typography>
+
               <Button
                 variant="contained"
                 startIcon={<DownloadIcon />}
@@ -159,7 +156,7 @@ export default function AvisoPrivacidadPage() {
                 Descargar Aviso de Privacidad (PDF)
               </Button>
             </Box>
-            
+
             {menuItems.map((item) => (
               <Box key={item.id} id={item.id} sx={{ scrollMarginTop: 100 }}>
                 <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>

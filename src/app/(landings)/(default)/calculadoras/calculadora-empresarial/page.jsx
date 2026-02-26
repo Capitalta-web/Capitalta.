@@ -208,9 +208,7 @@ export default function CalculadoraEmpresarialPage() {
           // O simplemente dejamos el lead guardado.
           // En este caso, mostraremos el error si es crítico, pero el lead ya se guardó.
           console.error('Error guardando cotización:', cotizacionResult.error);
-          setLeadError(
-            cotizacionResult.error || 'Guardamos tus datos, pero no pudimos registrar la cotización detallada.'
-          );
+          setLeadError(cotizacionResult.error || 'Guardamos tus datos, pero no pudimos registrar la cotización detallada.');
           // Si queremos que el usuario sepa que al menos sus datos se guardaron, podríamos poner leadEnviado a true de todos modos,
           // pero el código original mostraba error. Mantendremos el comportamiento de mostrar error.
           return;

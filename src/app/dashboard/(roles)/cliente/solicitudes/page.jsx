@@ -1,16 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Grid,
-  Chip,
-  Button,
-  CircularProgress
-} from '@mui/material';
+import { Box, Typography, Card, CardContent, Grid, Chip, Button, CircularProgress } from '@mui/material';
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
@@ -26,7 +17,9 @@ export default function MisSolicitudesPage() {
   useEffect(() => {
     const fetchData = async () => {
       const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
 
       if (user) {
         const { data, error } = await supabase
@@ -34,7 +27,7 @@ export default function MisSolicitudesPage() {
           .select('*')
           .eq('cliente_id', user.id)
           .order('created_at', { ascending: false });
-        
+
         if (data) setSolicitudes(data);
       }
       setLoading(false);
@@ -55,11 +48,7 @@ export default function MisSolicitudesPage() {
     <MainCard>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h4">Mis Solicitudes</Typography>
-        <Button 
-          variant="contained" 
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={() => router.push('/dashboard/cliente/solicitud/nueva')}
-        >
+        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => router.push('/dashboard/cliente/solicitud/nueva')}>
           Nueva Solicitud
         </Button>
       </Box>
@@ -79,18 +68,16 @@ export default function MisSolicitudesPage() {
                     <Typography variant="h6" component="div">
                       {solicitud.tipo_credito.replace('_', ' ').toUpperCase()}
                     </Typography>
-                    <Chip 
-                      label={solicitud.estado.replace(/_/g, ' ')} 
-                      color={['aprobado', 'fondeo'].includes(solicitud.estado) ? 'success' : 'primary'} 
-                      size="small" 
+                    <Chip
+                      label={solicitud.estado.replace(/_/g, ' ')}
+                      color={['aprobado', 'fondeo'].includes(solicitud.estado) ? 'success' : 'primary'}
+                      size="small"
                     />
                   </Box>
                   <Typography color="text.secondary" gutterBottom>
                     Monto: {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(solicitud.monto_solicitado)}
                   </Typography>
-                  <Typography color="text.secondary">
-                    Plazo: {solicitud.plazo_meses} meses
-                  </Typography>
+                  <Typography color="text.secondary">Plazo: {solicitud.plazo_meses} meses</Typography>
                   <Typography variant="caption" display="block" sx={{ mt: 2 }}>
                     Solicitado el: {new Date(solicitud.fecha_solicitud).toLocaleDateString()}
                   </Typography>

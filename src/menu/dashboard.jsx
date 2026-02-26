@@ -1,13 +1,4 @@
-import {
-  IconDashboard,
-  IconFilePlus,
-  IconFiles,
-  IconUser,
-  IconFolders,
-  IconCalendar,
-  IconSettings,
-  IconUsers
-} from '@tabler/icons-react';
+import { IconDashboard, IconFilePlus, IconFiles, IconUser, IconFolders, IconCalendar, IconSettings, IconUsers } from '@tabler/icons-react';
 
 const dashboard = {
   id: 'dashboard-group',

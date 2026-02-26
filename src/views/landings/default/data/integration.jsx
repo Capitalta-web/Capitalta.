@@ -1,6 +1,5 @@
 // @project
 import SvgIcon from '@/components/SvgIcon';
-import { DOCS_URL } from '@/path';
 
 export const integration = {
   headLine: 'Soluciones para cada sector',

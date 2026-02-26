@@ -154,4 +154,10 @@ export default function Login1({ heading, caption, testimonials, image, signupLi
   );
 }
 
-Login1.propTypes = { heading: PropTypes.string, caption: PropTypes.string, testimonials: PropTypes.array, image: PropTypes.any, signupLink: PropTypes.string };
+Login1.propTypes = {
+  heading: PropTypes.string,
+  caption: PropTypes.string,
+  testimonials: PropTypes.array,
+  image: PropTypes.any,
+  signupLink: PropTypes.string
+};

@@ -1,9 +1,5 @@
 // @project
-import branding from '@/branding.json';
 import { IconType } from '@/enum';
-import { SECTION_PATH, BUY_NOW_URL, ADMIN_PATH, DOCS_URL } from '@/path';
-
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 
 export const feature2 = {
   heading: 'Culture of inovation',
@@ -190,8 +186,7 @@ export const feature7 = {
     {
       name: 'John Doe',
       designation: 'CEO',
-      review:
-        'The team at SaasAble is incredibly talented and dedicated. They went above and beyond to ensure our project was a success.'
+      review: 'The team at SaasAble is incredibly talented and dedicated. They went above and beyond to ensure our project was a success.'
     },
     {
       name: 'Jane Smith',

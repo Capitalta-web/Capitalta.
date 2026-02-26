@@ -375,8 +375,8 @@ export default function CalculadoraSimplePage() {
                 </Typography>
                 <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 640 }}>
-                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del 36% anual, revisa la tabla de amortización completa y descarga una
-                  cotización en PDF para compartirla o analizarla con tu equipo.
+                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del 36% anual, revisa la tabla de
+                  amortización completa y descarga una cotización en PDF para compartirla o analizarla con tu equipo.
                 </Typography>
               </Stack>
             </Grid>

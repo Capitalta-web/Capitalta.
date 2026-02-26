@@ -70,11 +70,7 @@ export default async function CitasAdminPage({ searchParams }) {
     notFound();
   }
 
-  const { data, error } = await supabase
-    .from('citas')
-    .select('*')
-    .order('fecha', { ascending: false })
-    .order('hora', { ascending: false });
+  const { data, error } = await supabase.from('citas').select('*').order('fecha', { ascending: false }).order('hora', { ascending: false });
 
   if (error) {
     throw new Error(error.message);
@@ -97,12 +93,7 @@ export default async function CitasAdminPage({ searchParams }) {
               <Typography variant="overline" sx={{ letterSpacing: 1 }}>
                 Admin
               </Typography>
-              <Button 
-                component={Link} 
-                href={`/admin/leads?token=${token}`}
-                variant="outlined" 
-                size="small"
-              >
+              <Button component={Link} href={`/admin/leads?token=${token}`} variant="outlined" size="small">
                 Ir a Chats & Leads
               </Button>
             </Box>
@@ -183,4 +174,3 @@ export default async function CitasAdminPage({ searchParams }) {
     </Box>
   );
 }
-

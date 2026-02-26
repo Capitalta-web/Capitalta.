@@ -195,9 +195,7 @@ export default function Feature20({ heading, caption, image, features, actionBtn
                           transition={{ duration: 0.5, delay: index * 0.3 }}
                         >
                           {item.content && (
-                            <Typography sx={{ color: withAlpha(theme.vars.palette.common.white, 0.86) }}>
-                              {item.content}
-                            </Typography>
+                            <Typography sx={{ color: withAlpha(theme.vars.palette.common.white, 0.86) }}>{item.content}</Typography>
                           )}
                         </motion.div>
                         {item.href && (

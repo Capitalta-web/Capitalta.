@@ -5,22 +5,22 @@ import { createClient } from '@supabase/supabase-js';
 export async function resendOtpAction(email) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  
+
   if (!supabaseUrl || !supabaseAnonKey) {
     return { error: 'Error de configuración' };
   }
-  
+
   try {
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: { persistSession: false }
     });
     const cleanEmail = email.trim().toLowerCase();
-    
+
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: cleanEmail
     });
-    
+
     if (error) {
       console.error('Supabase Resend Error:', error);
       // Handle rate limit specifically
@@ -29,7 +29,7 @@ export async function resendOtpAction(email) {
       }
       return { error: error.message };
     }
-    
+
     return { success: true, message: 'Código reenviado con éxito.' };
   } catch (err) {
     console.error('Unexpected error in resendOtpAction:', err);
@@ -41,22 +41,22 @@ export async function sendOtpAction(email, password, metadata) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  
+
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('Supabase URL or Key missing in Server Action');
     return { error: 'Error de configuración del servidor' };
   }
-  
+
   try {
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: { persistSession: false }
     });
     const cleanEmail = email.trim().toLowerCase();
-    
+
     // Check if user exists (optional, but good for UX)
     // Note: getUser is only for logged in users. Admin logic would require Service Key.
     // We'll rely on signUp handling it.
-    
+
     // Switch to signUp to use "Confirm Email" template and set password immediately
     const { data, error } = await supabase.auth.signUp({
       email: cleanEmail,
@@ -66,13 +66,13 @@ export async function sendOtpAction(email, password, metadata) {
         emailRedirectTo: siteUrl ? `${siteUrl}/auth/callback` : undefined
       }
     });
-    
+
     // If user already exists, signUp might return success with null session/user (if email confirmation needed)
     // OR it might throw an error "User already registered".
     // If "User already registered", we should try to resend confirmation or fallback to signInWithOtp if they want to login?
     // But this is "Registro", so erroring is arguably correct if they already exist.
     // However, for UX, if they are stuck in "unconfirmed" state, signUp resends the email.
-    
+
     if (error) {
       console.error('Supabase signUp Error:', error);
 
@@ -83,25 +83,25 @@ export async function sendOtpAction(email, password, metadata) {
 
       // If user exists, we might want to try resending the OTP (signup type)
       if (error.message.includes('already registered')) {
-          // If already registered, we try to resend the signup OTP.
-          // This handles cases where they registered but didn't verify.
-          const { error: resendError } = await supabase.auth.resend({
-            type: 'signup',
-            email: cleanEmail
-          });
-          
-          if (resendError) {
-             console.error('Auto-resend failed:', resendError);
-             if (resendError.status === 429) {
-                 return { error: 'El usuario ya existe, pero excediste el límite de intentos. Espera 60s.' };
-             }
-             return { error: `El usuario ya está registrado. Error al reenviar: ${resendError.message}` };
+        // If already registered, we try to resend the signup OTP.
+        // This handles cases where they registered but didn't verify.
+        const { error: resendError } = await supabase.auth.resend({
+          type: 'signup',
+          email: cleanEmail
+        });
+
+        if (resendError) {
+          console.error('Auto-resend failed:', resendError);
+          if (resendError.status === 429) {
+            return { error: 'El usuario ya existe, pero excediste el límite de intentos. Espera 60s.' };
           }
-          return { success: true, message: 'Reenviado código de confirmación.' };
+          return { error: `El usuario ya está registrado. Error al reenviar: ${resendError.message}` };
+        }
+        return { success: true, message: 'Reenviado código de confirmación.' };
       }
       return { error: error.message };
     }
-    
+
     return { success: true, data };
   } catch (err) {
     console.error('Unexpected error in sendOtpAction:', err);
@@ -123,27 +123,27 @@ export async function verifyOtpAction({ email, token, type }) {
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: { persistSession: false }
     });
-    
+
     const cleanEmail = email.trim().toLowerCase();
     // Normalizar token: eliminar cualquier carácter no numérico (espacios, guiones, etc.)
     const cleanToken = token.toString().replace(/\D+/g, '');
-    
+
     console.log(`Verificando OTP para ${cleanEmail} con tipo inicial: ${type || 'signup'}`);
 
     // 1. Intentar primero como 'signup' (lo más probable en registro)
-    let result = await supabase.auth.verifyOtp({ 
-      email: cleanEmail, 
-      token: cleanToken, 
-      type: type || 'signup' 
+    let result = await supabase.auth.verifyOtp({
+      email: cleanEmail,
+      token: cleanToken,
+      type: type || 'signup'
     });
 
     // 2. Si falla y era 'signup', intentar como 'email' (magiclink/login)
     if (result.error && (type === 'signup' || !type)) {
       console.warn('Verificación como signup falló, intentando como magiclink...', result.error.message);
-      const emailResult = await supabase.auth.verifyOtp({ 
-        email: cleanEmail, 
-        token: cleanToken, 
-        type: 'email' 
+      const emailResult = await supabase.auth.verifyOtp({
+        email: cleanEmail,
+        token: cleanToken,
+        type: 'email'
       });
 
       if (!emailResult.error) {
@@ -151,14 +151,14 @@ export async function verifyOtpAction({ email, token, type }) {
       } else {
         // 3. Si falla email, intentar recovery (por si acaso es un reset de password)
         console.warn('Verificación como signup falló, intentando como recovery...', emailResult.error.message);
-        const recoveryResult = await supabase.auth.verifyOtp({ 
-          email: cleanEmail, 
-          token: cleanToken, 
-          type: 'recovery' 
+        const recoveryResult = await supabase.auth.verifyOtp({
+          email: cleanEmail,
+          token: cleanToken,
+          type: 'recovery'
         });
 
         if (!recoveryResult.error) {
-           result = recoveryResult;
+          result = recoveryResult;
         }
       }
     }
@@ -199,7 +199,7 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
     const cleanEmail = user.email ? user.email.trim().toLowerCase() : null;
 
     // 1. Actualizar usuario (password y metadata)
-    // Nota: update user password requiere ser el usuario autenticado o admin. 
+    // Nota: update user password requiere ser el usuario autenticado o admin.
     // Como estamos en servidor con service role, somos admin.
     const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
       password: userData.password,
@@ -213,17 +213,15 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
 
     // 1.5. Asegurar que el perfil público existe y está actualizado
     // Esto es crucial porque el trigger puede no haber corrido o no tener todos los datos
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .upsert({
-        id: userId,
-        nombre_completo: userData.metadata.full_name,
-        telefono: userData.metadata.telefono,
-        rfc: userData.metadata.rfc,
-        email: cleanEmail, // Email obtenido del usuario autenticado
-        role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
-        updated_at: new Date().toISOString()
-      });
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      id: userId,
+      nombre_completo: userData.metadata.full_name,
+      telefono: userData.metadata.telefono,
+      rfc: userData.metadata.rfc,
+      email: cleanEmail, // Email obtenido del usuario autenticado
+      role: userData.metadata.tipo_persona === 'moral' ? 'cliente' : 'cliente', // Default a cliente
+      updated_at: new Date().toISOString()
+    });
 
     if (profileError) {
       console.error('Error updating public profile:', profileError);
@@ -233,12 +231,10 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
 
     // 2. Crear solicitud de crédito
     // Insertamos directamente con service role para asegurar que se cree
-    const { error: insertError } = await supabase
-      .from('solicitudes_credito')
-      .insert({
-        cliente_id: userId,
-        ...requestData
-      });
+    const { error: insertError } = await supabase.from('solicitudes_credito').insert({
+      cliente_id: userId,
+      ...requestData
+    });
 
     if (insertError) {
       console.error('Error creating request:', insertError);
@@ -246,7 +242,6 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
     }
 
     return { success: true };
-
   } catch (err) {
     console.error('Unexpected error in updateUserAndCreateRequestAction:', err);
     return { error: 'Error inesperado al procesar la solicitud' };

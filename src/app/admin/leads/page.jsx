@@ -25,29 +25,27 @@ export default async function LeadsAdminPage({ searchParams }) {
     return <Typography>Error de configuración de Supabase</Typography>;
   }
 
-  const { data: conversations, error } = await supabase
-    .from('chat_conversaciones')
-    .select('*')
-    .order('updated_at', { ascending: false });
+  const { data: conversations, error } = await supabase.from('chat_conversaciones').select('*').order('updated_at', { ascending: false });
 
   if (error) {
     console.error('Supabase Error:', error);
     // Si la tabla no existe (migración no aplicada), mostrar mensaje amigable
-    if (error.code === '42P01') { // undefined_table
+    if (error.code === '42P01') {
+      // undefined_table
       return (
-         <Box sx={{ p: 4, bgcolor: 'background.paper', minHeight: '100vh' }}>
-            <ContainerWrapper>
-              <Stack spacing={2}>
-                <Typography variant="h5" color="error">⚠️ Tabla 'chat_conversaciones' no encontrada</Typography>
-                <Typography variant="body1">
-                  Parece que la migración de base de datos no se ha aplicado todavía.
-                </Typography>
-                <Typography variant="body2" sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, fontFamily: 'monospace' }}>
-                  Ejecuta el archivo SQL: src/supabase/migrations/create_chat_table.sql
-                </Typography>
-              </Stack>
-            </ContainerWrapper>
-         </Box>
+        <Box sx={{ p: 4, bgcolor: 'background.paper', minHeight: '100vh' }}>
+          <ContainerWrapper>
+            <Stack spacing={2}>
+              <Typography variant="h5" color="error">
+                ⚠️ Tabla 'chat_conversaciones' no encontrada
+              </Typography>
+              <Typography variant="body1">Parece que la migración de base de datos no se ha aplicado todavía.</Typography>
+              <Typography variant="body2" sx={{ bgcolor: 'grey.100', p: 2, borderRadius: 1, fontFamily: 'monospace' }}>
+                Ejecuta el archivo SQL: src/supabase/migrations/create_chat_table.sql
+              </Typography>
+            </Stack>
+          </ContainerWrapper>
+        </Box>
       );
     }
   }
@@ -67,12 +65,7 @@ export default async function LeadsAdminPage({ searchParams }) {
               <Typography variant="overline" sx={{ letterSpacing: 1 }}>
                 Admin
               </Typography>
-              <Button 
-                component={Link} 
-                href={`/admin/citas?token=${token}`}
-                variant="outlined" 
-                size="small"
-              >
+              <Button component={Link} href={`/admin/citas?token=${token}`} variant="outlined" size="small">
                 Ver Citas Agendadas
               </Button>
             </Box>

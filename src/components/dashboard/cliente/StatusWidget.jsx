@@ -29,12 +29,12 @@ const PASOS_CREDITO = [
 ];
 
 const STATUS_MAPPING = {
-  'borrador': 0,
-  'solicitud_iniciada': 0,
-  'integracion_expediente': 1,
-  'avaluo_en_proceso': 2,
-  'en_comite': 3,
-  'aprobado': 4, // Maps to 'en_comite' or 'formalizacion'? The prompt says 'aprobado' is step 6 in DB but here 4 is comite. Let's align.
+  borrador: 0,
+  solicitud_iniciada: 0,
+  integracion_expediente: 1,
+  avaluo_en_proceso: 2,
+  en_comite: 3,
+  aprobado: 4, // Maps to 'en_comite' or 'formalizacion'? The prompt says 'aprobado' is step 6 in DB but here 4 is comite. Let's align.
   // Wait, DB check constraint says: 'borrador', 'solicitud_iniciada', 'integracion_expediente', 'avaluo_en_proceso', 'en_comite', 'aprobado', 'rechazado', 'formalizacion_notarial', ...
   // Prompt steps:
   // 0: solicitud_iniciada
@@ -46,13 +46,13 @@ const STATUS_MAPPING = {
   // 6: credito_activo
 
   // So mapping should be:
-  'formalizacion_notarial': 4,
-  'cita_agendada': 4, // Sub-step of formalizacion
-  'cita_completada': 4, // Sub-step of formalizacion
-  'fondeo_en_proceso': 5,
-  'fondeado': 5,
-  'credito_activo': 6,
-  'credito_liquidado': 6
+  formalizacion_notarial: 4,
+  cita_agendada: 4, // Sub-step of formalizacion
+  cita_completada: 4, // Sub-step of formalizacion
+  fondeo_en_proceso: 5,
+  fondeado: 5,
+  credito_activo: 6,
+  credito_liquidado: 6
 };
 
 // Custom Step Icon Component
@@ -71,7 +71,7 @@ function ColorlibStepIcon(props) {
         borderRadius: '50%',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 1,
+        zIndex: 1
       }}
     >
       {stepConfig ? stepConfig.icon : icon}
@@ -82,7 +82,7 @@ function ColorlibStepIcon(props) {
 ColorlibStepIcon.propTypes = {
   active: PropTypes.bool,
   completed: PropTypes.bool,
-  icon: PropTypes.node,
+  icon: PropTypes.node
 };
 
 export default function StatusWidget({ application }) {
@@ -100,8 +100,8 @@ export default function StatusWidget({ application }) {
           <Typography variant="body2" color="text.secondary" paragraph>
             Comienza tu proceso de crédito hoy mismo.
           </Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => router.push('/dashboard/cliente/solicitud/nueva')}
           >
@@ -117,7 +117,7 @@ export default function StatusWidget({ application }) {
   if (STATUS_MAPPING.hasOwnProperty(application.estado)) {
     currentStep = STATUS_MAPPING[application.estado];
   } else if (application.estado === 'aprobado') {
-     currentStep = 3; // After comite, before formalizacion? Or part of formalizacion? Let's say end of comite.
+    currentStep = 3; // After comite, before formalizacion? Or part of formalizacion? Let's say end of comite.
   }
 
   const isRejected = application.estado === 'rechazado' || application.estado === 'cancelado';
@@ -129,8 +129,8 @@ export default function StatusWidget({ application }) {
     // Step 2: Integracion Expediente (Index 1)
     if (currentStep === 1) {
       return (
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           color="primary"
           startIcon={<UploadFileIcon />}
           onClick={() => router.push('/dashboard/cliente/documentos')}
@@ -144,8 +144,8 @@ export default function StatusWidget({ application }) {
     // Step 5: Formalizacion Notarial (Index 4)
     if (currentStep === 4) {
       return (
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           color="secondary"
           startIcon={<CalendarMonthIcon />}
           onClick={() => router.push('/dashboard/cliente/citas')}
@@ -159,8 +159,8 @@ export default function StatusWidget({ application }) {
     // Step 7: Credito Activo (Index 6)
     if (currentStep === 6) {
       return (
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           color="success"
           startIcon={<VisibilityIcon />}
           onClick={() => router.push('/dashboard/cliente/creditos')}
@@ -177,7 +177,16 @@ export default function StatusWidget({ application }) {
   return (
     <Card sx={{ height: '100%', boxShadow: 3, borderRadius: 2 }}>
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexDirection: isMobile ? 'column' : 'row', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 2,
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: 2
+          }}
+        >
           <Box>
             <Typography variant="h6" fontWeight="bold">
               Solicitud Activa
@@ -186,16 +195,17 @@ export default function StatusWidget({ application }) {
               ID: {application.id.substring(0, 8)}
             </Typography>
           </Box>
-          <Chip 
-            label={application.estado.replace(/_/g, ' ')} 
-            color={isRejected ? 'error' : 'primary'} 
-            sx={{ textTransform: 'capitalize' }} 
+          <Chip
+            label={application.estado.replace(/_/g, ' ')}
+            color={isRejected ? 'error' : 'primary'}
+            sx={{ textTransform: 'capitalize' }}
           />
         </Box>
 
         <Box sx={{ mb: 4 }}>
           <Typography variant="body1" gutterBottom>
-            <strong>Monto Solicitado:</strong> {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(application.monto_solicitado)}
+            <strong>Monto Solicitado:</strong>{' '}
+            {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(application.monto_solicitado)}
           </Typography>
           <Typography variant="body1">
             <strong>Tipo de Crédito:</strong> {application.tipo_credito.replace(/_/g, ' ')}
@@ -205,16 +215,10 @@ export default function StatusWidget({ application }) {
         {/* Stepper */}
         {!isRejected && (
           <Box sx={{ width: '100%', mb: 4, mt: 3 }}>
-            <Stepper 
-              activeStep={currentStep} 
-              alternativeLabel={!isMobile}
-              orientation={isMobile ? 'vertical' : 'horizontal'}
-            >
+            <Stepper activeStep={currentStep} alternativeLabel={!isMobile} orientation={isMobile ? 'vertical' : 'horizontal'}>
               {PASOS_CREDITO.map((step, index) => (
                 <Step key={step.id}>
-                  <StepLabel StepIconComponent={ColorlibStepIcon}>
-                    {step.label}
-                  </StepLabel>
+                  <StepLabel StepIconComponent={ColorlibStepIcon}>{step.label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
@@ -222,20 +226,15 @@ export default function StatusWidget({ application }) {
         )}
 
         {/* Action Button Area */}
-        {!isRejected && renderActionButton() && (
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-            {renderActionButton()}
-          </Box>
-        )}
-        
+        {!isRejected && renderActionButton() && <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>{renderActionButton()}</Box>}
+
         {isRejected && (
           <Box sx={{ mt: 2 }}>
-             <Typography color="error" variant="body2">
-               Su solicitud ha sido rechazada o cancelada. Por favor contacte a soporte para más información.
-             </Typography>
+            <Typography color="error" variant="body2">
+              Su solicitud ha sido rechazada o cancelada. Por favor contacte a soporte para más información.
+            </Typography>
           </Box>
         )}
-
       </CardContent>
     </Card>
   );

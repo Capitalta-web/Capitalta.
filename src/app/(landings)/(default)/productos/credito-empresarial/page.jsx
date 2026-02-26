@@ -410,7 +410,7 @@ export default function CreditoEmpresarialPage() {
                 type="number"
                 value={tasaAnual}
                 InputProps={{
-                  readOnly: true,
+                  readOnly: true
                 }}
                 helperText="La tasa de interés para este producto es fija del 24% anual."
               />

@@ -234,7 +234,7 @@ export default function Hero7({ headLine, captionLine, primaryBtn, image1, image
                   </Stack>
                 </Card>
               )}
-              
+
               <Card
                 sx={{
                   position: 'absolute',
@@ -263,11 +263,20 @@ export default function Hero7({ headLine, captionLine, primaryBtn, image1, image
                     </Box>
                   </Stack>
                   <Box sx={{ height: 40, width: '100%', opacity: 0.5 }}>
-                     {/* Simple SVG Graph simulation */}
-                     <svg width="100%" height="100%" viewBox="0 0 100 40">
-                         <path d="M0 35 C 20 35, 20 15, 40 15 C 60 15, 60 5, 100 0" fill="none" stroke={theme.palette.success.main} strokeWidth="3" />
-                         <path d="M0 40 L 0 35 C 20 35, 20 15, 40 15 C 60 15, 60 5, 100 0 L 100 40 Z" fill={theme.palette.success.light} opacity="0.5" />
-                      </svg>
+                    {/* Simple SVG Graph simulation */}
+                    <svg width="100%" height="100%" viewBox="0 0 100 40">
+                      <path
+                        d="M0 35 C 20 35, 20 15, 40 15 C 60 15, 60 5, 100 0"
+                        fill="none"
+                        stroke={theme.palette.success.main}
+                        strokeWidth="3"
+                      />
+                      <path
+                        d="M0 40 L 0 35 C 20 35, 20 15, 40 15 C 60 15, 60 5, 100 0 L 100 40 Z"
+                        fill={theme.palette.success.light}
+                        opacity="0.5"
+                      />
+                    </svg>
                   </Box>
                 </Stack>
               </Card>

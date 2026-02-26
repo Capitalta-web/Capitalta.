@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Grid, 
-  Typography, 
-  Card, 
-  CardContent, 
-  Box, 
-  Chip, 
+import {
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  Box,
+  Chip,
   Divider,
   Table,
   TableBody,
@@ -26,7 +26,7 @@ import { generarTablaAmortizacion } from '@/utils/amortizacion';
 export default function MisCreditosPage() {
   const [loading, setLoading] = useState(true);
   const [creditos, setCreditos] = useState([]);
-  
+
   useEffect(() => {
     fetchCreditos();
   }, []);
@@ -34,8 +34,10 @@ export default function MisCreditosPage() {
   const fetchCreditos = async () => {
     try {
       const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+
       if (!user) return;
 
       const { data, error } = await supabase
@@ -73,9 +75,11 @@ export default function MisCreditosPage() {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h3" gutterBottom>Mis Créditos</Typography>
+        <Typography variant="h3" gutterBottom>
+          Mis Créditos
+        </Typography>
       </Grid>
-      
+
       {creditos.map((credito) => {
         // Generar tabla de amortización simulada (o real si tuviéramos tasa)
         // Asumimos tasa del 18% anual para demo si no existe
@@ -101,18 +105,14 @@ export default function MisCreditosPage() {
                         {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(credito.monto_solicitado)}
                       </Typography>
                       <Box sx={{ mt: 2 }}>
-                        <Chip 
-                          label={credito.estado.replace('_', ' ')} 
-                          color="success" 
-                          variant="outlined" 
-                        />
+                        <Chip label={credito.estado.replace('_', ' ')} color="success" variant="outlined" />
                       </Box>
                     </CardContent>
                   </Card>
                 </Grid>
-                
+
                 <Grid item xs={12} md={4}>
-                   <Card variant="outlined">
+                  <Card variant="outlined">
                     <CardContent>
                       <Typography color="textSecondary" gutterBottom>
                         Plazo
@@ -128,16 +128,18 @@ export default function MisCreditosPage() {
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                   <Card variant="outlined">
+                  <Card variant="outlined">
                     <CardContent>
                       <Typography color="textSecondary" gutterBottom>
                         Próximo Pago
                       </Typography>
                       <Typography variant="h4" component="div">
-                        {tabla[0] ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(tabla[0].monto_programado) : '$0.00'}
+                        {tabla[0]
+                          ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(tabla[0].monto_programado)
+                          : '$0.00'}
                       </Typography>
                       <Typography variant="body2" sx={{ mt: 2 }}>
-                         {tabla[0] ? new Date(tabla[0].fecha_programada).toLocaleDateString() : '-'}
+                        {tabla[0] ? new Date(tabla[0].fecha_programada).toLocaleDateString() : '-'}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -164,10 +166,18 @@ export default function MisCreditosPage() {
                           <TableRow key={row.numero_pago}>
                             <TableCell>{row.numero_pago}</TableCell>
                             <TableCell>{new Date(row.fecha_programada).toLocaleDateString()}</TableCell>
-                            <TableCell align="right">{new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.monto_programado)}</TableCell>
-                            <TableCell align="right">{new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.interes)}</TableCell>
-                            <TableCell align="right">{new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.capital)}</TableCell>
-                            <TableCell align="right">{new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.saldo_restante)}</TableCell>
+                            <TableCell align="right">
+                              {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.monto_programado)}
+                            </TableCell>
+                            <TableCell align="right">
+                              {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.interes)}
+                            </TableCell>
+                            <TableCell align="right">
+                              {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.capital)}
+                            </TableCell>
+                            <TableCell align="right">
+                              {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(row.saldo_restante)}
+                            </TableCell>
                           </TableRow>
                         ))}
                         {tabla.length > 12 && (

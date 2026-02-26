@@ -1,11 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Dialog, DialogTitle, DialogContent, DialogActions, 
-  Button, Typography, Box, Grid, Divider, Chip, 
-  Tabs, Tab, Paper, CircularProgress, TextField,
-  IconButton, Tooltip, Link, Alert
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Box,
+  Grid,
+  Divider,
+  Chip,
+  Tabs,
+  Tab,
+  Paper,
+  CircularProgress,
+  TextField,
+  IconButton,
+  Tooltip,
+  Link,
+  Alert
 } from '@mui/material';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
@@ -19,14 +34,21 @@ import PersonIcon from '@mui/icons-material/Person';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const getStatusColor = (status) => {
-  switch(status) {
-    case 'solicitud_iniciada': return 'info';
-    case 'en_revision': return 'warning';
-    case 'aprobada': return 'success';
-    case 'rechazada': return 'error';
-    case 'requiere_informacion': return 'warning';
-    case 'validado': return 'success';
-    default: return 'default';
+  switch (status) {
+    case 'solicitud_iniciada':
+      return 'info';
+    case 'en_revision':
+      return 'warning';
+    case 'aprobada':
+      return 'success';
+    case 'rechazada':
+      return 'error';
+    case 'requiere_informacion':
+      return 'warning';
+    case 'validado':
+      return 'success';
+    default:
+      return 'default';
   }
 };
 
@@ -37,18 +59,8 @@ const formatCurrency = (amount) => {
 
 function TabPanel({ children, value, index, ...other }) {
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`solicitud-tabpanel-${index}`}
-      aria-labelledby={`solicitud-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 2 }}>
-          {children}
-        </Box>
-      )}
+    <div role="tabpanel" hidden={value !== index} id={`solicitud-tabpanel-${index}`} aria-labelledby={`solicitud-tab-${index}`} {...other}>
+      {value === index && <Box sx={{ p: 2 }}>{children}</Box>}
     </div>
   );
 }
@@ -60,7 +72,7 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
   const [loadingDocs, setLoadingDocs] = useState(false);
   const [loadingAvaluo, setLoadingAvaluo] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
-  
+
   // Avaluo Form State
   const [avaluoForm, setAvaluoForm] = useState({
     valor_inmueble: '',
@@ -99,14 +111,10 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
   const fetchAvaluo = async () => {
     try {
       setLoadingAvaluo(true);
-      const { data, error } = await supabase
-        .from('avaluos')
-        .select('*')
-        .eq('solicitud_id', solicitud.id)
-        .single();
+      const { data, error } = await supabase.from('avaluos').select('*').eq('solicitud_id', solicitud.id).single();
 
       if (error && error.code !== 'PGRST116') throw error; // Ignore not found error
-      
+
       if (data) {
         setAvaluo(data);
         setAvaluoForm({
@@ -135,10 +143,7 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
   const handleDocumentAction = async (docId, status) => {
     try {
       setActionLoading(true);
-      const { error } = await supabase
-        .from('documentos')
-        .update({ estado: status })
-        .eq('id', docId);
+      const { error } = await supabase.from('documentos').update({ estado: status }).eq('id', docId);
 
       if (error) throw error;
       await fetchDocuments();
@@ -152,7 +157,7 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
   const handleSaveAvaluo = async () => {
     try {
       setActionLoading(true);
-      
+
       const avaluoData = {
         solicitud_id: solicitud.id,
         ...avaluoForm
@@ -161,21 +166,16 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
       let error;
       if (avaluo) {
         // Update
-        const { error: updateError } = await supabase
-          .from('avaluos')
-          .update(avaluoData)
-          .eq('id', avaluo.id);
+        const { error: updateError } = await supabase.from('avaluos').update(avaluoData).eq('id', avaluo.id);
         error = updateError;
       } else {
         // Insert
-        const { error: insertError } = await supabase
-          .from('avaluos')
-          .insert(avaluoData);
+        const { error: insertError } = await supabase.from('avaluos').insert(avaluoData);
         error = insertError;
       }
 
       if (error) throw error;
-      
+
       await fetchAvaluo();
       alert('Avalúo guardado correctamente');
     } catch (error) {
@@ -197,16 +197,15 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
           <Typography variant="h6">Detalle de Solicitud</Typography>
-          <Typography variant="caption" color="text.secondary">ID: {solicitud.id}</Typography>
+          <Typography variant="caption" color="text.secondary">
+            ID: {solicitud.id}
+          </Typography>
         </Box>
-        <Chip 
-          label={solicitud.estado} 
-          color={getStatusColor(solicitud.estado)}
-        />
+        <Chip label={solicitud.estado} color={getStatusColor(solicitud.estado)} />
       </DialogTitle>
-      
+
       <Divider />
-      
+
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="solicitud tabs">
@@ -220,35 +219,47 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">Cliente</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Cliente
+              </Typography>
               <Typography variant="h6">{solicitud.cliente_nombre}</Typography>
               <Typography variant="body2">{solicitud.cliente_email}</Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="text.secondary">Fecha de Solicitud</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Fecha de Solicitud
+              </Typography>
               <Typography variant="body1">{new Date(solicitud.created_at).toLocaleString()}</Typography>
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Tipo de Crédito</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Tipo de Crédito
+              </Typography>
               <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
                 {solicitud.tipo_credito?.replace('_', ' ')}
               </Typography>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Monto Solicitado</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Monto Solicitado
+              </Typography>
               <Typography variant="h6" color="primary.main">
                 {formatCurrency(solicitud.monto_solicitado)}
               </Typography>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Typography variant="subtitle2" color="text.secondary">Plazo</Typography>
+              <Typography variant="subtitle2" color="text.secondary">
+                Plazo
+              </Typography>
               <Typography variant="body1">{solicitud.plazo_meses} meses</Typography>
             </Grid>
 
             {solicitud.detalles && (
               <Grid item xs={12}>
-                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>Información Adicional</Typography>
+                <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+                  Información Adicional
+                </Typography>
                 <Paper variant="outlined" sx={{ p: 2, bgcolor: 'grey.50' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
                     {JSON.stringify(solicitud.detalles, null, 2)}
@@ -273,40 +284,28 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
                 <Grid item xs={12} key={doc.id}>
                   <Paper variant="outlined" sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
-                      <Typography variant="subtitle1" fontWeight="bold">{doc.tipo_documento}</Typography>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {doc.tipo_documento}
+                      </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {doc.nombre_archivo} • {new Date(doc.created_at).toLocaleDateString()}
                       </Typography>
                       <Box sx={{ mt: 0.5 }}>
-                        <Chip 
-                          label={doc.estado} 
-                          size="small" 
-                          color={doc.estado === 'validado' ? 'success' : doc.estado === 'rechazado' ? 'error' : 'default'} 
+                        <Chip
+                          label={doc.estado}
+                          size="small"
+                          color={doc.estado === 'validado' ? 'success' : doc.estado === 'rechazado' ? 'error' : 'default'}
                         />
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Button 
-                        variant="outlined" 
-                        size="small" 
-                        startIcon={<OpenInNewIcon />}
-                        href={doc.url_archivo}
-                        target="_blank"
-                      >
+                      <Button variant="outlined" size="small" startIcon={<OpenInNewIcon />} href={doc.url_archivo} target="_blank">
                         Ver
                       </Button>
-                      <IconButton 
-                        color="success" 
-                        onClick={() => handleDocumentAction(doc.id, 'validado')}
-                        disabled={actionLoading}
-                      >
+                      <IconButton color="success" onClick={() => handleDocumentAction(doc.id, 'validado')} disabled={actionLoading}>
                         <CheckCircleIcon />
                       </IconButton>
-                      <IconButton 
-                        color="error" 
-                        onClick={() => handleDocumentAction(doc.id, 'rechazado')}
-                        disabled={actionLoading}
-                      >
+                      <IconButton color="error" onClick={() => handleDocumentAction(doc.id, 'rechazado')} disabled={actionLoading}>
                         <CancelIcon />
                       </IconButton>
                     </Box>
@@ -356,12 +355,7 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
               />
             </Grid>
             <Grid item xs={12}>
-              <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={handleSaveAvaluo}
-                disabled={actionLoading}
-              >
+              <Button variant="contained" color="primary" onClick={handleSaveAvaluo} disabled={actionLoading}>
                 {avaluo ? 'Actualizar Avalúo' : 'Guardar Avalúo'}
               </Button>
             </Grid>
@@ -370,32 +364,32 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
       </Box>
 
       <Divider />
-      
+
       <DialogActions sx={{ p: 2.5 }}>
         <Button onClick={onClose} color="inherit">
           Cerrar
         </Button>
-        <Button 
-          variant="outlined" 
-          color="warning" 
+        <Button
+          variant="outlined"
+          color="warning"
           startIcon={<PendingIcon />}
           onClick={() => onStatusUpdate('en_revision')}
           disabled={actionLoading}
         >
           En Revisión
         </Button>
-        <Button 
-          variant="contained" 
-          color="error" 
+        <Button
+          variant="contained"
+          color="error"
           startIcon={<CancelIcon />}
           onClick={() => onStatusUpdate('rechazada')}
           disabled={actionLoading}
         >
           Rechazar
         </Button>
-        <Button 
-          variant="contained" 
-          color="secondary" 
+        <Button
+          variant="contained"
+          color="secondary"
           startIcon={<CheckCircleIcon />}
           onClick={() => onStatusUpdate('en_comite')}
           disabled={actionLoading}

@@ -28,4 +28,3 @@ export default async function AuthCallbackPage({ searchParams }) {
 
   redirect('/dashboard');
 }
-

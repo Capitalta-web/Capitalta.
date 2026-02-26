@@ -19,7 +19,6 @@ import Box from '@mui/material/Box';
 
 // @project
 import { Feature15, FeatureProducts } from '@/blocks/feature';
-import { ProcessTimeline } from '@/blocks/process';
 import { Hero16 } from '@/blocks/hero';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import LazySection from '@/components/LazySection';
@@ -67,7 +66,7 @@ export default function Main() {
                 plazo.
               </Typography>
             </Stack>
-            
+
             <Box
               sx={{
                 display: 'grid',

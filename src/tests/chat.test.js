@@ -68,7 +68,7 @@ describe('ChatWidget', () => {
 
     render(<ChatWidget />);
     fireEvent.click(screen.getByLabelText('chat'));
-    
+
     const input = screen.getByPlaceholderText('Escribe un mensaje...');
     const sendButton = screen.getByRole('button', { name: /send/i }); // Ajustar según tu icono
 
@@ -87,7 +87,7 @@ describe('ChatWidget', () => {
 
     render(<ChatWidget />);
     fireEvent.click(screen.getByLabelText('chat'));
-    
+
     const input = screen.getByPlaceholderText('Escribe un mensaje...');
     fireEvent.change(input, { target: { value: 'Hola' } });
     fireEvent.click(screen.getByRole('button', { name: /send/i })); // Ajustar según tu icono

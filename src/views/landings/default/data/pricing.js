@@ -1,8 +1,3 @@
-// @project
-import { BUY_NOW_URL } from '@/path';
-
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
-
 export const pricing = {
   heading: 'Planes de Financiamiento',
   caption: 'Elige la opción que mejor se adapte a tu estrategia de crecimiento.',

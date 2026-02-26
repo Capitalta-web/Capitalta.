@@ -1,12 +1,27 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Typography, Box, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Chip, Button, 
-  IconButton, Tooltip, CircularProgress, Dialog,
-  DialogTitle, DialogContent, DialogActions, Grid,
-  Divider, Paper
+import {
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  Button,
+  IconButton,
+  Tooltip,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  Divider,
+  Paper
 } from '@mui/material';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import MainCard from '@/components/MainCard';
@@ -14,30 +29,48 @@ import MainCard from '@/components/MainCard';
 import SolicitudDetailDialog from './SolicitudDetailDialog';
 
 const getStatusColor = (status) => {
-  switch(status) {
-    case 'solicitud_iniciada': return 'info';
-    case 'en_revision': return 'warning';
-    case 'en_comite': return 'secondary';
-    case 'aprobada': return 'success';
-    case 'rechazada': return 'error';
-    case 'requiere_informacion': return 'warning';
-    case 'validado': return 'success';
-    case 'fondeado': return 'success';
-    default: return 'default';
+  switch (status) {
+    case 'solicitud_iniciada':
+      return 'info';
+    case 'en_revision':
+      return 'warning';
+    case 'en_comite':
+      return 'secondary';
+    case 'aprobada':
+      return 'success';
+    case 'rechazada':
+      return 'error';
+    case 'requiere_informacion':
+      return 'warning';
+    case 'validado':
+      return 'success';
+    case 'fondeado':
+      return 'success';
+    default:
+      return 'default';
   }
 };
 
 const getStatusLabel = (status) => {
-  switch(status) {
-    case 'solicitud_iniciada': return 'Iniciada';
-    case 'en_revision': return 'En Revisión';
-    case 'en_comite': return 'En Comité';
-    case 'aprobada': return 'Aprobada';
-    case 'rechazada': return 'Rechazada';
-    case 'requiere_informacion': return 'Req. Información';
-    case 'validado': return 'Validado';
-    case 'fondeado': return 'Fondeado';
-    default: return status;
+  switch (status) {
+    case 'solicitud_iniciada':
+      return 'Iniciada';
+    case 'en_revision':
+      return 'En Revisión';
+    case 'en_comite':
+      return 'En Comité';
+    case 'aprobada':
+      return 'Aprobada';
+    case 'rechazada':
+      return 'Rechazada';
+    case 'requiere_informacion':
+      return 'Req. Información';
+    case 'validado':
+      return 'Validado';
+    case 'fondeado':
+      return 'Fondeado';
+    default:
+      return status;
   }
 };
 
@@ -56,10 +89,7 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
     try {
       setLoading(true);
       const supabase = createSupabaseBrowserClient();
-      let query = supabase
-        .from('solicitudes_credito')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let query = supabase.from('solicitudes_credito').select('*').order('created_at', { ascending: false });
 
       if (limit) {
         query = query.limit(limit);
@@ -79,21 +109,21 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
 
       if (solicitudesData && solicitudesData.length > 0) {
         // Fetch profiles manually
-        const userIds = [...new Set(solicitudesData.map(s => s.cliente_id))];
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('id, nombre_completo, email')
-          .in('id', userIds);
-        
-        const profilesMap = (profiles || []).reduce((acc, p) => ({ 
-          ...acc, 
-          [p.id]: { name: p.nombre_completo, email: p.email } 
-        }), {});
+        const userIds = [...new Set(solicitudesData.map((s) => s.cliente_id))];
+        const { data: profiles } = await supabase.from('profiles').select('id, nombre_completo, email').in('id', userIds);
 
-        const mappedSolicitudes = solicitudesData.map(s => ({
-            ...s,
-            cliente_nombre: profilesMap[s.cliente_id]?.name || 'Usuario Desconocido',
-            cliente_email: profilesMap[s.cliente_id]?.email || '',
+        const profilesMap = (profiles || []).reduce(
+          (acc, p) => ({
+            ...acc,
+            [p.id]: { name: p.nombre_completo, email: p.email }
+          }),
+          {}
+        );
+
+        const mappedSolicitudes = solicitudesData.map((s) => ({
+          ...s,
+          cliente_nombre: profilesMap[s.cliente_id]?.name || 'Usuario Desconocido',
+          cliente_email: profilesMap[s.cliente_id]?.email || ''
         }));
         setSolicitudes(mappedSolicitudes);
       } else {
@@ -108,7 +138,7 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
 
   useEffect(() => {
     fetchSolicitudes();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
   const handleOpenDialog = (solicitud) => {
@@ -123,14 +153,14 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
 
   const handleUpdateStatus = async (newStatus) => {
     if (!selectedSolicitud) return;
-    
+
     setActionLoading(true);
     const supabase = createSupabaseBrowserClient();
-    
+
     try {
       const { error } = await supabase
         .from('solicitudes_credito')
-        .update({ 
+        .update({
           estado: newStatus,
           updated_at: new Date()
         })
@@ -183,18 +213,15 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
                   <TableRow key={row.id} hover>
                     <TableCell>
                       <Typography variant="subtitle2">{row.cliente_nombre}</Typography>
-                      <Typography variant="caption" color="text.secondary">{row.cliente_email}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {row.cliente_email}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ textTransform: 'capitalize' }}>{row.tipo_credito?.replace('_', ' ')}</TableCell>
                     <TableCell>{formatCurrency(row.monto_solicitado)}</TableCell>
                     <TableCell>{new Date(row.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Chip 
-                        label={getStatusLabel(row.estado)} 
-                        color={getStatusColor(row.estado)} 
-                        size="small" 
-                        variant="soft"
-                      />
+                      <Chip label={getStatusLabel(row.estado)} color={getStatusColor(row.estado)} size="small" variant="soft" />
                     </TableCell>
                     <TableCell align="center">
                       <Tooltip title="Ver Detalle">
@@ -212,9 +239,9 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
       </MainCard>
 
       {/* Detail Dialog */}
-      <SolicitudDetailDialog 
-        open={dialogOpen} 
-        onClose={handleCloseDialog} 
+      <SolicitudDetailDialog
+        open={dialogOpen}
+        onClose={handleCloseDialog}
         solicitud={selectedSolicitud}
         onStatusUpdate={handleUpdateStatus}
       />

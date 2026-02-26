@@ -7,28 +7,21 @@ export async function POST(request) {
 
   if (!supabase) {
     // Fallback para desarrollo si no hay Supabase configurado
-    return NextResponse.json({ 
-      cita: { 
-        id: 'mock-id', 
-        status: 'mock-confirmada',
-        ...await request.json() 
-      } 
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        cita: {
+          id: 'mock-id',
+          status: 'mock-confirmada',
+          ...(await request.json())
+        }
+      },
+      { status: 201 }
+    );
   }
 
   const body = await request.json();
 
-  const { 
-    sucursal_id, 
-    fecha, 
-    hora, 
-    nombre_cliente, 
-    email, 
-    telefono, 
-    codigo_cita,
-    cliente_id,
-    solicitud_id
-  } = body;
+  const { sucursal_id, fecha, hora, nombre_cliente, email, telefono, codigo_cita, cliente_id, solicitud_id } = body;
 
   if (!sucursal_id || !fecha || !hora || !nombre_cliente || !codigo_cita) {
     return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
@@ -37,8 +30,8 @@ export async function POST(request) {
   // Validación básica de sucursal (según valores esperados)
   const sucursalesValidas = ['reforma', 'polanco'];
   if (!sucursalesValidas.includes(sucursal_id.toLowerCase())) {
-     // Si no es una de las conocidas, permitimos pasar pero logueamos advertencia o rechazamos si es estricto.
-     // Para MVP flexible, lo dejamos pasar pero normalizamos a minúsculas.
+    // Si no es una de las conocidas, permitimos pasar pero logueamos advertencia o rechazamos si es estricto.
+    // Para MVP flexible, lo dejamos pasar pero normalizamos a minúsculas.
   }
 
   const { data, error } = await supabase
@@ -85,11 +78,7 @@ export async function GET(request) {
   }
 
   if (codigoCita) {
-    const { data, error } = await supabase
-      .from('citas')
-      .select('*')
-      .eq('codigo_cita', codigoCita)
-      .single();
+    const { data, error } = await supabase.from('citas').select('*').eq('codigo_cita', codigoCita).single();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ cita: data }, { status: 200 });

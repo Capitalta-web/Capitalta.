@@ -73,16 +73,16 @@ export let DynamicComponentType;
 // Added missing enums
 export let AvatarSize;
 (function (AvatarSize) {
-    AvatarSize["BADGE"] = "badge";
-    AvatarSize["XS"] = "xs";
-    AvatarSize["SM"] = "sm";
-    AvatarSize["MD"] = "md";
-    AvatarSize["LG"] = "lg";
-    AvatarSize["XL"] = "xl";
+  AvatarSize['BADGE'] = 'badge';
+  AvatarSize['XS'] = 'xs';
+  AvatarSize['SM'] = 'sm';
+  AvatarSize['MD'] = 'md';
+  AvatarSize['LG'] = 'lg';
+  AvatarSize['XL'] = 'xl';
 })(AvatarSize || (AvatarSize = {}));
 
 export let ChipIconPosition;
 (function (ChipIconPosition) {
-    ChipIconPosition["LEFT"] = "left";
-    ChipIconPosition["RIGHT"] = "right";
+  ChipIconPosition['LEFT'] = 'left';
+  ChipIconPosition['RIGHT'] = 'right';
 })(ChipIconPosition || (ChipIconPosition = {}));

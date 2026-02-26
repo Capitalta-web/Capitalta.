@@ -17,24 +17,22 @@ export default function DashboardRedirect() {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
 
       if (!user) {
         router.push('/auth/login');
         return;
       }
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+      const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
       if (error || !profile) {
         // Fallback or error handling
         console.error('Error fetching profile:', error);
         // Default to cliente if profile missing (or handle_new_user hasn't run yet)
-        router.push('/dashboard/cliente'); 
+        router.push('/dashboard/cliente');
       } else {
         if (profile.role === 'admin') {
           router.push('/dashboard/admin');

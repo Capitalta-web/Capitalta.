@@ -2,19 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Box,
-  Stepper,
-  Step,
-  StepLabel,
-  Button,
-  Typography,
-  TextField,
-  MenuItem,
-  Grid,
-  CircularProgress,
-  Alert
-} from '@mui/material';
+import { Box, Stepper, Step, StepLabel, Button, Typography, TextField, MenuItem, Grid, CircularProgress, Alert } from '@mui/material';
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
@@ -32,7 +20,7 @@ export default function NuevaSolicitudPage() {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     tipo_credito: 'simple',
     monto_solicitado: '',
@@ -61,33 +49,32 @@ export default function NuevaSolicitudPage() {
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const supabase = createSupabaseBrowserClient();
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      
+
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+
       if (!user) throw new Error('No estás autenticado');
 
-      const { error: insertError } = await supabase
-        .from('solicitudes_credito')
-        .insert({
-          cliente_id: user.id,
-          tipo_credito: formData.tipo_credito,
-          monto_solicitado: parseFloat(formData.monto_solicitado),
-          plazo_meses: parseInt(formData.plazo_meses),
-          estado: 'solicitud_iniciada',
-          detalles: {
-            empresa: formData.empresa,
-            rfc: formData.rfc,
-            notas: formData.notas
-          }
-        });
+      const { error: insertError } = await supabase.from('solicitudes_credito').insert({
+        cliente_id: user.id,
+        tipo_credito: formData.tipo_credito,
+        monto_solicitado: parseFloat(formData.monto_solicitado),
+        plazo_meses: parseInt(formData.plazo_meses),
+        estado: 'solicitud_iniciada',
+        detalles: {
+          empresa: formData.empresa,
+          rfc: formData.rfc,
+          notas: formData.notas
+        }
+      });
 
       if (insertError) throw insertError;
 
       router.push('/dashboard/cliente');
-      
     } catch (err) {
       console.error(err);
       setError(err.message || 'Error al crear la solicitud');
@@ -101,17 +88,12 @@ export default function NuevaSolicitudPage() {
         return (
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>Selecciona el tipo de crédito</Typography>
+              <Typography variant="h6" gutterBottom>
+                Selecciona el tipo de crédito
+              </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                select
-                fullWidth
-                label="Tipo de Crédito"
-                name="tipo_credito"
-                value={formData.tipo_credito}
-                onChange={handleChange}
-              >
+              <TextField select fullWidth label="Tipo de Crédito" name="tipo_credito" value={formData.tipo_credito} onChange={handleChange}>
                 {CREDIT_TYPES.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
                     {option.label}
@@ -124,8 +106,10 @@ export default function NuevaSolicitudPage() {
       case 1:
         return (
           <Grid container spacing={3}>
-             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>Configura tu préstamo</Typography>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Configura tu préstamo
+              </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
               <TextField
@@ -154,26 +138,16 @@ export default function NuevaSolicitudPage() {
       case 2:
         return (
           <Grid container spacing={3}>
-             <Grid item xs={12}>
-              <Typography variant="h6" gutterBottom>Información Adicional (Opcional)</Typography>
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Información Adicional (Opcional)
+              </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Nombre de la Empresa"
-                name="empresa"
-                value={formData.empresa}
-                onChange={handleChange}
-              />
+              <TextField fullWidth label="Nombre de la Empresa" name="empresa" value={formData.empresa} onChange={handleChange} />
             </Grid>
             <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="RFC"
-                name="rfc"
-                value={formData.rfc}
-                onChange={handleChange}
-              />
+              <TextField fullWidth label="RFC" name="rfc" value={formData.rfc} onChange={handleChange} />
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -191,11 +165,21 @@ export default function NuevaSolicitudPage() {
       case 3:
         return (
           <Box sx={{ py: 2 }}>
-            <Typography variant="h6" gutterBottom>Resumen de Solicitud</Typography>
-            <Typography><strong>Tipo:</strong> {CREDIT_TYPES.find(t => t.value === formData.tipo_credito)?.label}</Typography>
-            <Typography><strong>Monto:</strong> ${formData.monto_solicitado}</Typography>
-            <Typography><strong>Plazo:</strong> {formData.plazo_meses} meses</Typography>
-            <Typography><strong>Empresa:</strong> {formData.empresa || 'N/A'}</Typography>
+            <Typography variant="h6" gutterBottom>
+              Resumen de Solicitud
+            </Typography>
+            <Typography>
+              <strong>Tipo:</strong> {CREDIT_TYPES.find((t) => t.value === formData.tipo_credito)?.label}
+            </Typography>
+            <Typography>
+              <strong>Monto:</strong> ${formData.monto_solicitado}
+            </Typography>
+            <Typography>
+              <strong>Plazo:</strong> {formData.plazo_meses} meses
+            </Typography>
+            <Typography>
+              <strong>Empresa:</strong> {formData.empresa || 'N/A'}
+            </Typography>
             <Alert severity="info" sx={{ mt: 2 }}>
               Al enviar esta solicitud, un asesor revisará tu información y se pondrá en contacto contigo.
             </Alert>
@@ -218,16 +202,14 @@ export default function NuevaSolicitudPage() {
           </Step>
         ))}
       </Stepper>
-      
+
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
 
-      <Box sx={{ mt: 2, mb: 4, minHeight: '200px' }}>
-        {renderStepContent(activeStep)}
-      </Box>
+      <Box sx={{ mt: 2, mb: 4, minHeight: '200px' }}>{renderStepContent(activeStep)}</Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         {activeStep !== 0 && (
@@ -236,12 +218,7 @@ export default function NuevaSolicitudPage() {
           </Button>
         )}
         {activeStep === steps.length - 1 ? (
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={loading}
-            startIcon={loading && <CircularProgress size={20} />}
-          >
+          <Button variant="contained" onClick={handleSubmit} disabled={loading} startIcon={loading && <CircularProgress size={20} />}>
             {loading ? 'Enviando...' : 'Enviar Solicitud'}
           </Button>
         ) : (

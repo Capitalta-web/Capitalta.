@@ -51,7 +51,10 @@ export default function ProductosContent() {
         title: '1. Solicitud inicial',
         description: 'Inicias tu proceso de crédito compartiendo datos básicos y el objetivo del financiamiento.',
         icon: 'tabler-file-plus',
-        list: [{ primary: 'Llenado de solicitud y definición del tipo de crédito' }, { primary: 'Identificación del monto y plazo que estás buscando' }]
+        list: [
+          { primary: 'Llenado de solicitud y definición del tipo de crédito' },
+          { primary: 'Identificación del monto y plazo que estás buscando' }
+        ]
       },
       {
         title: '2. Integración de expediente',
@@ -75,7 +78,10 @@ export default function ProductosContent() {
         title: '4. Revisión y aprobación por comité de crédito',
         description: 'Nuestro comité analiza la operación para tomar una decisión informada.',
         icon: 'tabler-checkup-list',
-        list: [{ primary: 'Análisis de capacidad de pago y riesgos de la operación' }, { primary: 'Emisión de resolución por parte del comité de crédito' }]
+        list: [
+          { primary: 'Análisis de capacidad de pago y riesgos de la operación' },
+          { primary: 'Emisión de resolución por parte del comité de crédito' }
+        ]
       },
       {
         title: '5. Formalización notarial',
@@ -90,7 +96,10 @@ export default function ProductosContent() {
         title: '6. Fondeo o disposición de crédito',
         description: 'Liberamos los recursos conforme a lo acordado para que puedas ejecutar tu plan.',
         icon: 'tabler-credit-card',
-        list: [{ primary: 'Verificación de condiciones previas al fondeo' }, { primary: 'Confirmación de la recepción de los recursos por parte del cliente' }]
+        list: [
+          { primary: 'Verificación de condiciones previas al fondeo' },
+          { primary: 'Confirmación de la recepción de los recursos por parte del cliente' }
+        ]
       },
       {
         title: '7. Seguimiento y cobranza',

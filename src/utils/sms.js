@@ -31,7 +31,7 @@ export async function sendSMS({ to, body }) {
     const message = await client.messages.create({
       body,
       from: fromPhone,
-      to,
+      to
     });
     console.log('[Twilio] SMS enviado exitosamente a:', to, '| SID:', message.sid);
     return { success: true, sid: message.sid };
@@ -61,7 +61,7 @@ export async function sendWhatsApp({ to, body }) {
     const message = await client.messages.create({
       body,
       from: fromWhatsApp,
-      to: toWhatsApp,
+      to: toWhatsApp
     });
     console.log('[Twilio] WhatsApp enviado exitosamente a:', to, '| SID:', message.sid);
     return { success: true, sid: message.sid };

@@ -18,15 +18,13 @@ export default function ClienteDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       const supabase = createSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+
       if (user) {
         setUser(user);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
         setProfile(profile);
 
         // Fetch active application
@@ -36,7 +34,7 @@ export default function ClienteDashboard() {
           .eq('cliente_id', user.id)
           .order('created_at', { ascending: false })
           .limit(1);
-        
+
         if (applications && applications.length > 0) {
           setActiveApplication(applications[0]);
         }

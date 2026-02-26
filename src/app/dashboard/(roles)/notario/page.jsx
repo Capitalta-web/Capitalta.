@@ -11,9 +11,7 @@ export default function NotarioDashboard() {
         <Typography variant="h4" gutterBottom fontWeight="bold">
           Panel de Notario
         </Typography>
-        <Typography color="text.secondary">
-          Gestión de formalización y firmas de contratos.
-        </Typography>
+        <Typography color="text.secondary">Gestión de formalización y firmas de contratos.</Typography>
       </Box>
 
       <Grid container spacing={3}>
@@ -24,14 +22,16 @@ export default function NotarioDashboard() {
                 <DescriptionIcon color="primary" sx={{ mr: 1 }} />
                 <Typography variant="h6">Contratos Pendientes</Typography>
               </Box>
-              <Typography variant="h3" fontWeight="bold">0</Typography>
+              <Typography variant="h3" fontWeight="bold">
+                0
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 Solicitudes listas para formalizar
               </Typography>
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12} sm={6}>
           <Card>
             <CardContent>
@@ -39,7 +39,9 @@ export default function NotarioDashboard() {
                 <EventIcon color="warning" sx={{ mr: 1 }} />
                 <Typography variant="h6">Próximas Firmas</Typography>
               </Box>
-              <Typography variant="h3" fontWeight="bold">0</Typography>
+              <Typography variant="h3" fontWeight="bold">
+                0
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 Citas agendadas para esta semana
               </Typography>

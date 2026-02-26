@@ -51,7 +51,7 @@ export async function POST(request) {
         );
       */
       // Los campos monto, plazo, tipo_credito NO existen en la tabla leads.
-      // Se deben guardar en 'notas' o ignorar. 
+      // Se deben guardar en 'notas' o ignorar.
       // Sin embargo, el frontend los envía. Para MVP, los meteremos en 'notas' como JSON string si no hay columnas.
       notas: JSON.stringify({
         empresa,
@@ -59,7 +59,7 @@ export async function POST(request) {
         monto_solicitado,
         plazo_meses,
         tipo_credito,
-        ...JSON.parse(body.notas || '{}') 
+        ...JSON.parse(body.notas || '{}')
       }),
       estado: 'nuevo' // Corregido para coincidir con el ENUM ('nuevo', 'contactado', etc.)
     })

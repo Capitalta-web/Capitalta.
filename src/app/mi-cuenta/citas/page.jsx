@@ -70,35 +70,33 @@ export default function MisCitasPage() {
     const fetchCitas = async () => {
       setLoading(true);
       const supabase = createSupabaseBrowserClient();
-      
+
       if (!supabase) {
         setLoading(false);
         return;
       }
 
       // Verificar sesión
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+
       if (!session) {
         setLoading(false);
         // Opcional: Redirigir al login si no hay sesión
-        // router.push('/auth/login'); 
+        // router.push('/auth/login');
         return;
       }
 
       setUser(session.user);
 
       // Obtener citas del usuario (por email)
-      const { data, error } = await supabase
-        .from('citas')
-        .select('*')
-        .eq('email', session.user.email)
-        .order('fecha', { ascending: false });
+      const { data, error } = await supabase.from('citas').select('*').eq('email', session.user.email).order('fecha', { ascending: false });
 
       if (!error && data) {
         // Enriquecer datos con nombre de sucursal
-          const citasEnriquecidas = data.map(cita => {
-          const sucursalInfo = sucursalesMock.find(s => s.id === cita.sucursal_id);
+        const citasEnriquecidas = data.map((cita) => {
+          const sucursalInfo = sucursalesMock.find((s) => s.id === cita.sucursal_id);
           return {
             ...cita,
             id: cita.codigo_cita || cita.id, // Preferir codigo_cita
@@ -144,7 +142,9 @@ export default function MisCitasPage() {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
         <Typography variant="h5">Inicia sesión para ver tus citas</Typography>
-        <Button variant="contained" href="/auth/login/1">Ir al Login</Button>
+        <Button variant="contained" href="/auth/login/1">
+          Ir al Login
+        </Button>
       </Box>
     );
   }

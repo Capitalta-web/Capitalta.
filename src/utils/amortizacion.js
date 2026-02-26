@@ -1,20 +1,19 @@
 export function generarTablaAmortizacion(monto, plazoMeses, tasaAnual, fechaInicio) {
   const tasaMensual = tasaAnual / 12 / 100;
-  const pagoMensual = (monto * tasaMensual * Math.pow(1 + tasaMensual, plazoMeses)) / 
-                      (Math.pow(1 + tasaMensual, plazoMeses) - 1);
-  
+  const pagoMensual = (monto * tasaMensual * Math.pow(1 + tasaMensual, plazoMeses)) / (Math.pow(1 + tasaMensual, plazoMeses) - 1);
+
   let saldo = monto;
   const pagos = [];
   const inicio = new Date(fechaInicio);
-  
+
   for (let i = 1; i <= plazoMeses; i++) {
     const interes = saldo * tasaMensual;
     const capital = pagoMensual - interes;
     saldo -= capital;
-    
+
     const fechaPago = new Date(inicio);
     fechaPago.setMonth(fechaPago.getMonth() + i);
-    
+
     pagos.push({
       numero_pago: i,
       fecha_programada: fechaPago.toISOString().split('T')[0],
@@ -25,6 +24,6 @@ export function generarTablaAmortizacion(monto, plazoMeses, tasaAnual, fechaInic
       estado: 'pendiente'
     });
   }
-  
+
   return pagos;
 }

@@ -1,10 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Typography, Box, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Chip, 
-  CircularProgress, Paper, Avatar 
+import {
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  CircularProgress,
+  Paper,
+  Avatar
 } from '@mui/material';
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
@@ -17,10 +26,7 @@ export default function UsuariosPage() {
     const fetchUsers = async () => {
       try {
         const supabase = createSupabaseBrowserClient();
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
+        const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
 
         if (error) throw error;
         setUsers(data || []);
@@ -37,7 +43,9 @@ export default function UsuariosPage() {
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom fontWeight="bold">Usuarios</Typography>
+        <Typography variant="h4" gutterBottom fontWeight="bold">
+          Usuarios
+        </Typography>
         <Typography color="text.secondary">Gestión de usuarios registrados en la plataforma.</Typography>
       </Box>
 
@@ -72,24 +80,20 @@ export default function UsuariosPage() {
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar>{user.nombre_completo?.charAt(0) || 'U'}</Avatar>
-                        <Typography variant="subtitle2">
-                          {user.nombre_completo || 'Sin nombre'}
-                        </Typography>
+                        <Typography variant="subtitle2">{user.nombre_completo || 'Sin nombre'}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <Chip 
-                        label={user.role || 'cliente'} 
+                      <Chip
+                        label={user.role || 'cliente'}
                         color={user.role === 'admin' ? 'error' : user.role === 'analista' ? 'warning' : 'primary'}
                         size="small"
                         variant="outlined"
                         sx={{ textTransform: 'capitalize' }}
                       />
                     </TableCell>
-                    <TableCell>
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </TableCell>
+                    <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Chip label="Activo" color="success" size="small" />
                     </TableCell>

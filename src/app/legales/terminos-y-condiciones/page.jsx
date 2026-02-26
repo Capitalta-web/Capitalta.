@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -118,8 +117,7 @@ const menuItems = [
           </Link>
         </Typography>
         <Typography paragraph>
-          <strong>Correo electrónico:</strong>{' '}
-          <Link href="mailto:asesoria@condusef.gob.mx">asesoria@condusef.gob.mx</Link>
+          <strong>Correo electrónico:</strong> <Link href="mailto:asesoria@condusef.gob.mx">asesoria@condusef.gob.mx</Link>
         </Typography>
       </>
     )
@@ -141,7 +139,10 @@ const menuItems = [
     content: (
       <>
         <Typography paragraph>
-          La Comisión Nacional para la Protección y Defensa de los Usuarios de Servicios Financieros (CONDUSEF), de conformidad con lo establecido en las &quot;Reglas del Registro de Prestadores de Servicios Financieros&quot; publicadas en el Diario Oficial de la Federación el día 28 de diciembre de 2011, Millenials Innovations, SAPI de CV, SOFOM ENR, te invita a que ingreses a la siguiente liga y corrobores que somos una Entidad Financiera, en el Portal del Registro de Prestadores de Servicios Financieros (SIPRES).
+          La Comisión Nacional para la Protección y Defensa de los Usuarios de Servicios Financieros (CONDUSEF), de conformidad con lo
+          establecido en las &quot;Reglas del Registro de Prestadores de Servicios Financieros&quot; publicadas en el Diario Oficial de la
+          Federación el día 28 de diciembre de 2011, Millenials Innovations, SAPI de CV, SOFOM ENR, te invita a que ingreses a la siguiente
+          liga y corrobores que somos una Entidad Financiera, en el Portal del Registro de Prestadores de Servicios Financieros (SIPRES).
         </Typography>
         <Typography>
           <Link href="https://webapps.condusef.gob.mx/SIPRES" target="_blank" rel="noopener noreferrer">
@@ -157,11 +158,11 @@ const menuItems = [
     content: (
       <>
         <Typography paragraph>
-          De acuerdo con lo establecido en el artículo 11, párrafo quinto de la Ley para la Transparencia y Ordenamiento de los Servicios Financieros, pone a su disposición los Contratos de Adhesión que se encuentran registrados y vigentes en el Registro de Contratos de Adhesión.
+          De acuerdo con lo establecido en el artículo 11, párrafo quinto de la Ley para la Transparencia y Ordenamiento de los Servicios
+          Financieros, pone a su disposición los Contratos de Adhesión que se encuentran registrados y vigentes en el Registro de Contratos
+          de Adhesión.
         </Typography>
-        <Typography paragraph>
-          Te invitamos a consultar nuestros contratos de Adhesión, solo ingresa el número de registro.
-        </Typography>
+        <Typography paragraph>Te invitamos a consultar nuestros contratos de Adhesión, solo ingresa el número de registro.</Typography>
         <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
           Números de registro:
         </Typography>
@@ -209,13 +210,13 @@ export default function TerminosCondicionesPage() {
                     })
                   }}
                 >
-                  <ListItemText 
-                    primary={item.heading} 
-                    primaryTypographyProps={{ 
-                      variant: 'body2', 
+                  <ListItemText
+                    primary={item.heading}
+                    primaryTypographyProps={{
+                      variant: 'body2',
                       color: activeId === item.id ? 'text.primary' : 'text.secondary',
                       fontWeight: activeId === item.id ? 600 : 400
-                    }} 
+                    }}
                   />
                 </ListItemButton>
               ))}
@@ -228,11 +229,9 @@ export default function TerminosCondicionesPage() {
               <Typography variant="h3" gutterBottom>
                 Términos y Condiciones
               </Typography>
-              <Typography color="text.secondary">
-                Última actualización: Febrero 2026
-              </Typography>
+              <Typography color="text.secondary">Última actualización: Febrero 2026</Typography>
             </Box>
-            
+
             {menuItems.map((item) => (
               <Box key={item.id} id={item.id} sx={{ scrollMarginTop: 100 }}>
                 <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
