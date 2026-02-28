@@ -241,9 +241,33 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
       return { error: 'Error al crear solicitud: ' + insertError.message };
     }
 
-    return { success: true };
+    return { success: true, email: cleanEmail, nombre: userData.metadata.full_name };
   } catch (err) {
     console.error('Unexpected error in updateUserAndCreateRequestAction:', err);
     return { error: 'Error inesperado al procesar la solicitud' };
+  }
+}
+
+export async function sendWelcomeEmailAction(email, nombre) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.capitalta.mx'}/api/email/welcome`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, nombre })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('Error sending welcome email:', result.error);
+      return { success: false, error: result.error || 'Error al enviar correo de bienvenida' };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('Error in sendWelcomeEmailAction:', err);
+    return { success: false, error: 'Error al enviar correo de bienvenida' };
   }
 }

@@ -23,12 +23,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconCheck, IconMail, IconClock } from '@tabler/icons-react';
 import OtpInput from 'react-otp-input';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
-import { sendOtpAction, verifyOtpAction, updateUserAndCreateRequestAction, resendOtpAction } from './actions';
+import { sendOtpAction, verifyOtpAction, updateUserAndCreateRequestAction, resendOtpAction, sendWelcomeEmailAction } from './actions';
 
 const MONTO_MIN = 30000;
 const MONTO_MAX = 10000000;
@@ -96,6 +96,10 @@ export default function RegistroWizardPage() {
   const [submitError, setSubmitError] = useState('');
   // Guardamos el userId obtenido en la verificación OTP para evitar llamadas a getUser() que puedan fallar por red
   const [verifiedUserId, setVerifiedUserId] = useState(null);
+  // Success screen state
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successData, setSuccessData] = useState(null);
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -279,7 +283,7 @@ export default function RegistroWizardPage() {
       if (!targetUserId) throw new Error('No se pudo identificar al usuario. Por favor recarga la página.');
 
       // Usamos Server Action para actualizar perfil y crear solicitud (evita CORS/Fetch errors)
-      const { error: actionError } = await updateUserAndCreateRequestAction({
+      const { error: actionError, email: userEmail, nombre: userName } = await updateUserAndCreateRequestAction({
         userId: targetUserId,
         userData: {
           password,
@@ -305,14 +309,35 @@ export default function RegistroWizardPage() {
 
       if (actionError) throw new Error(actionError);
 
-      setSubmitError('¡Cuenta creada y solicitud enviada con éxito! Redirigiendo...');
-      setTimeout(() => {
-        router.push('/dashboard/client');
-      }, 2000);
+      // Enviar correo de bienvenida (sin bloquear si falla)
+      if (userEmail && userName) {
+        await sendWelcomeEmailAction(userEmail, userName);
+      }
+
+      // Mostrar pantalla de éxito
+      setSuccessData({
+        email: userEmail,
+        nombre: userName,
+        monto: montoAjustado,
+        plazo: plazoAjustado
+      });
+      setShowSuccess(true);
+      setLoading(false);
+
+      // Contar hacia atrás y redirigir
+      let countdown = 5;
+      setRedirectCountdown(countdown);
+      const interval = setInterval(() => {
+        countdown -= 1;
+        setRedirectCountdown(countdown);
+        if (countdown === 0) {
+          clearInterval(interval);
+          router.push('/dashboard/cliente');
+        }
+      }, 1000);
     } catch (err) {
       console.error(err);
       setSubmitError(err.message || 'Ocurrió un error inesperado');
-    } finally {
       setLoading(false);
     }
   };
@@ -649,6 +674,100 @@ export default function RegistroWizardPage() {
     </Stack>
   );
 
+  const renderSuccessScreen = () => (
+    <Stack spacing={3} sx={{ textAlign: 'center', py: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+        <Box
+          sx={{
+            width: 80,
+            height: 80,
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #008080 0%, #006666 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'pulse 0.5s ease-in-out'
+          }}
+        >
+          <IconCheck size={40} color="white" strokeWidth={3} />
+        </Box>
+      </Box>
+
+      <Typography variant="h4" sx={{ fontWeight: 700 }}>
+        ¡Solicitud creada exitosamente!
+      </Typography>
+
+      <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: 500, mx: 'auto' }}>
+        Tu cuenta ha sido activada y tu solicitud de crédito ha sido registrada en nuestro sistema.
+      </Typography>
+
+      <Box
+        sx={{
+          p: 3,
+          backgroundColor: '#f0f9f9',
+          borderRadius: 2,
+          border: '1px solid #c0e7e7',
+          mt: 2
+        }}
+      >
+        <Stack spacing={2}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <IconMail size={24} style={{ color: '#008080', marginTop: 4 }} />
+            <Stack spacing={0.5}>
+              <Typography variant="subtitle2">Correo de bienvenida enviado</Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Hemos enviado un correo de bienvenida a <strong>{successData?.email}</strong> con las instrucciones y próximos pasos.
+              </Typography>
+            </Stack>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+            <IconClock size={24} style={{ color: '#008080', marginTop: 4 }} />
+            <Stack spacing={0.5}>
+              <Typography variant="subtitle2">¿Qué sigue?</Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Un asesor de Capitalta se pondrá en contacto contigo para agendar una cita presencial y continuar con el proceso de revisión de tu solicitud.
+              </Typography>
+            </Stack>
+          </Box>
+        </Stack>
+      </Box>
+
+      <Box sx={{ mt: 3, p: 2, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+          Resumen de tu solicitud
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Monto solicitado
+            </Typography>
+            <Typography variant="body2">{formatoMoneda(successData?.monto)}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Plazo
+            </Typography>
+            <Typography variant="body2">{successData?.plazo} meses</Typography>
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Alert severity="info" sx={{ mt: 2 }}>
+        Serás redirigido a tu panel de control en <strong>{redirectCountdown} segundos</strong>... o puedes hacer clic en el botón de abajo.
+      </Alert>
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => router.push('/dashboard/cliente')}
+        size="large"
+      >
+        Ir a Mi Panel Ahora
+      </Button>
+    </Stack>
+  );
+
   let contenidoPaso;
 
   if (paso === 0) {
@@ -661,6 +780,41 @@ export default function RegistroWizardPage() {
     contenidoPaso = renderPaso4();
   } else {
     contenidoPaso = renderPaso5();
+  }
+
+  // If success screen should be shown, render it instead
+  if (showSuccess) {
+    return (
+      <Box
+        sx={{
+          bgcolor: 'grey.50',
+          minHeight: '100vh',
+          py: { xs: 5, sm: 7 },
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <ContainerWrapper>
+          <Grid container spacing={4} sx={{ maxWidth: 600, mx: 'auto' }}>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  p: { xs: 3, sm: 4 },
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  bgcolor: 'background.paper',
+                  textAlign: 'center'
+                }}
+              >
+                {renderSuccessScreen()}
+              </Box>
+            </Grid>
+          </Grid>
+        </ContainerWrapper>
+      </Box>
+    );
   }
 
   return (

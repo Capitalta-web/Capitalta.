@@ -102,3 +102,79 @@ export async function sendAppointmentConfirmation(cita) {
 
   return sendEmail({ to: email, subject, html });
 }
+
+/**
+ * Envía un correo de bienvenida después del registro exitoso.
+ */
+export async function sendWelcomeEmail(email, nombre) {
+  const subject = '¡Bienvenido a Capitalta! Tu cuenta está lista';
+
+  const html = `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0;">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #008080 0%, #006666 100%); padding: 40px 20px; text-align: center; border-radius: 12px 12px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">¡Bienvenido a Capitalta!</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 16px;">Tu solicitud ha sido recibida</p>
+      </div>
+
+      <!-- Main Content -->
+      <div style="background-color: #ffffff; padding: 40px 30px; border: 1px solid #eee; border-top: none;">
+        <p style="color: #333; font-size: 16px; margin: 0 0 20px 0;">Hola <strong>${nombre}</strong>,</p>
+
+        <p style="color: #555; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">
+          Tu registro en Capitalta se ha completado exitosamente. Estamos emocionados de acompañarte en tu búsqueda de financiamiento.
+        </p>
+
+        <!-- What's Next Section -->
+        <div style="background-color: #f0f9f9; padding: 25px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #008080;">
+          <h3 style="color: #008080; margin: 0 0 15px 0; font-size: 18px;">¿Qué sigue ahora?</h3>
+          <ol style="color: #555; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+            <li><strong>Revisa tu solicitud:</strong> Accede a tu panel de control para verificar los detalles de tu solicitud de crédito.</li>
+            <li><strong>Agenda tu cita:</strong> Un asesor de Capitalta se pondrá en contacto contigo para agendar una cita presencial.</li>
+            <li><strong>Proporciona documentación:</strong> Durante la cita, presentarás la documentación necesaria según tu tipo de cliente.</li>
+            <li><strong>Análisis y aprobación:</strong> Nuestro equipo analizará tu solicitud y te informará del resultado en breve.</li>
+          </ol>
+        </div>
+
+        <!-- Access Panel Section -->
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://www.capitalta.mx/dashboard" style="display: inline-block; background-color: #008080; color: white; padding: 14px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px;">
+            Acceder a mi Panel de Control
+          </a>
+        </div>
+
+        <!-- Info Section -->
+        <div style="background-color: #fafafa; padding: 20px; border-radius: 6px; margin: 30px 0;">
+          <p style="color: #666; font-size: 14px; margin: 0;">
+            <strong>¿Necesitas ayuda?</strong> Si tienes preguntas sobre tu solicitud o el proceso, no dudes en contactarnos:
+          </p>
+          <ul style="color: #666; font-size: 14px; margin: 10px 0 0 20px; padding-left: 0;">
+            <li>📧 <strong>Email:</strong> soporte@capitalta.mx</li>
+            <li>📞 <strong>Teléfono:</strong> +52 (55) 1234-5678</li>
+            <li>⏰ <strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM</li>
+          </ul>
+        </div>
+
+        <!-- Important Notes -->
+        <div style="margin: 30px 0; padding: 15px; border: 1px solid #ffc107; border-radius: 6px; background-color: #fffbf0;">
+          <p style="color: #856404; font-size: 14px; margin: 0; font-weight: 600;">⚠️ Importante:</p>
+          <ul style="color: #856404; font-size: 13px; margin: 8px 0 0 20px; padding-left: 0;">
+            <li>Nunca compartiremos tu información con terceros sin tu consentimiento.</li>
+            <li>Asegúrate de no compartir tu contraseña con nadie.</li>
+            <li>Si recibiste este correo por error, por favor contacta a soporte.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #f5f5f5; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border: 1px solid #eee; border-top: none;">
+        <p style="color: #999; font-size: 12px; margin: 0;">
+          © ${new Date().getFullYear()} Capitalta. Todos los derechos reservados.<br/>
+          <span style="color: #bbb;">Este es un correo automático, por favor no respondas a este mensaje.</span>
+        </p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({ to: email, subject, html });
+}
