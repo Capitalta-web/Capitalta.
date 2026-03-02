@@ -254,27 +254,48 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         },
         verifyCode: async (args) => {
           const { email, code } = args;
+          console.log(`[Verification Code Flow]: Verificando código ${code} para ${email}`);
+          
           const supabase = createSupabaseServerClient();
           if (supabase) {
+            // Buscamos el código más reciente que coincida, no haya sido usado y no haya expirado
             const { data, error } = await supabase
               .from('temp_verification_codes')
               .select('*')
               .eq('email', email)
-              .eq('code', code)
+              .eq('code', code.trim())
               .eq('is_used', false)
-              .gt('expires_at', new Date().toISOString())
+              .order('created_at', { ascending: false })
+              .limit(1)
               .single();
 
             if (error || !data) {
-              return JSON.stringify({ success: false, error: 'Código inválido o expirado' });
+              console.error(`[OTP Error]: Código inválido o no encontrado para ${email}. Detalle:`, error?.message);
+              return JSON.stringify({ success: false, error: 'Código inválido o expirado. Por favor, asegúrate de copiar el último código recibido.' });
+            }
+
+            // Validar expiración manualmente por seguridad extra
+            const now = new Date();
+            const expiresAt = new Date(data.expires_at);
+            if (now > expiresAt) {
+              console.error(`[OTP Error]: Código expirado para ${email}. Expiró el: ${data.expires_at}`);
+              return JSON.stringify({ success: false, error: 'El código ha expirado. Por favor solicita uno nuevo.' });
             }
 
             // Marcar como usado
-            await supabase.from('temp_verification_codes').update({ is_used: true }).eq('id', data.id);
+            const { error: updateError } = await supabase
+              .from('temp_verification_codes')
+              .update({ is_used: true })
+              .eq('id', data.id);
 
-            return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente.' });
+            if (updateError) {
+              console.error('[Supabase Error]: No se pudo marcar el código como usado:', updateError);
+            }
+
+            console.log(`[Verification Code Flow]: Verificación exitosa para ${email}`);
+            return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente. Ahora podemos proceder con tu solicitud.' });
           }
-          return JSON.stringify({ success: false, error: 'Error de conexión' });
+          return JSON.stringify({ success: false, error: 'Error de conexión con el servicio de verificación.' });
         },
         bookAppointment: async (args) => {
           const { fecha, hora, nombre, sucursalId, email, telefono } = args;

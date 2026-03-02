@@ -31,14 +31,15 @@ export async function sendEmail({ to, subject, html, text }) {
     }
   });
 
-  // Usamos el remitente que coincida con la cuenta SMTP para evitar rechazos de Google
-  const fromEmail = user;
+  // Configuramos el remitente oficial con el nuevo dominio
+  const fromEmail = "contacto@capitalta.mx";
 
   try {
-    console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail}...`);
+    console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail} (via ${user})...`);
     const info = await transporter.sendMail({
       from: `"Capitalta" <${fromEmail}>`,
       to,
+      replyTo: fromEmail,
       subject,
       text: text || '',
       html: html || `<p>${text}</p>`
