@@ -65,8 +65,20 @@ export default function AuthLogin({ inputSx }) {
       if (error) {
         setErrorMsg(error.message === 'Invalid login credentials' ? 'Credenciales incorrectas' : error.message);
       } else {
-        router.push('/mi-cuenta/citas');
-        router.refresh();
+        // Get user and determine dashboard route
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('tipo_persona')
+            .eq('id', user.id)
+            .single();
+
+          // Redirect based on user role
+          const dashboard = profile?.tipo_persona === 'administrador' ? '/dashboard/admin' : '/dashboard/cliente';
+          router.push(dashboard);
+          router.refresh();
+        }
       }
     } catch (err) {
       if (err instanceof TypeError && err.message === 'Failed to fetch') {
