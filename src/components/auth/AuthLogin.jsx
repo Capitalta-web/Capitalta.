@@ -46,48 +46,61 @@ export default function AuthLogin({ inputSx }) {
 
   // Handle form submission
   const onSubmit = async (data) => {
+    console.log('🔵 Iniciando login con:', data.email);
     setErrorMsg('');
     setIsLoading(true);
 
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
+      console.error('❌ Supabase no está configurado');
       setErrorMsg('Error de configuración de Supabase.');
       setIsLoading(false);
       return;
     }
 
     try {
+      console.log('🔵 Intentando autenticación...');
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password
       });
 
       if (error) {
+        console.error('❌ Error de autenticación:', error.message);
         setErrorMsg(error.message === 'Invalid login credentials' ? 'Credenciales incorrectas' : error.message);
+        setIsLoading(false);
       } else {
+        console.log('✅ Autenticación exitosa, obteniendo usuario...');
         // Get user and determine dashboard route
         const { data: { user } } = await supabase.auth.getUser();
+        console.log('✅ Usuario:', user?.email);
         if (user) {
+          console.log('🔵 Buscando perfil...');
           const { data: profile } = await supabase
             .from('profiles')
             .select('tipo_persona')
             .eq('id', user.id)
             .single();
 
+          console.log('✅ Perfil encontrado:', profile?.tipo_persona);
           // Redirect based on user role
           const dashboard = profile?.tipo_persona === 'administrador' ? '/dashboard/admin' : '/dashboard/cliente';
+          console.log('🔵 Redirigiendo a:', dashboard);
           router.push(dashboard);
           router.refresh();
+        } else {
+          console.error('❌ No se encontró usuario');
+          setErrorMsg('No se pudo obtener información del usuario');
+          setIsLoading(false);
         }
       }
     } catch (err) {
+      console.error('❌ Error capturado:', err);
       if (err instanceof TypeError && err.message === 'Failed to fetch') {
         setErrorMsg('No se pudo conectar con el servicio de autenticación. Revisa tu conexión o configuración de Supabase.');
       } else {
-        setErrorMsg('Ocurrió un error inesperado.');
+        setErrorMsg('Ocurrió un error inesperado: ' + err.message);
       }
-      console.error('Error en login Supabase:', err);
-    } finally {
       setIsLoading(false);
     }
   };
