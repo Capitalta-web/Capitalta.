@@ -31,8 +31,8 @@ export async function sendEmail({ to, subject, html, text }) {
     }
   });
 
-  // Configuramos el remitente oficial con el nuevo dominio
-  const fromEmail = "contacto@capitalta.mx";
+  // Usamos el correo que sí tenemos controlado en Google Workspace
+  const fromEmail = "capitalta@abdev.click";
 
   try {
     console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail} (via ${user})...`);
