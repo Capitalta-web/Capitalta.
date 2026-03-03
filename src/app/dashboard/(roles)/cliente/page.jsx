@@ -33,27 +33,40 @@ export default function ClienteDashboard() {
       const supabase = createSupabaseBrowserClient();
 
       // 1. Obtener usuario autenticado
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-      if (user) {
-        setUser(user);
+      if (authError || !user) {
+        console.error('Error fetching user:', authError);
+        router.push('/auth/login');
+        return;
+      }
 
-        // 2. Obtener perfil
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        setProfile(profileData);
+      setUser(user);
 
-        // 3. Obtener todas las solicitudes del usuario
-        const { data: solicitudesData } = await supabase
-          .from('solicitudes_credito')
-          .select('*')
-          .eq('cliente_id', user.id)
-          .order('created_at', { ascending: false });
+      // 2. Obtener perfil (Manejo de error si no existe)
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (profileError) {
+        console.warn('Error fetching profile:', profileError);
+        // No bloqueamos, usamos datos del user
+      }
+      setProfile(profileData);
 
-        setSolicitudes(solicitudesData || []);
+      // 3. Obtener todas las solicitudes del usuario (Manejo de error)
+      const { data: solicitudesData, error: solicitudesError } = await supabase
+        .from('solicitudes_credito')
+        .select('*')
+        .eq('cliente_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (solicitudesError) {
+        console.warn('Error fetching solicitudes:', solicitudesError);
+      }
+      setSolicitudes(solicitudesData || []);
 
         // 4. Obtener crédito más reciente/activo
         if (solicitudesData && solicitudesData.length > 0) {
