@@ -86,8 +86,8 @@ export default function AuthLogin({ inputSx }) {
           // Redirect based on user role
           const dashboard = profile?.tipo_persona === 'administrador' ? '/dashboard/admin' : '/dashboard/cliente';
           console.log('🔵 Redirigiendo a:', dashboard);
-          router.push(dashboard);
           router.refresh();
+          router.replace(dashboard);
         } else {
           console.error('❌ No se encontró usuario');
           setErrorMsg('No se pudo obtener información del usuario');

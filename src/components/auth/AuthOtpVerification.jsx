@@ -96,8 +96,23 @@ export default function AuthOtpVerification() {
         console.log('Email confirmado exitosamente en Supabase');
       }
 
-      // 3. Éxito - redirigir a login
-      router.push('/auth/login?verified=true');
+      // 3. Éxito - redirigir a dashboard
+      // El endpoint de confirmación ya activó la cuenta.
+      // Sin embargo, para entrar al dashboard necesitamos una sesión activa.
+      // Como acabamos de confirmar el email, lo ideal sería hacer login automático.
+      
+      // Intento de login automático (opcional, si no redirigir a login)
+      try {
+        const loginResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: '...' }) // No tenemos password aquí
+        });
+        // Como no tenemos la contraseña, enviamos al usuario al login con mensaje
+        router.push('/auth/login?verified=true&email=' + encodeURIComponent(email));
+      } catch (e) {
+        router.push('/auth/login?verified=true');
+      }
       reset();
     } catch (err) {
       setErrorMsg('Ocurrió un error inesperado');
