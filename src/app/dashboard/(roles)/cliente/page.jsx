@@ -64,20 +64,21 @@ export default function ClienteDashboard() {
         }
 
         // 5. Obtener cita más próxima
-        const { data: citasData } = await supabase
+        // Usar maybeSingle() o manejar error si no hay citas, ya que la tabla puede no tener RLS correcto o estar vacía
+        const { data: citasData, error: citasError } = await supabase
           .from('citas')
           .select('*')
-          .eq('cliente_id', user.id)
+          .eq('email', user.email) // Usar email en lugar de cliente_id temporalmente si id es null
           .gte('fecha', new Date().toISOString().split('T')[0])
           .order('fecha', { ascending: true })
           .limit(1);
 
-        if (citasData && citasData.length > 0) {
+        if (!citasError && citasData && citasData.length > 0) {
           setCita(citasData[0]);
         }
 
         // 6. Obtener documentos uploadados
-        const { data: documentosData } = await supabase
+        const { data: documentosData, error: docsError } = await supabase
           .from('documentos')
           .select('*')
           .eq('usuario_id', user.id);
@@ -86,6 +87,7 @@ export default function ClienteDashboard() {
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      // No re-lanzamos el error para evitar pantalla de Error 500, mostramos dashboard vacío
     } finally {
       setLoading(false);
     }
