@@ -30,82 +30,101 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.6 // Adjust threshold as needed
-    };
-
-    // Handle video play/pause based on intersection with the viewport
-    const handleIntersection = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          if (videoElement && !isPlaying) {
-            videoElement
-              .play()
-              .then(() => {
-                setIsPlaying(true);
-              })
-              .catch((error) => {
-                console.error('Autoplay was prevented:', error);
-              });
-          }
-        } else {
-          if (videoElement && isPlaying) {
-            videoElement.pause();
-            setIsPlaying(false);
-          }
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(handleIntersection, options);
     const videoElement = videoRef.current;
-
     if (videoElement) {
-      observer.observe(videoElement);
+      videoElement.muted = true; // Ensure video is muted for autoplay
+      videoElement.play().catch((error) => console.error('Autoplay prevented:', error));
     }
-
-    return () => {
-      if (videoElement) {
-        observer.unobserve(videoElement);
-      }
-    };
-  }, [isPlaying]);
+  }, []);
 
   return (
-    <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
-      <Stack sx={{ justifyContent: 'center', gap: 3 }}>
-        <Stack direction={{ md: 'row' }} sx={{ width: 1, justifyContent: 'space-between', alignItems: { xs: 'start', md: 'end' }, gap: 3 }}>
+    <Stack sx={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        playsInline
+        autoPlay
+        muted
+        loop
+        poster={GetImagePath(poster)}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 0
+        }}
+      >
+        <source src={GetImagePath(videoSrc)} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Overlay Overlay Dark */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.4)', // Dark overlay for text readability
+          zIndex: 1
+        }}
+      />
+
+      {/* Content Overlay */}
+      <ContainerWrapper sx={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', py: { xs: 4, md: 8 } }}>
+        
+        {/* Top Left Content */}
+        <Stack sx={{ maxWidth: { xs: '100%', md: '700px' }, mt: { xs: 8, md: 12 }, gap: 2 }}>
           <Typeset
-            {...{
-              heading,
-              caption,
-              headingProps: { variant: 'h1', sx: { maxWidth: { xs: 350, sm: 500, md: 709 } } },
-              captionProps: { sx: { maxWidth: { xs: 343, md: 500 } } }
+            heading="Capitalta"
+            caption="Tu crecimiento no se detiene, Nuestro apoyo tampoco..."
+            headingProps={{ 
+              variant: 'h1', 
+              sx: { color: 'common.white', fontSize: { xs: '3rem', md: '5rem' }, fontWeight: 700, mb: 1 } 
+            }}
+            captionProps={{ 
+              variant: 'h2', 
+              sx: { color: 'common.white', fontSize: { xs: '1.5rem', md: '2.5rem' }, fontWeight: 500, lineHeight: 1.2 } 
             }}
           />
-          <Button color="primary" size="large" variant="outlined" {...secondaryBtn} sx={{ minWidth: 194 }} />
+          <Typeset
+            caption="Soluciones financieras ágiles y flexibles para personas y negocios en México."
+            captionProps={{ 
+              variant: 'h3', 
+              sx: { color: 'common.white', fontSize: { xs: '1.1rem', md: '1.5rem' }, fontWeight: 400, opacity: 0.9, mt: 2 } 
+            }}
+          />
         </Stack>
-      </Stack>
-      <GraphicsCard sx={{ mt: 4 }}>
-        <video
-          playsInline
-          ref={videoRef}
-          width="100%"
-          height="100%"
-          style={{ maxHeight: '691px' }}
-          controls
-          preload="metadata"
-          poster={GetImagePath(poster)}
-          autoPlay={false}
-          loop={false}
-          muted={true}
-        >
-          <source src={videoSrc} type="video/mp4" />
-        </video>
-      </GraphicsCard>
-    </ContainerWrapper>
+
+        {/* Bottom Right Button */}
+        <Stack direction="row" sx={{ justifyContent: 'flex-end', width: '100%', mb: { xs: 4, md: 6 } }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            size="large" 
+            href="/auth/signup" // Assuming this is the link for credit request
+            sx={{ 
+              minWidth: 200, 
+              fontSize: '1.1rem', 
+              py: 1.5,
+              boxShadow: '0 4px 14px 0 rgba(0,0,0,0.3)',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px 0 rgba(0,0,0,0.4)'
+              }
+            }}
+          >
+            Solicitar crédito
+          </Button>
+        </Stack>
+
+      </ContainerWrapper>
+    </Stack>
   );
 }
 

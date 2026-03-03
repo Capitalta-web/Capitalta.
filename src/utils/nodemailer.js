@@ -32,7 +32,7 @@ export async function sendEmail({ to, subject, html, text }) {
   });
 
   // Usamos el correo que sí tenemos controlado en Google Workspace
-  const fromEmail = "capitalta@abdev.click";
+  const fromEmail = "contacto@capitalta.mx";
 
   try {
     console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail} (via ${user})...`);
@@ -150,7 +150,7 @@ export async function sendWelcomeEmail(email, nombre) {
             <strong>¿Necesitas ayuda?</strong> Si tienes preguntas sobre tu solicitud o el proceso, no dudes en contactarnos:
           </p>
           <ul style="color: #666; font-size: 14px; margin: 10px 0 0 20px; padding-left: 0;">
-            <li>📧 <strong>Email:</strong> soporte@capitalta.mx</li>
+            <li>📧 <strong>Email:</strong> contacto@capitalta.mx</li>
             <li>📞 <strong>Teléfono:</strong> +52 (55) 1234-5678</li>
             <li>⏰ <strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM</li>
           </ul>

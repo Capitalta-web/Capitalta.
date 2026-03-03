@@ -5,10 +5,13 @@ import { sendVerificationCode } from '@/utils/nodemailer';
  * Endpoint para probar el envío de códigos con Nodemailer (Google).
  * GET /api/test-nodemailer
  */
-export async function GET() {
+export async function GET(request) {
   try {
-    const testEmail = 'abalderas10@gmail.com';
+    const { searchParams } = new URL(request.url);
+    const testEmail = searchParams.get('email') || 'abalderas10@gmail.com';
     const testCode = '999888';
+
+    console.log(`[Test Endpoint] Intentando enviar a: ${testEmail}`);
 
     const result = await sendVerificationCode(testEmail, testCode);
 
