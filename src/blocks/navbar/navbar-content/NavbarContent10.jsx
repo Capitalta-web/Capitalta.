@@ -53,26 +53,6 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
         </Box>
       )}
       <Stack direction="row" sx={{ gap: { xs: 1, md: 1.5 }, alignItems: 'center' }}>
-        <IconButton
-          size="small"
-          aria-label="Cambiar tema claro/oscuro"
-          onClick={toggleMode}
-          sx={{
-            width: 36,
-            height: 36,
-            bgcolor: 'grey.100',
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'grey.300',
-            '&:hover': { borderColor: 'grey.600', bgcolor: 'grey.100' }
-          }}
-        >
-          {mode === ThemeMode.DARK ? (
-            <SvgIcon name="tabler-sun" size={18} color="text.primary" />
-          ) : (
-            <SvgIcon name="tabler-moon" size={18} color="text.primary" />
-          )}
-        </IconButton>
         {customization && <Customization selectedTheme={selectedTheme} />}
         {!downSM && (
           <>

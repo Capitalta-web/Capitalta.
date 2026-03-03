@@ -12,6 +12,10 @@ import Typography from '@mui/material/Typography';
 // @third-party
 import { motion } from 'framer-motion';
 
+import { useColorScheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import { ThemeMode } from '@/config';
+
 // @project
 import branding from '@/branding.json';
 import { GraphicsCard } from '@/components/cards';
@@ -98,6 +102,13 @@ const iconProps = { color: 'text.secondary' };
 /***************************  FOOTER - 7  ***************************/
 
 export default function Footer7() {
+  const { mode, setMode } = useColorScheme();
+
+  const toggleMode = () => {
+    const nextMode = mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK;
+    setMode(nextMode);
+  };
+
   const logoFollowContent = (
     <Stack sx={{ alignItems: 'flex-start', gap: { xs: 1.5, sm: 3 } }}>
       <LogoSection />
@@ -141,7 +152,29 @@ export default function Footer7() {
               }}
             >
               <Copyright type={CopyrightType.TYPE3} />
-              <FollowUS heading={false} color="grey.100" />
+              <Stack direction="row" alignItems="center" gap={2}>
+                <IconButton
+                  size="small"
+                  aria-label="Cambiar tema claro/oscuro"
+                  onClick={toggleMode}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: 'grey.100',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'grey.300',
+                    '&:hover': { borderColor: 'grey.600', bgcolor: 'grey.100' }
+                  }}
+                >
+                  {mode === ThemeMode.DARK ? (
+                    <SvgIcon name="tabler-sun" size={16} color="text.primary" />
+                  ) : (
+                    <SvgIcon name="tabler-moon" size={16} color="text.primary" />
+                  )}
+                </IconButton>
+                <FollowUS heading={false} color="grey.100" />
+              </Stack>
             </Stack>
           </GraphicsCard>
         </Stack>
