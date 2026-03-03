@@ -97,7 +97,7 @@ export default function ClienteDashboard() {
           .eq('usuario_id', user.id);
 
         setDocumentos(documentosData || []);
-      }
+      // Eliminamos el bloque if/user duplicado y cerramos el try correctamente
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       // No re-lanzamos el error para evitar pantalla de Error 500, mostramos dashboard vacío
