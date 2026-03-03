@@ -32,19 +32,19 @@ export async function updateSession(request) {
   }
 
   if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('tipo_persona').eq('id', user.id).single();
 
-    const role = profile?.role || 'cliente';
+    const role = profile?.tipo_persona || 'cliente';
     const path = request.nextUrl.pathname;
 
-    if (path.startsWith('/dashboard/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+    if (path.startsWith('/dashboard/admin') && role !== 'administrador') {
+      return NextResponse.redirect(new URL('/dashboard/cliente', request.url));
     }
     if (path.startsWith('/dashboard/analista') && role !== 'analista') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL('/dashboard/cliente', request.url));
     }
-    if (path.startsWith('/dashboard/cliente') && role !== 'cliente') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+    if (path.startsWith('/dashboard/cliente') && role === 'administrador') {
+      return NextResponse.redirect(new URL('/dashboard/admin', request.url));
     }
   }
 
