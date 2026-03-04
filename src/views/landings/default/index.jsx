@@ -298,7 +298,7 @@ export default function Main() {
           <Typography variant="h3" sx={{ mb: { xs: 4, md: 6 } }}>
             Aliados Estratégicos
           </Typography>
-          <Grid container spacing={4} justifyContent="center" alignItems="center">
+          <Grid container spacing={{ xs: 6, md: 10 }} justifyContent="center" alignItems="center">
             {[
               { src: '/assets/images/capitalta/burodecredito.jpeg', alt: 'Buró de Crédito', height: 60 },
               { src: '/assets/images/capitalta/carvid.jpeg', alt: 'Carvid', height: 60 },
