@@ -67,6 +67,10 @@ const data = [
         link: { href: '/sobre-nosotros' }
       },
       {
+        label: 'Blog',
+        link: { href: '/blog' }
+      },
+      {
         label: 'Contacto',
         link: { href: '/contacto' }
       }

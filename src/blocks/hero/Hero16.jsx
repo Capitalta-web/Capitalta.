@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 // @mui
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
 
 // @project
 import ContainerWrapper from '@/components/ContainerWrapper';
@@ -13,6 +14,9 @@ import GetImagePath from '@/utils/GetImagePath';
 import { GraphicsCard } from '@/components/cards';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 import Typeset from '@/components/Typeset';
+
+// @assets
+import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandWhatsapp } from '@tabler/icons-react';
 
 /***************************  HERO - 16  ***************************/
 
@@ -99,6 +103,38 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
               sx: { color: 'common.white', fontSize: { xs: '1.1rem', md: '1.5rem' }, fontWeight: 400, opacity: 0.9, mt: 2 } 
             }}
           />
+
+          {/* Social Icons */}
+          <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
+            {[
+              { icon: IconBrandFacebook, href: 'https://facebook.com/capitalta', label: 'Facebook' },
+              { icon: IconBrandInstagram, href: 'https://instagram.com/capitalta', label: 'Instagram' },
+              { icon: IconBrandLinkedin, href: 'https://linkedin.com/company/capitalta', label: 'LinkedIn' },
+              { icon: IconBrandWhatsapp, href: 'https://wa.me/525512345678', label: 'WhatsApp' }
+            ].map((social, index) => (
+              <IconButton
+                key={index}
+                component="a"
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                sx={{
+                  color: 'common.white',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  backdropFilter: 'blur(4px)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    borderColor: 'common.white',
+                    transform: 'translateY(-2px)'
+                  },
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <social.icon size={24} stroke={1.5} />
+              </IconButton>
+            ))}
+          </Stack>
         </Stack>
 
         {/* Bottom Right Button */}
