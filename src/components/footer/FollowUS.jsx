@@ -52,14 +52,27 @@ export default function FollowUS({ heading = true, color }) {
             <Avatar
               variant="rounded"
               sx={{
-                bgcolor: color || 'grey.200',
+                bgcolor: 'transparent',
                 width: { xs: 40, sm: 52, lg: 56 },
                 height: { xs: 40, sm: 52, lg: 56 },
                 borderRadius: 3,
-                ':hover': { bgcolor: 'grey.300' }
+                border: '1px solid',
+                borderColor: 'divider',
+                color: 'text.primary',
+                ':hover': { 
+                  bgcolor: 'primary.main', 
+                  color: 'common.white',
+                  borderColor: 'primary.main' 
+                },
+                transition: 'all 0.3s ease'
               }}
             >
-              <SvgIcon type={IconType.FILL} {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} />
+              <SvgIcon 
+                type={IconType.STROKE} 
+                {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} 
+                size={24}
+                stroke={1.5}
+              />
             </Avatar>
           </Link>
         ))}
