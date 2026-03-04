@@ -50,24 +50,40 @@ export default function FeatureProducts({ heading, caption, features }) {
                   sx={{
                     p: { xs: 3, md: 4 },
                     height: '100%',
-                    borderRadius: 3,
+                    borderRadius: 4,
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 3,
-                    transition: 'all 0.3s ease-in-out',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     border: '1px solid',
-                    borderColor: 'primary.main',
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
+                    borderColor: 'divider',
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '4px',
+                      bgcolor: 'primary.main',
+                      transform: 'scaleX(0)',
+                      transformOrigin: 'left',
+                      transition: 'transform 0.4s ease'
+                    },
                     '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: theme.shadows[10],
-                      borderColor: 'primary.dark',
-                      borderWidth: 2,
-                      '& .MuiButton-root': {
+                      transform: 'translateY(-12px)',
+                      boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)',
+                      borderColor: 'primary.light',
+                      '&::before': {
+                        transform: 'scaleX(1)'
+                      },
+                      '& .icon-avatar': {
+                        bgcolor: 'primary.main',
                         color: 'common.white',
-                        borderColor: alpha(theme.palette.common.white, 0.9),
-                        bgcolor: alpha(theme.palette.common.white, 0.16)
+                        transform: 'scale(1.1) rotate(5deg)'
                       }
                     }
                   }}
@@ -75,47 +91,51 @@ export default function FeatureProducts({ heading, caption, features }) {
                 >
                   <Stack direction="row" alignItems="center" justifyContent="space-between">
                     <Avatar
+                      className="icon-avatar"
                       sx={{
-                        width: 56,
-                        height: 56,
-                        bgcolor: alpha(theme.palette.common.white, 0.18),
-                        color: 'common.white',
-                        borderRadius: 2
+                        width: 64,
+                        height: 64,
+                        bgcolor: alpha(theme.palette.primary.main, 0.1),
+                        color: 'primary.main',
+                        borderRadius: 3,
+                        transition: 'all 0.4s ease'
                       }}
                     >
-                      <SvgIcon name={item.icon} size={28} />
+                      <SvgIcon name={item.icon} size={32} stroke={1.5} />
                     </Avatar>
+                    {item.recommended && (
+                      <Chip 
+                        label="Recomendado" 
+                        color="primary" 
+                        size="small" 
+                        sx={{ fontWeight: 600, borderRadius: 1 }} 
+                      />
+                    )}
                   </Stack>
 
-                  <Box>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, letterSpacing: '-0.5px' }}>
                       {item.title}
                     </Typography>
-                    <Typography variant="body1" sx={{ mb: 2, minHeight: { md: 48 }, opacity: 0.92 }}>
+                    <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', lineHeight: 1.6 }}>
                       {item.description || item.content}
                     </Typography>
 
                     {(item.monto || item.plazo) && (
-                      <Stack spacing={1.5} sx={{ mt: 2 }}>
+                      <Stack spacing={2} sx={{ mt: 2, p: 2.5, bgcolor: 'grey.50', borderRadius: 2 }}>
                         {item.monto && (
-                          <Stack direction="row" alignItems="center" spacing={1}>
-                            <SvgIcon name="tabler-currency-dollar" size={18} />
+                          <Stack direction="row" alignItems="center" spacing={1.5}>
+                            <SvgIcon name="tabler-coin" size={20} color="primary.main" />
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                              Monto:{' '}
-                              <Typography component="span" variant="body2">
-                                {item.monto}
-                              </Typography>
+                              Monto: <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>{item.monto}</Box>
                             </Typography>
                           </Stack>
                         )}
                         {item.plazo && (
-                          <Stack direction="row" alignItems="center" spacing={1}>
-                            <SvgIcon name="tabler-calendar-time" size={18} />
+                          <Stack direction="row" alignItems="center" spacing={1.5}>
+                            <SvgIcon name="tabler-calendar-time" size={20} color="primary.main" />
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                              Plazo:{' '}
-                              <Typography component="span" variant="body2">
-                                {item.plazo}
-                              </Typography>
+                              Plazo: <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>{item.plazo}</Box>
                             </Typography>
                           </Stack>
                         )}
@@ -123,27 +143,27 @@ export default function FeatureProducts({ heading, caption, features }) {
                     )}
                   </Box>
 
-                  <Box sx={{ mt: 'auto', pt: 2 }}>
-                    {item.href && (
-                      <Button
-                        variant="outlined"
-                        color="inherit"
-                        fullWidth
-                        href={item.href}
-                        sx={{
-                          borderColor: alpha(theme.palette.common.white, 0.7),
-                          color: 'common.white',
-                          '&:hover': {
-                            borderColor: 'common.white',
-                            bgcolor: alpha(theme.palette.common.white, 0.18)
-                          }
-                        }}
-                        endIcon={<SvgIcon name="tabler-arrow-right" size={16} />}
-                      >
-                        Ver Detalles
-                      </Button>
-                    )}
-                  </Box>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    href={item.href}
+                    sx={{
+                      mt: 'auto',
+                      py: 1.5,
+                      borderRadius: 2,
+                      textTransform: 'none',
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      boxShadow: 'none',
+                      '&:hover': {
+                        boxShadow: '0 8px 20px -6px rgba(0,0,0,0.2)',
+                        transform: 'translateY(-2px)'
+                      }
+                    }}
+                  >
+                    Ver detalles
+                  </Button>
                 </Paper>
               </motion.div>
             </Grid>

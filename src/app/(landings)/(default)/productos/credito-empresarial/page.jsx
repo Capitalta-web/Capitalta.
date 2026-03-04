@@ -90,7 +90,7 @@ function formatoMoneda(valor) {
 export default function CreditoEmpresarialPage() {
   const [monto, setMonto] = useState(1000000);
   const [plazo, setPlazo] = useState(36);
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const [tasaAnual, setTasaAnual] = useState(36);
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
