@@ -293,6 +293,43 @@ export default function Main() {
         offset="200px"
       />
 
+      <ContainerWrapper>
+        <Box sx={{ py: { xs: 6, md: 8 }, textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ mb: { xs: 4, md: 6 } }}>
+            Aliados Estratégicos
+          </Typography>
+          <Grid container spacing={4} justifyContent="center" alignItems="center">
+            {[
+              { src: '/assets/images/capitalta/burodecredito.jpeg', alt: 'Buró de Crédito', height: 60 },
+              { src: '/assets/images/capitalta/carvid.jpeg', alt: 'Carvid', height: 60 },
+              { src: '/assets/images/capitalta/check.jpeg', alt: 'Check', height: 60 },
+              { src: '/assets/images/capitalta/cisa.png', alt: 'CISA', height: 80 }
+            ].map((logo, index) => (
+              <Grid item xs={6} sm={4} md={3} key={index}>
+                <Box
+                  component="img"
+                  src={logo.src}
+                  alt={logo.alt}
+                  sx={{
+                    maxHeight: logo.height,
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    filter: 'grayscale(100%)',
+                    opacity: 0.7,
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      filter: 'none',
+                      opacity: 1,
+                      transform: 'scale(1.05)'
+                    }
+                  }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </ContainerWrapper>
+
       <LazySection
         sections={[{ importFunc: () => import('@/blocks/faq').then((module) => ({ default: module.Faq6 })), props: faq }]}
         offset="200px"
