@@ -83,7 +83,10 @@ export default function FeatureProducts({ heading, caption, features }) {
                       '& .icon-avatar': {
                         bgcolor: 'primary.main',
                         color: 'common.white',
-                        transform: 'scale(1.1) rotate(5deg)'
+                        transform: 'scale(1.1) rotate(5deg)',
+                        '& svg': {
+                          color: 'common.white' // Force icon color to white on hover
+                        }
                       }
                     }
                   }}

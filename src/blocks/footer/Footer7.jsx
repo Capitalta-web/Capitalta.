@@ -177,7 +177,7 @@ export default function Footer7() {
                     <SvgIcon name="tabler-moon" size={16} color="text.primary" />
                   )}
                 </IconButton>
-                <FollowUS heading={false} color="grey.100" />
+                <FollowUS heading={false} />
               </Stack>
             </Stack>
           </GraphicsCard>
