@@ -80,8 +80,13 @@ export default function Main() {
                       </Typography>
                       <TextField
                         variant="standard"
-                        value={monto}
-                        onChange={(e) => setMonto(Number(e.target.value))}
+                        value={monto.toLocaleString()}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/,/g, '');
+                          if (!isNaN(value)) {
+                            setMonto(Number(value));
+                          }
+                        }}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">$</InputAdornment>,
                           disableUnderline: true,
