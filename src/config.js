@@ -10,7 +10,8 @@ import {
   Manrope,
   Inter,
   Syne,
-  Heebo
+  Heebo,
+  Poppins // Importing Poppins for modern look
 } from 'next/font/google';
 import localFont from 'next/font/local';
 import { AuthType } from '@/enum';
@@ -139,6 +140,12 @@ export const FONT_UNCUT_SANS_VF = fontUncutSans;
 export const FONT_GENERAL_SANS = fontGeneralSans;
 export const FONT_MANROPE = fontManrope;
 export const FONT_INTER = fontInter;
+export const FONT_POPPINS = Poppins({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] });
 
-export const FONT_ALTA = fontSyne; // Capitalta primary
-export const FONT_GENERAL = fontHeebo; // Capitalta body
+// Definición de fuentes personalizadas para Capitalta
+export const FONT_ALTA_CUSTOM = localFont({
+  src: '../public/assets/fonts/alta/alta_regular.otf',
+  variable: '--font-alta'
+});
+export const FONT_ALTA = FONT_ALTA_CUSTOM; // Tipografía para la palabra "Capitalta"
+export const FONT_GENERAL = FONT_POPPINS; // Tipografía global moderna

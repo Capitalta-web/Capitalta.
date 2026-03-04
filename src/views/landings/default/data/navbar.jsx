@@ -4,6 +4,7 @@
 
 export const navbar = {
   customization: false,
+  secondaryBtn: { children: 'Brokers', href: '/brokers' },
   primaryBtn: { children: 'Solicitar crédito', href: '/auth/registro' },
   animated: true,
   navItems: [

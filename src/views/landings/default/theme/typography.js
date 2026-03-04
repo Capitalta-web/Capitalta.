@@ -1,15 +1,20 @@
 // @project
-import { FONT_PLUS_JAKARTA } from '@/config';
+import { FONT_GENERAL, FONT_ALTA } from '@/config';
 
 /***************************  DEFAULT / AI THEME - TYPOGRAPHY  ***************************/
 
 export default function typography(theme) {
   return {
-    fontFamily: FONT_PLUS_JAKARTA,
+    fontFamily: FONT_GENERAL.style.fontFamily,
+
+    // Capitalta brand specific
+    brand: {
+      fontFamily: FONT_ALTA.style.fontFamily,
+    },
 
     // heading - large
     h1: {
-      fontWeight: 600,
+      fontWeight: 700,
       fontSize: 57,
 
       // lineHeight = lineHeight in figma / fontSize. i.e 1.123 = 64/57
@@ -75,7 +80,6 @@ export default function typography(theme) {
 
     // label - large
     h5: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 600,
       fontSize: 22,
       lineHeight: 1.273,
@@ -89,7 +93,6 @@ export default function typography(theme) {
 
     // paragraph - large
     h6: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 500,
       fontSize: 22,
       lineHeight: 1.364,
@@ -103,7 +106,6 @@ export default function typography(theme) {
 
     // paragraph - medium
     body1: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: 1.5,
@@ -117,7 +119,6 @@ export default function typography(theme) {
 
     // paragraph - small
     body2: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 400,
       fontSize: 14,
       lineHeight: 1.429,
@@ -130,7 +131,6 @@ export default function typography(theme) {
 
     // label - medium
     subtitle1: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 500,
       fontSize: 16,
       lineHeight: 1.5,
@@ -145,7 +145,6 @@ export default function typography(theme) {
 
     // label - small
     subtitle2: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 600,
       fontSize: 14,
       lineHeight: 1.429,
@@ -158,7 +157,6 @@ export default function typography(theme) {
 
     // hyperlink - small
     caption: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 500,
       fontSize: 12,
       lineHeight: 1.333,
@@ -167,7 +165,6 @@ export default function typography(theme) {
 
     // hyperlink - large
     caption1: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: 1.5,
@@ -176,7 +173,6 @@ export default function typography(theme) {
 
     // hyperlink - medium
     caption2: {
-      fontFamily: FONT_PLUS_JAKARTA,
       fontWeight: 500,
       fontSize: 14,
       lineHeight: 1.429,
@@ -185,7 +181,6 @@ export default function typography(theme) {
 
     // button
     button: {
-      fontFamily: FONT_PLUS_JAKARTA,
       textTransform: 'capitalize'
     }
   };
