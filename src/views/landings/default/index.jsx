@@ -47,7 +47,6 @@ export default function Main() {
     <>
       <Hero16 {...hero} />
       <FeatureProducts {...feature20} />
-      <Feature15 {...aboutCapitalta} />
       <ContainerWrapper>
         <Box
           sx={{
