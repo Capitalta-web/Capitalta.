@@ -144,7 +144,7 @@ export const FONT_POPPINS = Poppins({ subsets: ['latin'], weight: ['300', '400',
 
 // Definición de fuentes personalizadas para Capitalta
 export const FONT_ALTA_CUSTOM = localFont({
-  src: '../public/assets/fonts/alta/alta_regular.otf',
+  src: '../public/assets/fonts/alta-regular.otf',
   variable: '--font-alta'
 });
 export const FONT_ALTA = FONT_ALTA_CUSTOM; // Tipografía para la palabra "Capitalta"
