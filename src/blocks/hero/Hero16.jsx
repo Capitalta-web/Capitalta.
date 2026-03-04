@@ -16,7 +16,7 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
 import Typeset from '@/components/Typeset';
 
 // @assets
-import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandWhatsapp } from '@tabler/icons-react';
+import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandWhatsapp, IconBrandTiktok } from '@tabler/icons-react';
 
 /***************************  HERO - 16  ***************************/
 
@@ -107,8 +107,9 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
           {/* Social Icons */}
           <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
             {[
-              { icon: IconBrandFacebook, href: 'https://facebook.com/capitalta', label: 'Facebook' },
-              { icon: IconBrandInstagram, href: 'https://instagram.com/capitalta', label: 'Instagram' },
+              { icon: IconBrandTiktok, href: 'https://www.tiktok.com/@capitalta_?_r=1&_t=ZS-93cuVnZL9BI', label: 'TikTok' },
+              { icon: IconBrandInstagram, href: 'https://www.instagram.com/capitaltamx/', label: 'Instagram' },
+              { icon: IconBrandFacebook, href: 'https://www.facebook.com/capitaltamx/', label: 'Facebook' },
               { icon: IconBrandLinkedin, href: 'https://linkedin.com/company/capitalta', label: 'LinkedIn' },
               { icon: IconBrandWhatsapp, href: 'https://wa.me/525512345678', label: 'WhatsApp' }
             ].map((social, index) => (

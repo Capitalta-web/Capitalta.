@@ -16,16 +16,16 @@ import { IconType } from '@/enum';
 const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 const socialIcons = [
   {
-    icon: 'tabler-brand-facebook',
-    link: { href: `${branding.company.socialLink.facebook}`, ...linkProps }
+    icon: 'tabler-brand-tiktok',
+    link: { href: `${branding.company.socialLink.tiktok}`, ...linkProps }
   },
   {
     icon: 'tabler-brand-instagram',
     link: { href: `${branding.company.socialLink.instagram}`, ...linkProps }
   },
   {
-    icon: 'tabler-brand-tiktok',
-    link: { href: `${branding.company.socialLink.tiktok}`, ...linkProps }
+    icon: 'tabler-brand-facebook',
+    link: { href: `${branding.company.socialLink.facebook}`, ...linkProps }
   },
   {
     icon: 'tabler-brand-linkedin',
