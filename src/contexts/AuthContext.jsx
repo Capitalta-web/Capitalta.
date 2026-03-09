@@ -11,16 +11,46 @@ export const AuthProvider = ({ children }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const supabase = createSupabaseBrowserClient();
 
-  const fetchProfile = async (userId) => {
+  const fetchProfile = async (authUser) => {
+    if (!authUser) return null;
+
     try {
-      const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+      const { data: profile, error } = await supabase.from('profiles').select('*').eq('id', authUser.id).single();
 
       if (error) {
+        // If profile not found (PGRST116), try to create it manually as fallback
+        if (error.code === 'PGRST116') {
+          console.warn('Profile not found for user, attempting to create default profile...');
+          
+          const newProfile = {
+            id: authUser.id,
+            email: authUser.email,
+            nombre_completo: authUser.user_metadata?.full_name || authUser.user_metadata?.nombre_completo || 'Usuario Nuevo',
+            role: authUser.user_metadata?.role || 'cliente',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          };
+
+          const { data: insertedProfile, error: insertError } = await supabase
+            .from('profiles')
+            .insert([newProfile])
+            .select()
+            .single();
+
+          if (insertError) {
+            console.error('Error auto-creating profile:', insertError);
+            return null;
+          }
+          
+          return insertedProfile;
+        }
+
         console.error('Error fetching profile:', error);
         return null;
       }
       return profile;
     } catch (err) {
+      if (err.name === 'AbortError') return null;
       console.error('Unexpected error fetching profile:', err);
       return null;
     }
@@ -37,7 +67,7 @@ export const AuthProvider = ({ children }) => {
       if (error || !authUser) {
         setUser(null);
       } else {
-        const profile = await fetchProfile(authUser.id);
+        const profile = await fetchProfile(authUser);
         setUser({
           ...authUser,
           ...profile, // Merge profile data (role, nombre_completo, etc.)
@@ -65,7 +95,7 @@ export const AuthProvider = ({ children }) => {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (session?.user) {
-          const profile = await fetchProfile(session.user.id);
+          const profile = await fetchProfile(session.user);
           setUser({
             ...session.user,
             ...profile,
