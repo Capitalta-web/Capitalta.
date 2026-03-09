@@ -15,7 +15,7 @@ export const faq = {
     {
       question: '¿Cuál es el monto mínimo y máximo que puedo solicitar?',
       answer:
-        'Los montos dependen del tipo de crédito y de tu perfil, pero contamos con opciones desde $30,000 hasta varios millones de pesos.',
+        'Los montos dependen del tipo de crédito y de tu perfil, pero contamos con opciones desde $30,000 hasta 50 millones de pesos.',
       category: 'Créditos y elegibilidad'
     },
     {
