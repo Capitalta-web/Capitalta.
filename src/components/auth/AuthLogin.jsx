@@ -67,7 +67,10 @@ export default function AuthLogin({ inputSx }) {
 
       if (error) {
         console.error('❌ Error de autenticación:', error.message);
-        setErrorMsg(error.message === 'Invalid login credentials' ? 'Credenciales incorrectas' : error.message);
+        let msg = error.message;
+        if (msg === 'Invalid login credentials') msg = 'Correo o contraseña incorrectos.';
+        if (msg === 'Email not confirmed') msg = 'Tu correo no ha sido confirmado. Revisa tu bandeja de entrada.';
+        setErrorMsg(msg);
         setIsLoading(false);
       } else {
         console.log('✅ Autenticación exitosa, obteniendo usuario...');
