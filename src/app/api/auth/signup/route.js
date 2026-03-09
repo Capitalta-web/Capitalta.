@@ -66,7 +66,8 @@ export async function POST(request) {
     // 4. Enviar código por email
     const emailResult = await sendVerificationCode(email, verificationCode);
 
-    if (!emailResult.success) {
+    // En desarrollo, permitimos continuar aunque falle el envío de correo
+    if (!emailResult.success && process.env.NODE_ENV !== 'development') {
       console.error('Email sending failed:', emailResult.error);
       return NextResponse.json(
         {
@@ -76,15 +77,19 @@ export async function POST(request) {
         },
         { status: 500 }
       );
+    } else if (!emailResult.success && process.env.NODE_ENV === 'development') {
+      console.warn('[DEV MODE] Email failed but continuing registration flow. OTP:', verificationCode);
     }
 
-    console.log(`[Auth Signup Success] Usuario creado: ${email}, código guardado y enviado exitosamente`);
+    console.log(`[Auth Signup Success] Usuario creado: ${email}, código guardado y enviado exitosamente (o simulado en dev)`);
 
     return NextResponse.json({
       success: true,
       message: 'Usuario registrado. Verifica tu email para el código de 6 dígitos.',
       user: data.user,
-      email: email
+      email: email,
+      // En desarrollo, devolvemos el código para facilitar pruebas
+      devCode: process.env.NODE_ENV === 'development' ? verificationCode : undefined
     });
   } catch (err) {
     console.error('API Route Error:', err.message || err);
