@@ -99,7 +99,7 @@ export default function Main() {
                       value={typeof monto === 'number' ? monto : 0}
                       onChange={(e, newValue) => setMonto(newValue)}
                       min={50000}
-                      max={5000000}
+                      max={50000000}
                       step={10000}
                       valueLabelDisplay="auto"
                       valueLabelFormat={(value) => `$${value.toLocaleString()}`}
@@ -109,7 +109,7 @@ export default function Main() {
                         $50k
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        $5M
+                        $50M
                       </Typography>
                     </Stack>
                   </Box>
