@@ -6,7 +6,7 @@ export const contactUS = {
       icon: 'tabler-phone',
       title: 'Llámanos',
       content: 'Atención personalizada de Lunes a Viernes',
-      link: { children: '55 1234 5678', href: 'tel:+525512345678' }
+      link: { children: '55 1234 5678', href: 'tel:5512345678' }
     },
     {
       icon: 'tabler-mail',

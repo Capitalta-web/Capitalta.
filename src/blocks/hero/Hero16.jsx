@@ -111,7 +111,7 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
               { icon: IconBrandInstagram, href: 'https://www.instagram.com/capitaltamx/', label: 'Instagram' },
               { icon: IconBrandFacebook, href: 'https://www.facebook.com/capitaltamx/', label: 'Facebook' },
               { icon: IconBrandLinkedin, href: 'https://linkedin.com/company/capitalta', label: 'LinkedIn' },
-              { icon: IconBrandWhatsapp, href: 'https://wa.me/525512345678', label: 'WhatsApp' }
+              { icon: IconBrandWhatsapp, href: 'https://wa.me/5512345678', label: 'WhatsApp' }
             ].map((social, index) => (
               <IconButton
                 key={index}
