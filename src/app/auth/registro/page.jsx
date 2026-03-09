@@ -106,8 +106,8 @@ export default function RegistrationPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', bgcolor: 'background.paper' }}>
-      <Grid container>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.paper' }}>
+      <Grid container sx={{ minHeight: '100vh' }}>
         {/* Left Side - Visual & Value Prop */}
         <Grid item xs={12} md={6} lg={5} sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', bgcolor: 'primary.main', color: 'primary.contrastText', position: 'relative' }}>
           <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, background: 'radial-gradient(circle at top right, #ffffff 0%, transparent 40%)' }} />
