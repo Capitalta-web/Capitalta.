@@ -6,7 +6,19 @@ export const contactUS = {
       icon: 'tabler-phone',
       title: 'Llámanos',
       content: 'Atención personalizada de Lunes a Viernes',
-      link: { children: '55 1234 5678', href: 'tel:5512345678' }
+      link: { children: '800 258 2000', href: 'tel:8002582000' }
+    },
+    {
+      icon: 'tabler-device-mobile',
+      title: 'Móvil / WhatsApp',
+      content: 'Contáctanos directamente',
+      link: { children: '55 9489 7309', href: 'tel:5594897309' }
+    },
+    {
+      icon: 'tabler-device-mobile',
+      title: 'Móvil / WhatsApp',
+      content: 'Soporte adicional',
+      link: { children: '56 5201 6445', href: 'tel:5652016445' }
     },
     {
       icon: 'tabler-mail',
@@ -17,8 +29,8 @@ export const contactUS = {
     {
       icon: 'tabler-map-pin',
       title: 'Ubicación',
-      content: 'Torre Cuarzo, Piso 33, Av. Paseo de la Reforma 26, Col. Juárez, Alcaldía Cuauhtémoc, CDMX, C.P. 06600',
-      link: { children: 'Ver mapa', href: '#', target: '_blank', rel: 'noopener noreferrer' }
+      content: 'Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite, Naucalpan Estado de México, C.P. 53310',
+      link: { children: 'Ver mapa', href: 'https://maps.google.com/?q=Circuito+Circunvalación+Poniente+16,+Naucalpan', target: '_blank', rel: 'noopener noreferrer' }
     }
   ]
 };

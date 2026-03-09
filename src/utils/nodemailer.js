@@ -80,7 +80,7 @@ export async function sendVerificationCode(email, code) {
  */
 export async function sendAppointmentConfirmation(cita) {
   const { nombre_cliente, email, fecha, hora, codigo_cita, sucursal_id } = cita;
-  const sucursalNombre = sucursal_id === 'reforma' ? 'Torre Cuarzo (Reforma)' : 'Polanco';
+  const sucursalNombre = sucursal_id === 'satelite' ? 'Oficinas Satélite' : 'Oficinas Centrales';
 
   const subject = `Confirmación de Cita - Capitalta (${codigo_cita})`;
 
@@ -95,7 +95,7 @@ export async function sendAppointmentConfirmation(cita) {
         <p style="margin: 5px 0;"><strong>Sucursal:</strong> ${sucursalNombre}</p>
         <p style="margin: 5px 0;"><strong>Código de seguimiento:</strong> <span style="color: #008080; font-weight: bold;">${codigo_cita}</span></p>
       </div>
-      <p><strong>Ubicación:</strong> Torre Cuarzo, Piso 33, Av. Paseo de la Reforma 26, Col. Juárez, CDMX.</p>
+      <p><strong>Ubicación:</strong> Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite, Naucalpan, Estado de México, C.P. 53310.</p>
       <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
       <p style="font-size: 12px; color: #777; text-align: center;">Este es un correo automático, por favor no respondas a este mensaje.</p>
     </div>
@@ -151,7 +151,8 @@ export async function sendWelcomeEmail(email, nombre) {
           </p>
           <ul style="color: #666; font-size: 14px; margin: 10px 0 0 20px; padding-left: 0;">
             <li>📧 <strong>Email:</strong> contacto@capitalta.mx</li>
-            <li>📞 <strong>Teléfono:</strong> +52 (55) 1234-5678</li>
+            <li>📞 <strong>Teléfono:</strong> 800 258 2000 | 55 9489 7309</li>
+            <li>📍 <strong>Dirección:</strong> Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite, Naucalpan, Edo. Méx.</li>
             <li>⏰ <strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM</li>
           </ul>
         </div>

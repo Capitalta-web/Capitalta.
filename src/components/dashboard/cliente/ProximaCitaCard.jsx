@@ -59,7 +59,7 @@ export default function ProximaCitaCard({ cita, onAgendar }) {
                 Ubicación
               </Typography>
               <Typography variant="body2" fontWeight="bold">
-                {cita.sucursal || 'Torre Cuarzo, Piso 33'}
+                {cita.sucursal || 'Oficinas Satélite'}
               </Typography>
             </Stack>
           </Box>

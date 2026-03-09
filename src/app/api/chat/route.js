@@ -333,7 +333,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
             // Enviar notificación SMS si hay teléfono disponible
             if (telefono) {
-              const sucursalNombre = sucursalId === 'reforma' ? 'Torre Cuarzo' : 'Polanco';
+              const sucursalNombre = sucursalId === 'satelite' ? 'Oficinas Satélite' : 'Oficinas Centrales';
               await sendSMS({
                 to: telefono,
                 body: `Capitalta: Cita confirmada para el ${fecha} a las ${hora} en ${sucursalNombre}. Codigo: ${codigo}`

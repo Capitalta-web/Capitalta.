@@ -27,12 +27,12 @@ export const horasDisponibles = ['09:00', '10:00', '11:00', '14:00', '15:00', '1
 
 export const sucursalesMock = [
   {
-    id: 'reforma',
-    nombre: 'Oficinas Centrales',
-    direccion: 'Torre Cuarzo, Piso 33, Av. Paseo de la Reforma 26, Col. Juárez',
-    ciudad: 'Ciudad de México',
-    estado: 'CDMX',
-    cp: '06600',
-    telefono: '+52 (55) 0000 0001' // TODO: Actualizar con teléfono real si está disponible
+    id: 'satelite',
+    nombre: 'Oficinas Satélite',
+    direccion: 'Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite',
+    ciudad: 'Naucalpan',
+    estado: 'Estado de México',
+    cp: '53310',
+    telefono: '800 258 2000'
   }
 ];
