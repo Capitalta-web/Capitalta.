@@ -154,7 +154,9 @@ export default function RegistrationPage() {
             </Box>
 
             <Stack spacing={1} sx={{ mb: 4 }}>
-              <Typography variant="h3" sx={{ fontWeight: 700 }}>Crea tu cuenta</Typography>
+              <Typography variant="h3" sx={{ fontWeight: 700, fontSize: { xs: '1.75rem', sm: '2.25rem' } }}>
+                Crea tu cuenta
+              </Typography>
               <Typography variant="body1" color="text.secondary">
                 Comienza tu solicitud en menos de 2 minutos.
               </Typography>
@@ -164,9 +166,9 @@ export default function RegistrationPage() {
               <Stack spacing={3}>
                 
                 {/* Monto Slider Section */}
-                <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 3, bgcolor: 'grey.50' }}>
+                <Box sx={{ p: { xs: 2, sm: 3 }, border: '1px solid', borderColor: 'divider', borderRadius: 3, bgcolor: 'grey.50' }}>
                   <Typography variant="subtitle2" gutterBottom>¿Cuánto capital necesitas?</Typography>
-                  <Typography variant="h4" color="primary.main" sx={{ mb: 2, fontWeight: 700 }}>
+                  <Typography variant="h4" color="primary.main" sx={{ mb: 2, fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
                     ${monto.toLocaleString()} MXN
                   </Typography>
                   <Slider
