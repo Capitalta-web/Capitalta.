@@ -106,10 +106,20 @@ export default function RegistrationPage() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.paper' }}>
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, minHeight: '100vh' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.paper', overflowX: 'hidden' }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, minHeight: '100vh', width: '100%', flexWrap: 'nowrap' }}>
         {/* Left Side - Visual & Value Prop */}
-        <Box sx={{ width: { xs: '100%', md: '41.66%' }, display: { xs: 'none', md: 'flex' }, flexDirection: 'column', bgcolor: 'primary.main', color: 'primary.contrastText', position: 'relative' }}>
+        <Box
+          sx={{
+            width: { xs: '100%', md: '45%' }, // Slightly wider for better balance
+            display: { xs: 'none', md: 'flex' },
+            flexDirection: 'column',
+            bgcolor: 'primary.main',
+            color: 'primary.contrastText',
+            position: 'relative',
+            flexShrink: 0 // Prevent shrinking
+          }}
+        >
           <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, background: 'radial-gradient(circle at top right, #ffffff 0%, transparent 40%)' }} />
           
           <Box sx={{ p: 6, zIndex: 1, height: '100vh', position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -147,7 +157,7 @@ export default function RegistrationPage() {
         </Box>
 
         {/* Right Side - Form */}
-        <Box sx={{ width: { xs: '100%', md: '58.33%' }, display: 'flex', alignItems: 'center', justifyContent: 'center', p: { xs: 3, sm: 6 } }}>
+        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: { xs: 3, sm: 6 }, minHeight: '100vh' }}>
           <Container maxWidth="sm">
             <Box sx={{ mb: 5, display: { xs: 'block', md: 'none' } }}>
               <Logo />

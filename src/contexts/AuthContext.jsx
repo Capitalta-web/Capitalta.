@@ -46,6 +46,10 @@ export const AuthProvider = ({ children }) => {
         });
       }
     } catch (err) {
+      if (err.name === 'AbortError') {
+        // Ignore abort errors
+        return;
+      }
       console.error('Error refreshing user:', err);
       setUser(null);
     } finally {
