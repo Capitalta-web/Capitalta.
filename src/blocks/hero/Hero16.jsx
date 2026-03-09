@@ -145,7 +145,7 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
             variant="contained" 
             color="primary" 
             size="large" 
-            href="/auth/signup" // Assuming this is the link for credit request
+            href="/auth/registro"
             sx={{ 
               minWidth: 200, 
               fontSize: '1.1rem', 
