@@ -8,7 +8,6 @@ import Link from 'next/link';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -32,6 +31,7 @@ export default function RegistrationPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [resendStatus, setResendStatus] = useState('');
 
   // Form State
   const [monto, setMonto] = useState(1000000);
@@ -51,15 +51,16 @@ export default function RegistrationPage() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setResendStatus('');
 
     try {
       const supabase = createSupabaseBrowserClient();
-      
-      // 1. Registro directo con Supabase Auth
+
       const { data, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             full_name: formData.nombre,
             phone: formData.telefono,
@@ -70,14 +71,33 @@ export default function RegistrationPage() {
 
       if (authError) throw authError;
 
-      // 2. Si el registro es exitoso, mostramos mensaje o redirigimos
       if (data?.user) {
         setSuccess(true);
       }
-
     } catch (err) {
       console.error(err);
       setError(err.message || 'Ocurrió un error al registrarse. Intenta nuevamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    setResendStatus('');
+    setError('');
+    setLoading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: formData.email,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+      });
+      if (resendError) throw resendError;
+      setResendStatus('Correo reenviado. Revisa tu bandeja de entrada y spam.');
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'No se pudo reenviar el correo. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -93,12 +113,18 @@ export default function RegistrationPage() {
             </Box>
             <Typography variant="h3" gutterBottom>¡Registro Exitoso!</Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Hemos enviado un correo de confirmación a <strong>{formData.email}</strong>. 
-              Por favor revisa tu bandeja de entrada para activar tu cuenta.
+              Si tu cuenta requiere confirmación, recibirás un correo en <strong>{formData.email}</strong>. Revisa tu bandeja de entrada y spam.
             </Typography>
-            <Button variant="contained" fullWidth size="large" href="/auth/login">
-              Ir a Iniciar Sesión
-            </Button>
+            {resendStatus && <Alert severity="success" sx={{ mb: 2 }}>{resendStatus}</Alert>}
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            <Stack spacing={1.5}>
+              <Button variant="outlined" fullWidth size="large" disabled={loading} onClick={handleResend}>
+                {loading ? 'Enviando...' : 'Reenviar correo de confirmación'}
+              </Button>
+              <Button variant="contained" fullWidth size="large" onClick={() => router.push('/auth/login?registered=1')}>
+                Ir a Iniciar Sesión
+              </Button>
+            </Stack>
           </Paper>
         </Container>
       </Box>
@@ -111,13 +137,13 @@ export default function RegistrationPage() {
         {/* Left Side - Visual & Value Prop */}
         <Box
           sx={{
-            width: { xs: '100%', md: '45%' }, // Slightly wider for better balance
+            width: { xs: '100%', md: '45%' },
             display: { xs: 'none', md: 'flex' },
             flexDirection: 'column',
             bgcolor: 'primary.main',
             color: 'primary.contrastText',
             position: 'relative',
-            flexShrink: 0 // Prevent shrinking
+            flexShrink: 0
           }}
         >
           <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, background: 'radial-gradient(circle at top right, #ffffff 0%, transparent 40%)' }} />

@@ -18,8 +18,8 @@ export default function AuthGuard({ children }) {
   const { isProcessing, userData } = useCurrentUser();
 
   useEffect(() => {
-    if (!isProcessing && (!userData || Object.keys(userData).length === 0) && pathname !== '/login') {
-      router.replace('/login');
+    if (!isProcessing && (!userData || Object.keys(userData).length === 0) && pathname !== '/auth/login') {
+      router.replace('/auth/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData, pathname, isProcessing]);

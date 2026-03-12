@@ -26,9 +26,7 @@ export const AuthProvider = ({ children }) => {
             id: authUser.id,
             email: authUser.email,
             nombre_completo: authUser.user_metadata?.full_name || authUser.user_metadata?.nombre_completo || 'Usuario Nuevo',
-            role: authUser.user_metadata?.role || 'cliente',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            role: authUser.user_metadata?.role || 'cliente'
           };
 
           const { data: insertedProfile, error: insertError } = await supabase
@@ -115,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <AuthContext value={{ user, isProcessing, refreshUser }}>{children}</AuthContext>;
+  return <AuthContext.Provider value={{ user, isProcessing, refreshUser }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

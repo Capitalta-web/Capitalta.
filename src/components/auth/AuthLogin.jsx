@@ -71,7 +71,7 @@ export default function AuthLogin({ inputSx }) {
         if (msg === 'Invalid login credentials') msg = 'Correo o contraseña incorrectos.';
         if (msg === 'Email not confirmed') msg = 'Tu correo no ha sido confirmado. Revisa tu bandeja de entrada.';
         setErrorMsg(msg);
-        setIsLoading(false);
+        return;
       } else {
         console.log('✅ Autenticación exitosa, obteniendo usuario...');
         // Get user and determine dashboard route
@@ -81,20 +81,26 @@ export default function AuthLogin({ inputSx }) {
           console.log('🔵 Buscando perfil...');
           const { data: profile } = await supabase
             .from('profiles')
-            .select('tipo_persona')
+            .select('role')
             .eq('id', user.id)
             .single();
 
-          console.log('✅ Perfil encontrado:', profile?.tipo_persona);
-          // Redirect based on user role
-          const dashboard = profile?.tipo_persona === 'administrador' ? '/dashboard/admin' : '/dashboard/cliente';
+          const role = profile?.role || user.user_metadata?.role || 'cliente';
+          const dashboard =
+            role === 'admin'
+              ? '/dashboard/admin'
+              : role === 'analista'
+                ? '/dashboard/analista'
+                : role === 'notario'
+                  ? '/dashboard/notario'
+                  : '/dashboard/cliente';
           console.log('🔵 Redirigiendo a:', dashboard);
           router.refresh();
           router.replace(dashboard);
         } else {
           console.error('❌ No se encontró usuario');
           setErrorMsg('No se pudo obtener información del usuario');
-          setIsLoading(false);
+          return;
         }
       }
     } catch (err) {
@@ -104,6 +110,8 @@ export default function AuthLogin({ inputSx }) {
       } else {
         setErrorMsg('Ocurrió un error inesperado: ' + err.message);
       }
+      return;
+    } finally {
       setIsLoading(false);
     }
   };
