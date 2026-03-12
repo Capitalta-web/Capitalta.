@@ -40,7 +40,6 @@ export default function AuthLogin({ inputSx }) {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors }
   } = useForm();
 
