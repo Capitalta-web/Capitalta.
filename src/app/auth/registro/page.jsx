@@ -56,6 +56,10 @@ export default function RegistrationPage() {
     try {
       const supabase = createSupabaseBrowserClient();
 
+      if (!supabase) {
+        throw new Error('No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
+      }
+
       const { data, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
