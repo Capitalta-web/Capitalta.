@@ -104,7 +104,7 @@ export default function ProductosContent() {
       {
         title: '7. Seguimiento y cobranza',
         description: 'Te acompañamos durante la vida del crédito y damos seguimiento a tus pagos.',
-        icon: 'tabler-handshake',
+        icon: 'tabler-chart-line',
         list: [
           { primary: 'Monitoreo de pagos y desempeño del crédito' },
           { primary: 'Posibilidad de reestructuras o nuevos créditos según tus necesidades' }
