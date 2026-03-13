@@ -3,13 +3,16 @@ import { redirect } from 'next/navigation';
 import { createServerClient } from '@supabase/ssr';
 
 export default async function AuthCallbackPage({ searchParams }) {
-  const code = searchParams?.code;
+  // En Next.js 15, searchParams es una Promise y debe ser awaited
+  const params = await searchParams;
+  const code = params?.code;
 
   if (!code) {
     redirect('/auth/login');
   }
 
-  const cookieStore = cookies();
+  // En Next.js 15, cookies() es asíncrono y debe ser awaited
+  const cookieStore = await cookies();
 
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {
@@ -24,7 +27,12 @@ export default async function AuthCallbackPage({ searchParams }) {
     }
   });
 
-  await supabase.auth.exchangeCodeForSession(code);
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  if (error) {
+    console.error('Error en callback de auth:', error.message);
+    redirect('/auth/login?error=callback_failed');
+  }
 
   redirect('/dashboard');
 }
