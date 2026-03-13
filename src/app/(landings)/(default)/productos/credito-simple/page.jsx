@@ -24,7 +24,7 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 // };
 
 const MONTO_MIN = 500000;
-const MONTO_MAX = 10000000;
+const MONTO_MAX = 50000000;
 const PLAZO_MIN = 12;
 const PLAZO_MAX = 60;
 
@@ -172,7 +172,7 @@ export default function CreditoSimplePage() {
                   <Typography variant="subtitle2">Resumen rápido</Typography>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Montos</Typography>
-                    <Typography variant="body2">$30,000 - $10,000,000 MXN</Typography>
+                    <Typography variant="body2">$30,000 - $50,000,000 MXN</Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Plazos</Typography>

@@ -23,7 +23,7 @@ const productos = [
     title: 'Crédito Revolvente',
     icon: 'tabler-currency-dollar',
     resumen: 'Crédito amortizable con un solo desembolso y tasa fija del 36% anual.',
-    monto: '$500,000 - $10,000,000 MXN',
+    monto: '$500,000 - $50,000,000 MXN',
     plazo: '12 a 60 meses',
     href: '/calculadoras/calculadora-simple',
     productoHref: '/productos/credito-simple'
