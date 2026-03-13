@@ -32,7 +32,7 @@ import { withAlpha } from '@/utils/colorUtils';
  * - [NavbarContent10 API](https://capitalta.gitbook.io/Capitalta/ui-kit/development/components/navbar/navbar-content/navbarcontent10#props-details)
  */
 
-export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, secondaryBtn, customization, selectedTheme, animated }) {
+export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, secondaryBtn, whatsappBtn, customization, selectedTheme, animated }) {
   const theme = useTheme();
   const { mode, setMode } = useColorScheme();
 
@@ -56,7 +56,8 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
         {customization && <Customization selectedTheme={selectedTheme} />}
         {!downSM && (
           <>
-            <NavSecondaryButton {...secondaryBtn} />
+            {whatsappBtn && <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />}
+            {secondaryBtn && <NavSecondaryButton {...secondaryBtn} />}
             <ButtonAnimationWrapper>
               {animated ? (
                 <motion.div
@@ -71,10 +72,10 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
                   }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
                 >
-                  <NavPrimaryButton {...primaryBtn} />
+                  {primaryBtn && <NavPrimaryButton {...primaryBtn} />}
                 </motion.div>
               ) : (
-                <NavPrimaryButton {...primaryBtn} />
+                primaryBtn && <NavPrimaryButton {...primaryBtn} />
               )}
             </ButtonAnimationWrapper>
           </>
@@ -103,9 +104,10 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
                 )}
                 {downSM && (
                   <Stack direction="row" sx={{ justifyContent: 'space-between', gap: 1, px: 2, py: 2.5, mx: -2, bgcolor: 'grey.100' }}>
-                    <NavSecondaryButton {...secondaryBtn} />
+                    {whatsappBtn && <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />}
+                    {secondaryBtn && <NavSecondaryButton {...secondaryBtn} />}
                     <ButtonAnimationWrapper>
-                      <NavPrimaryButton {...primaryBtn} />
+                      {primaryBtn && <NavPrimaryButton {...primaryBtn} />}
                     </ButtonAnimationWrapper>
                   </Stack>
                 )}
@@ -123,6 +125,7 @@ NavbarContent10.propTypes = {
   navItems: PropTypes.any,
   primaryBtn: PropTypes.any,
   secondaryBtn: PropTypes.any,
+  whatsappBtn: PropTypes.any,
   customization: PropTypes.any,
   selectedTheme: PropTypes.any,
   animated: PropTypes.any

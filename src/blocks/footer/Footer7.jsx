@@ -194,6 +194,12 @@ export default function Footer7() {
               </Stack>
             </Stack>
           </GraphicsCard>
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: 1100, mx: 'auto', whiteSpace: 'pre-line' }}
+          >
+            {`ALTA CAPITAL S.A . DE C.V. SOFOM ENR, para su constitución y operación con carácter de Sociedad Financiera de Objeto Múltiple, Entidad No Regulada, de conformidad con el Artículo 87-J de la Ley General de Organizaciones y Actividades Auxiliares de Crédito, no requiere autorización de la Secretaría de Hacienda y Crédito Público para su constitución y operación y; está sujeta a la supervisión y vigilancia de la Comisión Nacional Bancaria y de Valores para efectos del artículo 56, párrafo segundo y 95 Bis de dicha Ley.\n\nTodos los derechos reservados. Prohibida la reproducción total o parcial del contenido de este sitio.`}
+          </Typography>
         </Stack>
       </motion.div>
     </ContainerWrapper>

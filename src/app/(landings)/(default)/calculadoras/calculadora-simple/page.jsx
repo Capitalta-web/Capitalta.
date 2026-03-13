@@ -26,7 +26,7 @@ import { submitLeadAction, submitCotizacionAction } from '../actions';
 // };
 
 const MONTO_MIN = 500000;
-const MONTO_MAX = 10000000;
+const MONTO_MAX = 50000000;
 const PLAZO_MIN = 12;
 const PLAZO_MAX = 60;
 const TASA_MIN = 36;
