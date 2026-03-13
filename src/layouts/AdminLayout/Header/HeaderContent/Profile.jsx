@@ -1,6 +1,6 @@
 'use client';
 
-import { Activity, useState } from 'react';
+import { Fragment, useState } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -111,7 +111,7 @@ export default function ProfileSection() {
         </Box>
       </Box>
       <AnimatePresence>
-        <Activity mode={open ? 'visible' : 'hidden'}>
+        <Fragment>
           <Popper
             placement="bottom-end"
             id={id}
@@ -173,7 +173,7 @@ export default function ProfileSection() {
                               sx={{ textTransform: 'capitalize' }}
                             />
                             <AnimatePresence>
-                              <Activity mode={innerOpen ? 'visible' : 'hidden'}>
+                              <Fragment>
                                 <Popper
                                   placement="left-start"
                                   id={innerId}
@@ -222,8 +222,8 @@ export default function ProfileSection() {
                                     </Fade>
                                   )}
                                 </Popper>
-                              </Activity>
-                            </AnimatePresence>
+              </Fragment>
+            </AnimatePresence>
                           </ListItemButton>
                           <ListItemButton href="#" sx={{ ...buttonStyle, my: 0.5 }}>
                             <ListItemIcon>
@@ -251,7 +251,7 @@ export default function ProfileSection() {
               </Fade>
             )}
           </Popper>
-        </Activity>
+        </Fragment>
       </AnimatePresence>
     </>
   );
