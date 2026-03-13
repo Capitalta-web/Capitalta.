@@ -62,8 +62,9 @@ export default function RegistrationPage() {
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
-            full_name: formData.nombre,
-            phone: formData.telefono,
+            nombre_completo: formData.nombre,
+            nombre: formData.nombre,
+            telefono: formData.telefono,
             monto_interes: monto
           }
         }
@@ -73,7 +74,9 @@ export default function RegistrationPage() {
 
       if (data?.user) {
         // Sin confirmación de email: redirigir directo al dashboard
+        setLoading(false);
         router.push('/dashboard');
+        return;
       }
     } catch (err) {
       console.error(err);
