@@ -72,7 +72,8 @@ export default function RegistrationPage() {
       if (authError) throw authError;
 
       if (data?.user) {
-        setSuccess(true);
+        // Sin confirmación de email: redirigir directo al dashboard
+        router.push('/dashboard');
       }
     } catch (err) {
       console.error(err);
