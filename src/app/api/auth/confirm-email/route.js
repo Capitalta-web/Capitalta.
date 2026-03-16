@@ -13,6 +13,12 @@ import { createSupabaseServerClient } from '@/utils/supabaseClient';
  */
 export async function POST(request) {
   try {
+    const internalToken = request.headers.get('x-internal-token');
+    const expectedToken = process.env.INTERNAL_API_TOKEN || process.env.ADMIN_CITAS_TOKEN;
+    if (expectedToken && internalToken !== expectedToken) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { email } = body;
 
@@ -22,7 +28,7 @@ export async function POST(request) {
     }
 
     // Obtener cliente con Service Role Key
-    const supabase = createSupabaseServerClient();
+    const supabase = createSupabaseServerClient({ admin: true });
 
     if (!supabase) {
       console.error('Supabase server client could not be initialized.');

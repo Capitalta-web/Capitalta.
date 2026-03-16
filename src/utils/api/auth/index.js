@@ -73,7 +73,7 @@ export async function logout() {
   }
 
   localStorage.removeItem(AUTH_USER_KEY);
-  window.location.pathname = '/login';
+  window.location.pathname = '/auth/login';
   return { data: { message: 'Loggedout' }, error: null };
 }
 

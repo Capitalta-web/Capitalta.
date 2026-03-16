@@ -102,7 +102,7 @@ function formatearFecha(fecha) {
 export default function CalculadoraEmpresarialPage() {
   const [monto, setMonto] = useState(1000000);
   const [plazo, setPlazo] = useState(36);
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const [tasaAnual] = useState(24);
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');

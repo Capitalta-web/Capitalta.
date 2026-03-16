@@ -14,18 +14,16 @@ export function createSupabaseBrowserClient() {
   return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
-export function createSupabaseServerClient() {
-  // Intentar primero con Service Role Key (Admin access, bypass RLS)
-  if (supabaseUrl && supabaseServiceRoleKey) {
+export function createSupabaseServerClient(options = {}) {
+  const admin = Boolean(options?.admin);
+
+  if (!supabaseUrl) return null;
+
+  if (admin) {
+    if (!supabaseServiceRoleKey) return null;
     return createClient(supabaseUrl, supabaseServiceRoleKey);
   }
 
-  // Fallback a Anon Key (respetando RLS policies)
-  // Esto es útil si solo se han configurado las variables públicas
-  if (supabaseUrl && supabaseAnonKey) {
-    console.warn('Supabase Server Client usando Anon Key. Asegúrate de tener políticas RLS configuradas.');
-    return createClient(supabaseUrl, supabaseAnonKey);
-  }
-
-  return null;
+  if (!supabaseAnonKey) return null;
+  return createClient(supabaseUrl, supabaseAnonKey);
 }

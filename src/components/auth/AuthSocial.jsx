@@ -1,6 +1,8 @@
 'use client';
 import PropTypes from 'prop-types';
 
+import { useState } from 'react';
+
 // @mui
 import Button from '@mui/material/Button';
 import CardMedia from '@mui/material/CardMedia';
@@ -9,6 +11,7 @@ import Stack from '@mui/material/Stack';
 // @project
 import GetImagePath from '@/utils/GetImagePath';
 import { SocialTypes } from '@/enum';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 /***************************  SOCIAL BUTTON - DATA  ***************************/
 
@@ -33,6 +36,26 @@ const authButtons = [
 /***************************  AUTH - SOCIAL  ***************************/
 
 export default function AuthSocial({ type = SocialTypes.VERTICAL, buttonSx }) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSocialLogin = async (provider) => {
+    setIsLoading(true);
+    try {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) return;
+
+      await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : undefined
+        }
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Stack direction={type === SocialTypes.VERTICAL ? 'column' : 'row'} sx={{ gap: 1 }}>
       {authButtons.map((item, index) => (
@@ -40,6 +63,11 @@ export default function AuthSocial({ type = SocialTypes.VERTICAL, buttonSx }) {
           key={index}
           variant="outlined"
           fullWidth
+          disabled={isLoading || item.label === 'Apple'}
+          onClick={() => {
+            if (item.label === 'Google') handleSocialLogin('google');
+            if (item.label === 'Facebook') handleSocialLogin('facebook');
+          }}
           sx={{
             borderColor: 'grey.600',
             textTransform: 'none',

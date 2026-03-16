@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { obtenerProximasFechas, generarCodigoCita, horasDisponibles, sucursalesMock } from '@/utils/citas';
+import { obtenerProximasFechas, generarCodigoCita, sucursalesMock } from '@/utils/citas';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendAppointmentConfirmation, sendVerificationCode } from '@/utils/nodemailer';
 import { sendSMS } from '@/utils/sms';
 
-// Configuración del cliente OpenAI para x.ai (Grok)
+    // Configuración del cliente OpenAI para x.ai (Grok)
 // Si no hay XAI_API_KEY, intentará usar OPENAI_API_KEY o fallará controladamente.
 const client = new OpenAI({
   apiKey: process.env.XAI_API_KEY || process.env.OPENAI_API_KEY || 'dummy-key',
@@ -146,7 +146,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
     // Función auxiliar para persistencia
     const saveChat = async (history) => {
       if (!sessionId) return;
-      const supabase = createSupabaseServerClient();
+      const supabase = createSupabaseServerClient({ admin: true });
       if (!supabase) return;
 
       try {
@@ -181,7 +181,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
     };
 
     if (!process.env.XAI_API_KEY && !process.env.OPENAI_API_KEY) {
-      // Fallback Mock para demostración si no hay API Key configurada
+    // Fallback Mock para demostración si no hay API Key configurada
       const lastMessage = messages[messages.length - 1].content.toLowerCase();
       let mockResponse =
         'Lo siento, no tengo configurada mi API Key de IA en este momento. Por favor configura XAI_API_KEY en el archivo .env.';
@@ -227,7 +227,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
           console.log(`[Verification Code Flow]: Generando código para ${email}`);
 
-          const supabase = createSupabaseServerClient();
+          const supabase = createSupabaseServerClient({ admin: true });
           if (supabase) {
             // Guardar código en Supabase
             const { error } = await supabase.from('temp_verification_codes').insert({ email, code });
@@ -256,7 +256,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
           const { email, code } = args;
           console.log(`[Verification Code Flow]: Verificando código ${code} para ${email}`);
           
-          const supabase = createSupabaseServerClient();
+          const supabase = createSupabaseServerClient({ admin: true });
           if (supabase) {
             // Buscamos el código más reciente que coincida, no haya sido usado y no haya expirado
             const { data, error } = await supabase
@@ -301,7 +301,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
           const { fecha, hora, nombre, sucursalId, email, telefono } = args;
           const codigo = generarCodigoCita(new Date(fecha), hora);
 
-          const supabase = createSupabaseServerClient();
+          const supabase = createSupabaseServerClient({ admin: true });
           if (supabase) {
             const { error } = await supabase.from('citas').insert({
               fecha,

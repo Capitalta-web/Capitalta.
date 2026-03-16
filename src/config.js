@@ -76,7 +76,8 @@ export const HEADER_HEIGHT = 74;
 
 const config = {
   currentTheme: Themes.THEME_DEFAULT,
-  themeDirection: ThemeDirection.LTR
+  themeDirection: ThemeDirection.LTR,
+  i18n: ThemeI18n.EN
 };
 
 export default config;

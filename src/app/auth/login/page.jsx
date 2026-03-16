@@ -6,7 +6,7 @@ import { Login1 } from '@/blocks/auth/login';
 const data = {
   heading: 'Iniciar Sesión',
   caption: 'Bienvenido de nuevo a Capitalta',
-  signupLink: '/auth/signup'
+  signupLink: '/auth/registro'
 };
 
 /***************************  PAGE - LOGIN  ***************************/

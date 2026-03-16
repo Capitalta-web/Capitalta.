@@ -35,14 +35,6 @@ function formatoHora(hora) {
   return hora;
 }
 
-function formatoMoneda(valor) {
-  if (!valor || Number.isNaN(valor)) {
-    return '--';
-  }
-
-  return valor.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' });
-}
-
 function etiquetaEstado(estado) {
   if (estado === 'confirmada' || estado === 'programada') {
     return { label: 'Confirmada', color: 'primary' };

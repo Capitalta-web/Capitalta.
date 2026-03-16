@@ -20,7 +20,6 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import GraphicsImage from '@/components/GraphicsImage';
 import SvgIcon from '@/components/SvgIcon';
 import Typeset from '@/components/Typeset';
-import { ThemeDirection } from '@/config';
 import { withAlpha } from '@/utils/colorUtils';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 

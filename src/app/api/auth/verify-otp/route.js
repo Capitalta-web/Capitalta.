@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { createSupabaseServerClient } from '@/utils/supabaseClient';
 
 /**
  * Endpoint para verificar código OTP de email
@@ -30,7 +30,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'El código debe ser de 6 dígitos' }, { status: 400 });
     }
 
-    const supabase = createSupabaseBrowserClient();
+    const supabase = createSupabaseServerClient({ admin: true });
 
     if (!supabase) {
       console.error('Supabase client could not be initialized');
@@ -43,7 +43,7 @@ export async function POST(request) {
       .select('*')
       .eq('email', email)
       .eq('code', code)
-      .gt('expires_at', 'now()')
+      .gt('expires_at', new Date().toISOString())
       .eq('used', false)
       .single();
 
@@ -54,15 +54,28 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
-    // 2. Obtener datos del usuario para confirmación
-    // Nota: No podemos usar auth.admin directamente sin Service Role Key desde cliente público
-    // Pero como el código OTP es válido, confirmamos que el usuario tiene acceso a su email
-    // Ahora necesitamos confirmar el email en Supabase
+    const userId = otpRecord.user_id || otpRecord.userId || otpRecord.usuario_id || null;
+    let targetUserId = userId;
 
-    // Para esto, hacemos una consulta a una función SQL que actualice el usuario
-    // O alternativamente, llamamos otro endpoint interno que usa Service Role Key
+    if (!targetUserId) {
+      const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (listError) {
+        console.error('Error listing users:', listError);
+        return NextResponse.json({ error: 'Error al confirmar email' }, { status: 500 });
+      }
+      const found = (listData?.users || []).find((u) => u.email === email);
+      targetUserId = found?.id || null;
+    }
 
-    console.log(`[OTP Verification] Código válido para ${email}`);
+    if (!targetUserId) {
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
+
+    const { error: confirmError } = await supabase.auth.admin.updateUserById(targetUserId, { email_confirm: true });
+    if (confirmError) {
+      console.error('Error confirming email:', confirmError);
+      return NextResponse.json({ error: 'No se pudo confirmar el email' }, { status: 500 });
+    }
 
     // 3. Marcar código como usado
     const { error: updateOtpError } = await supabase
@@ -77,8 +90,6 @@ export async function POST(request) {
       console.error('Error marking OTP as used:', updateOtpError);
       // No bloqueamos aquí, el usuario puede continuar
     }
-
-    console.log(`[OTP Verification Success] Email verificado para: ${email}`);
 
     return NextResponse.json({
       success: true,

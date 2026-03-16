@@ -76,16 +76,39 @@ export default function RegistrationPage() {
 
       if (authError) throw authError;
 
-      if (data?.user) {
-        // Sin confirmación de email: redirigir directo al dashboard
-        setLoading(false);
+      if (data?.session) {
         router.push('/dashboard');
         return;
       }
+
+      setSuccess(true);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Ocurrió un error al registrarse. Intenta nuevamente.');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) throw new Error('No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
+
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+      });
+
+      if (oauthError) throw oauthError;
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'No se pudo iniciar sesión con Google. Intenta nuevamente.');
       setLoading(false);
     }
   };
@@ -302,7 +325,8 @@ export default function RegistrationPage() {
                   size="large"
                   variant="outlined"
                   startIcon={<IconBrandGoogle />}
-                  onClick={() => alert('Próximamente: Registro con Google')}
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
                   sx={{ py: 1.5, color: 'text.primary', borderColor: 'divider' }}
                 >
                   Google

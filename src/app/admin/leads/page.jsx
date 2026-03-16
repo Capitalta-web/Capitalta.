@@ -19,7 +19,7 @@ export default async function LeadsAdminPage({ searchParams }) {
     notFound();
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServerClient({ admin: true });
 
   if (!supabase) {
     return <Typography>Error de configuración de Supabase</Typography>;

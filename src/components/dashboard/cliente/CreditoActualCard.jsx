@@ -2,7 +2,6 @@
 
 import { Card, CardContent, Box, Stack, Typography, LinearProgress, Grid, Button } from '@mui/material';
 import { CircularProgress } from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
 export default function CreditoActualCard({ solicitud, onViewDetails }) {

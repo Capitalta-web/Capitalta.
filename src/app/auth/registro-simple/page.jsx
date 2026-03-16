@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 // @mui
@@ -27,7 +26,6 @@ import Logo from '@/components/logo';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 export default function SimpleRegistration() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -80,6 +78,29 @@ export default function SimpleRegistration() {
       console.error(err);
       setError(err.message || 'Ocurrió un error al registrarse. Intenta nuevamente.');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) throw new Error('No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
+
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+      });
+
+      if (oauthError) throw oauthError;
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'No se pudo iniciar sesión con Google. Intenta nuevamente.');
       setLoading(false);
     }
   };
@@ -257,7 +278,8 @@ export default function SimpleRegistration() {
                   size="large"
                   variant="outlined"
                   startIcon={<IconBrandGoogle />}
-                  onClick={() => alert('Próximamente: Registro con Google')}
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
                   sx={{ py: 1.5, color: 'text.primary', borderColor: 'divider' }}
                 >
                   Google

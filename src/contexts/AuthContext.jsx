@@ -57,6 +57,11 @@ export const AuthProvider = ({ children }) => {
   const refreshUser = async () => {
     setIsProcessing(true);
     try {
+      if (!supabase) {
+        setUser(null);
+        return;
+      }
+
       const {
         data: { user: authUser },
         error
@@ -87,6 +92,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     refreshUser();
+
+    if (!supabase) {
+      setIsProcessing(false);
+      return;
+    }
 
     const {
       data: { subscription }

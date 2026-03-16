@@ -12,6 +12,8 @@ import CreditoActualCard from '@/components/dashboard/cliente/CreditoActualCard'
 import MisSolicitudesTable from '@/components/dashboard/cliente/MisSolicitudesTable';
 import ProximaCitaCard from '@/components/dashboard/cliente/ProximaCitaCard';
 import DocumentosChecklist from '@/components/dashboard/cliente/DocumentosChecklist';
+import MainCard from '@/components/MainCard';
+import { DOCUMENTOS_REQUERIDOS } from '@/utils/documentosRequeridos';
 
 export default function ClienteDashboard() {
   const [user, setUser] = useState(null);
@@ -21,6 +23,7 @@ export default function ClienteDashboard() {
   const [creditoActual, setCreditoActual] = useState(null);
   const [cita, setCita] = useState(null);
   const [documentos, setDocumentos] = useState([]);
+  const [canAgendar, setCanAgendar] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -91,12 +94,36 @@ export default function ClienteDashboard() {
         }
 
         // 6. Obtener documentos uploadados
-        const { data: documentosData, error: docsError } = await supabase
-          .from('documentos')
+        const { data: applications } = await supabase
+          .from('solicitudes_credito')
           .select('*')
-          .eq('usuario_id', user.id);
+          .eq('cliente_id', user.id)
+          .neq('estado', 'cancelado')
+          .neq('estado', 'rechazado')
+          .order('created_at', { ascending: false })
+          .limit(1);
 
-        setDocumentos(documentosData || []);
+        const currentApplication = applications && applications.length > 0 ? applications[0] : null;
+        if (currentApplication) {
+          const { data: docs } = await supabase
+            .from('documentos')
+            .select('*')
+            .eq('solicitud_id', currentApplication.id)
+            .order('created_at', { ascending: false });
+
+          const docsList = docs || [];
+          setDocumentos(docsList);
+
+          const expedienteCompleto = DOCUMENTOS_REQUERIDOS.every((req) => {
+            const requiredCount = req.requiredCount || 1;
+            const count = docsList.filter((d) => d.tipo_documento === req.id && d.estado !== 'rechazado').length;
+            return count >= requiredCount;
+          });
+          setCanAgendar(expedienteCompleto);
+        } else {
+          setDocumentos([]);
+          setCanAgendar(false);
+        }
       // Eliminamos el bloque if/user duplicado y cerramos el try correctamente
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -123,6 +150,10 @@ export default function ClienteDashboard() {
     router.push('/dashboard/cliente/citas');
   };
 
+  const handleCompletarExpediente = () => {
+    router.push('/dashboard/cliente/documentos');
+  };
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -140,7 +171,10 @@ export default function ClienteDashboard() {
             Hola, {profile?.nombre_completo || user?.email?.split('@')[0] || 'Cliente'} 👋
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Bienvenido a tu panel de control. Gestiona tus solicitudes y créditos aquí.
+            Este es tu proceso: solicita, sube documentos, agenda una cita y recibe tu propuesta.
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            1) Completa tu perfil · 2) Envía tu solicitud · 3) Sube tu expediente · 4) Agenda cita · 5) Revisión y resolución
           </Typography>
         </Box>
         <Button
@@ -153,6 +187,18 @@ export default function ClienteDashboard() {
         </Button>
       </Box>
 
+      <Box sx={{ mb: 3 }}>
+        <MainCard>
+          <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 0.5 }}>
+            ¿Cómo funciona tu préstamo en Capitalta?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Completa tu perfil, crea tu solicitud y sube tu expediente. Cuando el expediente esté completo, se habilita la agenda para una cita
+            en sucursal (o con un asesor) para revisar tu caso y continuar con la evaluación.
+          </Typography>
+        </MainCard>
+      </Box>
+
       {/* Grid Principal */}
       <Grid container spacing={3}>
         {/* Columna izquierda - Perfil y Crédito */}
@@ -163,7 +209,7 @@ export default function ClienteDashboard() {
           </Box>
 
           {/* Próxima Cita */}
-          <ProximaCitaCard cita={cita} onAgendar={handleAgendar} />
+          <ProximaCitaCard cita={cita} onAgendar={handleAgendar} canAgendar={canAgendar} onCompletarExpediente={handleCompletarExpediente} />
         </Grid>
 
         {/* Columna derecha - Crédito, Solicitudes y Documentos */}

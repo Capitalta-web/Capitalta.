@@ -19,7 +19,6 @@ import { useForm } from 'react-hook-form';
 
 // @project
 import { emailSchema, passwordSchema, firstNameSchema, lastNameSchema } from '@/utils/validationSchema';
-import { createSupabaseBrowserClient } from '@/utils/supabaseClient'; // Corrected
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
@@ -28,6 +27,7 @@ import { CloseEye, OpenEye } from '@/icons';
 
 export default function AuthRegister({ inputSx }) {
   const theme = useTheme();
+  const palette = theme.vars ? theme.vars.palette : theme.palette;
   const router = useRouter(); // Added
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenConfirm, setIsOpenConfirm] = useState(false);
@@ -159,7 +159,7 @@ export default function AuthRegister({ inputSx }) {
             error={errors.password && Boolean(errors.password)}
             endAdornment={
               <IconButton disableRipple onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
-                {isOpen ? <OpenEye color={theme.vars.palette.grey[700]} /> : <CloseEye color={theme.vars.palette.grey[700]} />}
+                {isOpen ? <OpenEye color={palette.grey[700]} /> : <CloseEye color={palette.grey[700]} />}
               </IconButton>
             }
             sx={inputSx}
@@ -177,14 +177,14 @@ export default function AuthRegister({ inputSx }) {
             error={errors.password && Boolean(errors.password)}
             endAdornment={
               <IconButton disableRipple onClick={() => setIsOpenConfirm(!isOpenConfirm)} rel="noopener noreferrer" aria-label="eye">
-                {isOpenConfirm ? <OpenEye color={theme.vars.palette.grey[700]} /> : <CloseEye color={theme.vars.palette.grey[700]} />}
+                {isOpenConfirm ? <OpenEye color={palette.grey[700]} /> : <CloseEye color={palette.grey[700]} />}
               </IconButton>
             }
             sx={inputSx}
           />
         </Stack>
-        <Button fullWidth type="submit" color="primary" variant="contained" sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
-          Sign Up
+        <Button fullWidth type="submit" color="primary" variant="contained" disabled={isLoading} sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
+          {isLoading ? 'Creando cuenta...' : 'Sign Up'}
         </Button>
       </Stack>
     </form>

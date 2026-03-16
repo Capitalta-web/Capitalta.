@@ -1,4 +1,4 @@
-import { IconDashboard, IconFilePlus, IconFiles, IconUser, IconFolders, IconCalendar, IconSettings, IconUsers } from '@tabler/icons-react';
+import { IconDashboard, IconFilePlus, IconFiles, IconUser, IconFolders, IconCalendar, IconSettings, IconUsers, IconCreditCard } from '@tabler/icons-react';
 
 const dashboard = {
   id: 'dashboard-group',
@@ -44,6 +44,14 @@ const dashboard = {
       type: 'item',
       url: '/dashboard/cliente/citas',
       icon: IconCalendar,
+      roles: ['cliente']
+    },
+    {
+      id: 'mis-creditos',
+      title: 'Mis Créditos',
+      type: 'item',
+      url: '/dashboard/cliente/creditos',
+      icon: IconCreditCard,
       roles: ['cliente']
     },
     {

@@ -1,3 +1,4 @@
+'use client';
 import PropTypes from 'prop-types';
 import { Activity, useEffect, useState } from 'react';
 
@@ -33,7 +34,8 @@ export default function Locales({ children }) {
   const [messages, setMessages] = useState();
 
   useEffect(() => {
-    loadLocaleData(i18n).then((d) => {
+    const locale = i18n || ThemeI18n.EN;
+    loadLocaleData(locale).then((d) => {
       setMessages(d.default);
     });
   }, [i18n]);
@@ -41,7 +43,16 @@ export default function Locales({ children }) {
   return (
     <>
       <Activity mode={messages ? 'visible' : 'hidden'}>
-        <IntlProvider locale={i18n} defaultLocale="en" messages={messages}>
+        <IntlProvider
+          locale={i18n || ThemeI18n.EN}
+          defaultLocale={ThemeI18n.EN}
+          messages={messages || {}}
+          onError={(err) => {
+            if (err && err.code === 'MISSING_TRANSLATION') return;
+            // eslint-disable-next-line no-console
+            console.warn(err);
+          }}
+        >
           {children}
         </IntlProvider>
       </Activity>

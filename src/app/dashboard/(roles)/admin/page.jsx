@@ -185,7 +185,7 @@ export default function AdminDashboard() {
 
     // Formatear para Recharts
     return Object.entries(datos).map(([clave, monto]) => {
-      const [año, mes] = clave.split('-');
+      const [, mes] = clave.split('-');
       const mesIndex = parseInt(mes);
       return {
         mes: meses[mesIndex],

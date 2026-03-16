@@ -11,8 +11,7 @@ import {
   TableRow,
   Typography,
   Chip,
-  Button,
-  Box
+  Button
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 

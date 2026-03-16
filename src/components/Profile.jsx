@@ -18,7 +18,7 @@ export default function Profile({ avatar, title, caption, label, sx, titleProps,
           alt="profile"
           sx={{ ...avatar?.sx, ...(placeholderIfEmpty && { fontSize: 20, '& svg': { width: 26, height: 26 } }) }}
         >
-          {!avatar?.src && placeholderIfEmpty && <IconPhoto stroke={1} />}
+          {!avatar?.src && placeholderIfEmpty && (avatar?.children || <IconPhoto stroke={1} />)}
         </Avatar>
       )}
       <Stack sx={{ gap: 0.25 }}>
