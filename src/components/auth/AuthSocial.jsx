@@ -44,10 +44,12 @@ export default function AuthSocial({ type = SocialTypes.VERTICAL, buttonSx }) {
       const supabase = createSupabaseBrowserClient();
       if (!supabase) return;
 
+      const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
+
       await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${baseUrl}/auth/callback`,
           queryParams: provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : undefined
         }
       });

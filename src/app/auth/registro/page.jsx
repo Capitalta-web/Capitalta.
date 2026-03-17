@@ -33,6 +33,8 @@ export default function RegistrationPage() {
   const [success, setSuccess] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
 
+  const getBaseUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
+
   // Form State
   const [monto, setMonto] = useState(1000000);
   const [formData, setFormData] = useState({
@@ -64,7 +66,7 @@ export default function RegistrationPage() {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${getBaseUrl()}/auth/callback`,
           data: {
             nombre_completo: formData.nombre,
             nombre: formData.nombre,
@@ -100,7 +102,7 @@ export default function RegistrationPage() {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${getBaseUrl()}/auth/callback`,
           queryParams: { access_type: 'offline', prompt: 'consent' }
         }
       });
@@ -122,7 +124,7 @@ export default function RegistrationPage() {
       const { error: resendError } = await supabase.auth.resend({
         type: 'signup',
         email: formData.email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+        options: { emailRedirectTo: `${getBaseUrl()}/auth/callback` }
       });
       if (resendError) throw resendError;
       setResendStatus('Correo reenviado. Revisa tu bandeja de entrada y spam.');

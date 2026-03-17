@@ -1,6 +1,8 @@
 'use client';
 import PropTypes from 'prop-types';
 
+import { useEffect, useMemo, useState } from 'react';
+
 // @mui
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -18,6 +20,7 @@ import Logo from '@/components/logo';
 import { Customization, MenuPopper, NavMenu, NavMenuDrawer, NavPrimaryButton, NavSecondaryButton } from '@/components/navbar';
 import SvgIcon from '@/components/SvgIcon';
 import { withAlpha } from '@/utils/colorUtils';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 /***************************  NAVBAR - CONTENT 10  ***************************/
 
@@ -32,9 +35,39 @@ import { withAlpha } from '@/utils/colorUtils';
 
 export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, secondaryBtn, whatsappBtn, customization, selectedTheme, animated }) {
   const theme = useTheme();
+  const palette = theme.vars ? theme.vars.palette : theme.palette;
 
   const downMD = useMediaQuery(theme.breakpoints.down('md'));
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [isAuthed, setIsAuthed] = useState(false);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+
+    let ignore = false;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (ignore) return;
+      setIsAuthed(Boolean(data?.user));
+    });
+
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (ignore) return;
+      setIsAuthed(Boolean(session?.user));
+    });
+
+    return () => {
+      ignore = true;
+      subscription?.subscription?.unsubscribe?.();
+    };
+  }, []);
+
+  const effectivePrimaryBtn = useMemo(() => {
+    if (isAuthed) return { children: 'Dashboard', href: '/dashboard' };
+    return primaryBtn;
+  }, [isAuthed, primaryBtn]);
 
   return (
     <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', width: 1 }}>
@@ -56,18 +89,18 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
                   initial={{ borderRadius: '50px' }}
                   animate={{
                     boxShadow: [
-                      `0px 0px 0px 0px ${withAlpha(theme.vars.palette.primary.main, 0.7)}`,
-                      `0px 0px 0px 8px ${withAlpha(theme.vars.palette.primary.main, 0)}`,
-                      `0px 0px 0px 0px ${withAlpha(theme.vars.palette.primary.main, 0)}`
+                      `0px 0px 0px 0px ${withAlpha(palette.primary.main, 0.7)}`,
+                      `0px 0px 0px 8px ${withAlpha(palette.primary.main, 0)}`,
+                      `0px 0px 0px 0px ${withAlpha(palette.primary.main, 0)}`
                     ],
                     borderRadius: '50px'
                   }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
                 >
-                  {primaryBtn && <NavPrimaryButton {...primaryBtn} />}
+                  {effectivePrimaryBtn && <NavPrimaryButton {...effectivePrimaryBtn} />}
                 </motion.div>
               ) : (
-                primaryBtn && <NavPrimaryButton {...primaryBtn} />
+                effectivePrimaryBtn && <NavPrimaryButton {...effectivePrimaryBtn} />
               )}
             </ButtonAnimationWrapper>
           </>
@@ -99,7 +132,7 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
                     {whatsappBtn && <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />}
                     {secondaryBtn && <NavSecondaryButton {...secondaryBtn} />}
                     <ButtonAnimationWrapper>
-                      {primaryBtn && <NavPrimaryButton {...primaryBtn} />}
+                      {effectivePrimaryBtn && <NavPrimaryButton {...effectivePrimaryBtn} />}
                     </ButtonAnimationWrapper>
                   </Stack>
                 )}

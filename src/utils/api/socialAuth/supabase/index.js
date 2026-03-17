@@ -7,10 +7,11 @@ const supabase = createSupabaseClient();
 /***************************  SOCIAL AUTH SUPABASE - LOGIN WITH GOOGLE  ***************************/
 
 export function loginWithGoogle() {
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
   return supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${baseUrl}/auth/callback`,
       queryParams: { access_type: 'offline', prompt: 'consent' }
     }
   });
@@ -19,10 +20,11 @@ export function loginWithGoogle() {
 /***************************  SOCIAL AUTH SUPABASE - LOGIN WITH FACEBOOK  ***************************/
 
 export function loginWithFacebook() {
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
   return supabase.auth.signInWithOAuth({
     provider: 'facebook',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${baseUrl}/auth/callback`,
       scopes: 'public_profile,email'
     }
   });

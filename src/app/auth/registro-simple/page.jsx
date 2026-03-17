@@ -31,6 +31,8 @@ export default function SimpleRegistration() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  const getBaseUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
+
   // Form State
   const [monto, setMonto] = useState(1000000);
   const [formData, setFormData] = useState({
@@ -92,7 +94,7 @@ export default function SimpleRegistration() {
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${getBaseUrl()}/auth/callback`,
           queryParams: { access_type: 'offline', prompt: 'consent' }
         }
       });
