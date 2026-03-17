@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   Typography,
   Box,
@@ -24,19 +24,12 @@ import { useRouter } from 'next/navigation';
 // Components
 import MainCard from '@/components/MainCard';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
-const REQUIRED_DOCUMENTS = [
-  { id: 'ine', label: 'INE / Identificación Oficial' },
-  { id: 'comprobante_domicilio', label: 'Comprobante de Domicilio' },
-  { id: 'estado_cuenta', label: 'Estados de Cuenta (Últimos 3 meses)' },
-  { id: 'rfc', label: 'Constancia de Situación Fiscal (RFC)' },
-  { id: 'curp', label: 'CURP' }
-];
+import { DOCUMENTOS_REQUERIDOS as REQUIRED_DOCUMENTS } from '@/utils/documentosRequeridos';
 
 export default function DocumentosPage() {
   const [user, setUser] = useState(null);
@@ -49,6 +42,14 @@ export default function DocumentosPage() {
   const router = useRouter();
 
   const supabase = createSupabaseBrowserClient();
+
+  const docsByType = useMemo(() => {
+    return uploadedDocuments.reduce((acc, doc) => {
+      if (!acc[doc.tipo_documento]) acc[doc.tipo_documento] = [];
+      acc[doc.tipo_documento].push(doc);
+      return acc;
+    }, {});
+  }, [uploadedDocuments]);
 
   useEffect(() => {
     fetchData();
@@ -83,7 +84,11 @@ export default function DocumentosPage() {
         setActiveApplication(app);
 
         // Fetch uploaded documents
-        const { data: docs, error: docsError } = await supabase.from('documentos').select('*').eq('solicitud_id', app.id);
+        const { data: docs, error: docsError } = await supabase
+          .from('documentos')
+          .select('*')
+          .eq('solicitud_id', app.id)
+          .order('created_at', { ascending: false });
 
         if (docsError) throw docsError;
         setUploadedDocuments(docs || []);
@@ -96,9 +101,10 @@ export default function DocumentosPage() {
     }
   };
 
-  const handleFileUpload = async (event, docType) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  const handleFileUpload = async (event, docType, requiredCount = 1) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = '';
+    if (files.length === 0) return;
 
     if (!activeApplication) {
       setError('No tienes una solicitud activa para subir documentos.');
@@ -110,35 +116,44 @@ export default function DocumentosPage() {
     setSuccess(null);
 
     try {
-      // 1. Upload to Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${activeApplication.id}/${docType}_${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const toUpload = requiredCount > 1 ? files : files.slice(0, 1);
 
-      const { error: uploadError } = await supabase.storage.from('documentos-credito').upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // 2. Get Public URL (or signed URL if private)
-      // Assuming public bucket for simplicity based on prompt context implying easy access,
-      // but usually documents are private. Let's try getPublicUrl.
-      const {
-        data: { publicUrl }
-      } = supabase.storage.from('documentos-credito').getPublicUrl(filePath);
-
-      // 3. Insert into database
-      const { error: dbError } = await supabase.from('documentos').insert({
-        solicitud_id: activeApplication.id,
-        tipo_documento: docType,
-        nombre_archivo: file.name,
-        url_archivo: publicUrl, // or filePath if we want to sign urls later
-        subido_por: user.id,
-        estado: 'subido'
+      const bucket = 'documentos-credito';
+      const ensureResp = await fetch('/api/storage/ensure-bucket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bucket, public: true })
       });
+      if (!ensureResp.ok) {
+        const ensureBody = await ensureResp.json().catch(() => ({}));
+        throw new Error(ensureBody?.error || 'No se pudo preparar el storage para documentos.');
+      }
 
-      if (dbError) throw dbError;
+      for (const file of toUpload) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${activeApplication.id}/${docType}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${fileExt}`;
+        const filePath = `${fileName}`;
 
-      setSuccess(`Documento ${docType} subido correctamente.`);
+        const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file);
+        if (uploadError) throw uploadError;
+
+        const {
+          data: { publicUrl }
+        } = supabase.storage.from(bucket).getPublicUrl(filePath);
+
+        const { error: dbError } = await supabase.from('documentos').insert({
+          solicitud_id: activeApplication.id,
+          tipo_documento: docType,
+          nombre_archivo: file.name,
+          url_archivo: publicUrl,
+          subido_por: user.id,
+          estado: 'subido'
+        });
+
+        if (dbError) throw dbError;
+      }
+
+      setSuccess(requiredCount > 1 ? 'Documentos subidos correctamente.' : `Documento ${docType} subido correctamente.`);
       fetchData(); // Refresh list
     } catch (err) {
       console.error('Error uploading file:', err);
@@ -237,30 +252,38 @@ export default function DocumentosPage() {
                 </TableHead>
                 <TableBody>
                   {REQUIRED_DOCUMENTS.map((docType) => {
-                    const uploadedDoc = uploadedDocuments.find((d) => d.tipo_documento === docType.id);
-                    const isUploaded = !!uploadedDoc;
+                    const requiredCount = docType.requiredCount || 1;
+                    const docsForType = docsByType[docType.id] || [];
+                    const nonRejected = docsForType.filter((d) => d.estado !== 'rechazado');
+                    const uploadedCount = nonRejected.length;
+                    const primaryDoc = nonRejected[0] || docsForType[0];
+                    const isUploaded = uploadedCount > 0;
+                    const isComplete = uploadedCount >= requiredCount;
+                    const displayStatus = primaryDoc?.estado || 'pendiente';
 
                     return (
                       <TableRow key={docType.id}>
                         <TableCell>
                           <Typography variant="subtitle1">{docType.label}</Typography>
-                          {uploadedDoc && (
+                          {isUploaded && (
                             <Typography variant="caption" color="text.secondary">
-                              Archivo: {uploadedDoc.nombre_archivo}
+                              {requiredCount > 1
+                                ? `Archivos: ${Math.min(uploadedCount, requiredCount)}/${requiredCount}`
+                                : `Archivo: ${primaryDoc?.nombre_archivo || ''}`}
                             </Typography>
                           )}
-                          {uploadedDoc?.comentarios && (
+                          {primaryDoc?.comentarios && (
                             <Typography variant="caption" display="block" color="error">
-                              Nota: {uploadedDoc.comentarios}
+                              Nota: {primaryDoc.comentarios}
                             </Typography>
                           )}
                         </TableCell>
                         <TableCell>
                           {isUploaded ? (
                             <Chip
-                              icon={getDocStatusIcon(uploadedDoc.estado)}
-                              label={getDocStatusLabel(uploadedDoc.estado)}
-                              color={getDocStatusColor(uploadedDoc.estado)}
+                              icon={getDocStatusIcon(displayStatus)}
+                              label={requiredCount > 1 && !isComplete ? 'Incompleto' : getDocStatusLabel(displayStatus)}
+                              color={requiredCount > 1 && !isComplete ? 'warning' : getDocStatusColor(displayStatus)}
                               size="small"
                             />
                           ) : (
@@ -268,14 +291,20 @@ export default function DocumentosPage() {
                           )}
                         </TableCell>
                         <TableCell align="right">
-                          {(!isUploaded || uploadedDoc.estado === 'rechazado') && (
+                          {(!isUploaded || displayStatus !== 'validado') && (
                             <Button component="label" variant="outlined" startIcon={<CloudUploadIcon />} disabled={uploading} size="small">
-                              {uploading ? 'Subiendo...' : 'Subir'}
-                              <input type="file" hidden accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => handleFileUpload(e, docType.id)} />
+                              {uploading ? 'Subiendo...' : isUploaded ? (requiredCount > 1 ? 'Subir más' : 'Reemplazar') : 'Subir'}
+                              <input
+                                type="file"
+                                hidden
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                multiple={requiredCount > 1}
+                                onChange={(e) => handleFileUpload(e, docType.id, requiredCount)}
+                              />
                             </Button>
                           )}
                           {isUploaded && (
-                            <IconButton href={uploadedDoc.url_archivo} target="_blank" color="primary" size="small">
+                            <IconButton href={primaryDoc?.url_archivo} target="_blank" color="primary" size="small">
                               <VisibilityIcon />
                             </IconButton>
                           )}

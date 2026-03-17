@@ -1,46 +1,37 @@
 'use client';
 
-import { Card, CardContent, Box, Stack, Typography, Button, Checkbox, FormControlLabel, LinearProgress } from '@mui/material';
+import { useMemo } from 'react';
+
+import { useRouter } from 'next/navigation';
+
+import { Card, CardContent, Box, Stack, Typography, Button, LinearProgress } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
+import ErrorIcon from '@mui/icons-material/Error';
 
-const DOCUMENTOS_REQUERIDOS = [
-  {
-    id: 'identificacion',
-    nombre: 'Identificación (DNI/Pasaporte)',
-    completado: false
-  },
-  {
-    id: 'comprobante_domicilio',
-    nombre: 'Comprobante de Domicilio',
-    completado: false
-  },
-  {
-    id: 'ultimas_declaraciones',
-    nombre: 'Últimas 3 Declaraciones de Impuestos',
-    completado: false
-  },
-  {
-    id: 'comprobante_ingresos',
-    nombre: 'Comprobante de Ingresos',
-    completado: false
-  },
-  {
-    id: 'avance_credito',
-    nombre: 'Avance de Crédito (si aplica)',
-    completado: false
-  }
-];
+import { DOCUMENTOS_REQUERIDOS } from '@/utils/documentosRequeridos';
 
 export default function DocumentosChecklist({ documentos = [] }) {
-  // Mapear documentos requeridos con uploads
-  const docsConStatus = DOCUMENTOS_REQUERIDOS.map((doc) => ({
-    ...doc,
-    completado: documentos.some((d) => d.tipo_documento === doc.id && d.estado === 'validado')
-  }));
+  const router = useRouter();
 
-  const completados = docsConStatus.filter((d) => d.completado).length;
+  const docsConStatus = useMemo(() => {
+    return DOCUMENTOS_REQUERIDOS.map((doc) => {
+      const requiredCount = doc.requiredCount || 1;
+      const docsForType = documentos.filter((d) => d.tipo_documento === doc.id);
+      const nonRejected = docsForType.filter((d) => d.estado !== 'rechazado');
+      const uploadedCount = nonRejected.length;
+      const isUploaded = uploadedCount > 0;
+      const isComplete = uploadedCount >= requiredCount;
+      const isValidated = requiredCount === 1 ? docsForType.some((d) => d.estado === 'validado') : false;
+      const status = docsForType.some((d) => d.estado === 'rechazado') ? 'rechazado' : isComplete ? 'subido' : 'pendiente';
+
+      return { ...doc, status, isUploaded, isValidated, requiredCount, uploadedCount, isComplete };
+    });
+  }, [documentos]);
+
+  // Mapear documentos requeridos con uploads
+  const completados = docsConStatus.filter((d) => d.isComplete).length;
   const porcentaje = Math.round((completados / docsConStatus.length) * 100);
 
   return (
@@ -85,16 +76,21 @@ export default function DocumentosChecklist({ documentos = [] }) {
                 alignItems: 'center',
                 gap: 1.5,
                 p: 1.5,
-                bgcolor: doc.completado ? '#E8F5E9' : '#F5F5F5',
+                bgcolor: doc.isValidated ? '#E8F5E9' : doc.isUploaded ? '#E3F2FD' : '#F5F5F5',
                 borderRadius: 1,
                 cursor: 'pointer',
                 '&:hover': {
-                  bgcolor: doc.completado ? '#E0F2F1' : '#EEEEEE'
+                  bgcolor: doc.isValidated ? '#E0F2F1' : doc.isUploaded ? '#BBDEFB' : '#EEEEEE'
                 }
               }}
+              onClick={() => router.push('/dashboard/cliente/documentos')}
             >
-              {doc.completado ? (
+              {doc.status === 'rechazado' ? (
+                <ErrorIcon sx={{ color: 'error.main', flexShrink: 0 }} />
+              ) : doc.isValidated ? (
                 <CheckCircleIcon sx={{ color: 'success.main', flexShrink: 0 }} />
+              ) : doc.isUploaded ? (
+                <PendingIcon sx={{ color: 'info.main', flexShrink: 0 }} />
               ) : (
                 <PendingIcon sx={{ color: 'warning.main', flexShrink: 0 }} />
               )}
@@ -102,12 +98,16 @@ export default function DocumentosChecklist({ documentos = [] }) {
                 variant="body2"
                 sx={{
                   flex: 1,
-                  color: doc.completado ? 'success.main' : 'text.primary',
-                  textDecoration: doc.completado ? 'line-through' : 'none',
-                  fontWeight: doc.completado ? 500 : 400
+                  color: doc.isValidated ? 'success.main' : doc.isUploaded ? 'info.main' : 'text.primary',
+                  fontWeight: doc.isValidated || doc.isUploaded ? 500 : 400
                 }}
               >
-                {doc.nombre}
+                {doc.label}
+                {doc.requiredCount > 1 && (
+                  <Typography component="span" variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                    ({Math.min(doc.uploadedCount, doc.requiredCount)}/{doc.requiredCount})
+                  </Typography>
+                )}
               </Typography>
             </Box>
           ))}
@@ -115,18 +115,18 @@ export default function DocumentosChecklist({ documentos = [] }) {
 
         {/* Botones */}
         <Stack direction="row" spacing={1}>
-          <Button variant="contained" startIcon={<CloudUploadIcon />} fullWidth>
-            Subir Documento
+          <Button variant="contained" startIcon={<CloudUploadIcon />} fullWidth onClick={() => router.push('/dashboard/cliente/documentos')}>
+            Subir documentos
           </Button>
-          <Button variant="outlined" fullWidth>
-            Ver Todos
+          <Button variant="outlined" fullWidth onClick={() => router.push('/dashboard/cliente/documentos')}>
+            Ver expediente
           </Button>
         </Stack>
 
         {porcentaje === 100 && (
           <Box sx={{ mt: 2, p: 2, bgcolor: '#E8F5E9', borderRadius: 1, border: '1px solid #4CAF50' }}>
             <Typography variant="body2" color="success.main" fontWeight="600">
-              ✓ Todos los documentos han sido subidos y validados
+              ✓ Expediente completo: ya puedes agendar tu cita
             </Typography>
           </Box>
         )}

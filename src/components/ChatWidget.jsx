@@ -8,7 +8,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardActions,
   TextField,
   IconButton,
   Typography,
@@ -17,9 +16,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   Button,
-  Collapse,
   Fade
 } from '@mui/material';
 
@@ -114,7 +111,6 @@ export default function ChatWidget() {
   const messagesEndRef = useRef(null);
 
   const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const router = typeof window !== 'undefined' ? require('next/navigation').useRouter() : null;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -221,7 +217,7 @@ export default function ChatWidget() {
       setMessages((prev) => [...prev, assistantMessage]);
       // Detectar redirección en el contenido del mensaje
       if (assistantMessage.content.includes('/auth/registro') || assistantMessage.content.includes('REDIRECT_REGISTER')) {
-        if (router) router.push('/auth/registro');
+        if (typeof window !== 'undefined') window.location.href = '/auth/registro';
       }
 
       speakText(assistantMessage.content);

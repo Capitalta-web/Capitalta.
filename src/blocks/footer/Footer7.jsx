@@ -5,7 +5,6 @@ import NextLink from 'next/link';
 
 // @mui
 import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -17,7 +16,6 @@ import IconButton from '@mui/material/IconButton';
 import { ThemeMode } from '@/config';
 
 // @project
-import branding from '@/branding.json';
 import { GraphicsCard } from '@/components/cards';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { Copyright, FollowUS, Sitemap } from '@/components/footer';
@@ -25,7 +23,6 @@ import LogoSection from '@/components/logo';
 import SvgIcon from '@/components/SvgIcon';
 
 import { CopyrightType } from '@/enum';
-import { DOCS_URL, FREEBIES_URL } from '@/path';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
 /***************************  FOOTER - 7 DATA  ***************************/
@@ -36,7 +33,6 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
  * - [Footer7](https://www.Capitalta.io/blocks/footer/footer7)
  */
 
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
 const data = [
   {
     id: 'navegacion',
@@ -100,8 +96,6 @@ const data = [
     ]
   }
 ];
-
-const iconProps = { color: 'text.secondary' };
 
 /***************************  FOOTER - 7  ***************************/
 

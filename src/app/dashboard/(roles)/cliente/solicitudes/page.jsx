@@ -22,7 +22,7 @@ export default function MisSolicitudesPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('solicitudes_credito')
           .select('*')
           .eq('cliente_id', user.id)
@@ -48,9 +48,16 @@ export default function MisSolicitudesPage() {
     <MainCard>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h4">Mis Solicitudes</Typography>
-        <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => router.push('/dashboard/cliente/solicitud/nueva')}>
-          Nueva Solicitud
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {solicitudes.some((s) => ['credito_activo', 'credito_liquidado', 'fondeado'].includes(s.estado)) && (
+            <Button variant="outlined" onClick={() => router.push('/dashboard/cliente/creditos')}>
+              Mis Créditos
+            </Button>
+          )}
+          <Button variant="contained" startIcon={<AddCircleOutlineIcon />} onClick={() => router.push('/dashboard/cliente/solicitud/nueva')}>
+            Nueva Solicitud
+          </Button>
+        </Box>
       </Box>
       {solicitudes.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 5 }}>
@@ -70,7 +77,9 @@ export default function MisSolicitudesPage() {
                     </Typography>
                     <Chip
                       label={solicitud.estado.replace(/_/g, ' ')}
-                      color={['aprobado', 'fondeo'].includes(solicitud.estado) ? 'success' : 'primary'}
+                      color={
+                        ['aprobada', 'fondeado', 'credito_activo', 'credito_liquidado'].includes(solicitud.estado) ? 'success' : 'primary'
+                      }
                       size="small"
                     />
                   </Box>

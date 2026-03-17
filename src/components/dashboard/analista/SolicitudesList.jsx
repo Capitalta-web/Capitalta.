@@ -11,17 +11,9 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Button,
   IconButton,
   Tooltip,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Grid,
-  Divider,
-  Paper
+  CircularProgress
 } from '@mui/material';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import MainCard from '@/components/MainCard';
@@ -83,7 +75,7 @@ export default function SolicitudesList({ limit = null, filterStatus = null }) {
   const [solicitudes, setSolicitudes] = useState([]);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
+  const [, setActionLoading] = useState(false);
 
   const fetchSolicitudes = async () => {
     try {

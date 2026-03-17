@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { CircularProgress, Box, Typography } from '@mui/material';
 
 export default function DashboardRedirect() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -26,23 +25,34 @@ export default function DashboardRedirect() {
         return;
       }
 
-      const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+      const { data: profile, error } = await supabase.from('profiles').select('role,tipo_persona').eq('id', user.id).single();
 
       if (error || !profile) {
-        // Fallback or error handling
-        console.error('Error fetching profile:', error);
-        // Default to cliente if profile missing (or handle_new_user hasn't run yet)
-        router.push('/dashboard/cliente');
+        const roleFromJwt = user.user_metadata?.role || 'cliente';
+        const dashboard =
+          roleFromJwt === 'admin'
+            ? '/dashboard/admin'
+            : roleFromJwt === 'analista'
+              ? '/dashboard/analista'
+              : roleFromJwt === 'notario'
+                ? '/dashboard/notario'
+                : '/dashboard/cliente';
+        router.push(dashboard);
       } else {
-        if (profile.role === 'admin') {
+        const legacyRole = profile.tipo_persona;
+        const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
+        const role = profile.role || mappedRole || 'cliente';
+
+        if (role === 'admin') {
           router.push('/dashboard/admin');
-        } else if (profile.role === 'analista') {
+        } else if (role === 'analista') {
           router.push('/dashboard/analista');
+        } else if (role === 'notario') {
+          router.push('/dashboard/notario');
         } else {
           router.push('/dashboard/cliente');
         }
       }
-      setLoading(false);
     };
 
     checkUser();

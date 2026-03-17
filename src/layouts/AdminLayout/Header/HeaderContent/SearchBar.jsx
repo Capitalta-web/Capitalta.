@@ -46,6 +46,7 @@ const listCotent = [
 export default function SearchBar() {
   const theme = useTheme();
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+  const tooltipShadow = theme?.vars?.customShadows?.tooltip || theme?.customShadows?.tooltip || theme?.shadows?.[1];
 
   const buttonStyle = { borderRadius: 2, p: 1 };
   const [anchorEl, setAnchorEl] = useState(null);
@@ -165,7 +166,7 @@ export default function SearchBar() {
                   <MainCard
                     sx={{
                       borderRadius: 2,
-                      boxShadow: theme.vars.customShadows.tooltip,
+                      boxShadow: tooltipShadow,
                       width: 1,
                       minWidth: { xs: 352, sm: 240 },
                       maxWidth: { xs: 352, md: 420 },

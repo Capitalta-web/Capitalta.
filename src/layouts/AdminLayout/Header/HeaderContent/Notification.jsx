@@ -58,6 +58,8 @@ const swing = keyframes`
 export default function Notification() {
   const theme = useTheme();
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
+  const palette = theme?.vars ? theme.vars.palette : theme.palette;
+  const tooltipShadow = theme?.vars?.customShadows?.tooltip || theme?.customShadows?.tooltip || theme?.shadows?.[1];
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [innerAnchorEl, setInnerAnchorEl] = useState(null);
@@ -184,7 +186,7 @@ export default function Notification() {
           variant="dot"
           invisible={allRead || notifications.length === 0}
           slotProps={{
-            badge: { sx: { height: 6, minWidth: 6, top: 4, right: 4, border: `1px solid ${theme.vars.palette.background.default}` } }
+            badge: { sx: { height: 6, minWidth: 6, top: 4, right: 4, border: `1px solid ${palette.background.default}` } }
           }}
         >
           <IconBell size={16} />
@@ -208,7 +210,7 @@ export default function Notification() {
                   <MainCard
                     sx={{
                       borderRadius: 2,
-                      boxShadow: theme.vars.customShadows.tooltip,
+                      boxShadow: tooltipShadow,
                       width: 1,
                       minWidth: { xs: 352, sm: 240 },
                       maxWidth: { xs: 352, md: 420 },
@@ -240,7 +242,7 @@ export default function Notification() {
                               >
                                 {({ TransitionProps }) => (
                                   <Fade in={innerOpen} {...TransitionProps}>
-                                    <MainCard sx={{ borderRadius: 2, boxShadow: theme.vars.customShadows.tooltip, minWidth: 156, p: 0.5 }}>
+                                    <MainCard sx={{ borderRadius: 2, boxShadow: tooltipShadow, minWidth: 156, p: 0.5 }}>
                                       <ClickAwayListener onClickAway={() => setInnerAnchorEl(null)}>
                                         <List disablePadding>
                                           {listcontent.map((item, index) => (

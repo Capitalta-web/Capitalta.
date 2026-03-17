@@ -22,6 +22,7 @@ import { otpSchema } from '@/utils/validationSchema';
 
 export default function AuthOtpVerification() {
   const theme = useTheme();
+  const palette = theme.vars ? theme.vars.palette : theme.palette;
   const downSM = useMediaQuery(theme.breakpoints.down('sm'));
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -69,50 +70,20 @@ export default function AuthOtpVerification() {
         })
       });
 
-      const verifyResult = await verifyResponse.json();
+      const raw = await verifyResponse.text();
+      let verifyResult = {};
+      try {
+        verifyResult = raw ? JSON.parse(raw) : {};
+      } catch {
+        verifyResult = { error: raw };
+      }
 
       if (!verifyResponse.ok) {
         setErrorMsg(verifyResult.error || 'Error al verificar código');
         return;
       }
 
-      // 2. Si el OTP es válido, confirmar email en Supabase (email_confirm: true)
-      const confirmResponse = await fetch('/api/auth/confirm-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: email
-        })
-      });
-
-      const confirmResult = await confirmResponse.json();
-
-      if (!confirmResponse.ok) {
-        console.error('Error confirming email:', confirmResult.error);
-        // Continuamos aunque falle, el usuario puede intentar login
-      } else {
-        console.log('Email confirmado exitosamente en Supabase');
-      }
-
-      // 3. Éxito - redirigir a dashboard
-      // El endpoint de confirmación ya activó la cuenta.
-      // Sin embargo, para entrar al dashboard necesitamos una sesión activa.
-      // Como acabamos de confirmar el email, lo ideal sería hacer login automático.
-      
-      // Intento de login automático (opcional, si no redirigir a login)
-      try {
-        const loginResponse = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email, password: '...' }) // No tenemos password aquí
-        });
-        // Como no tenemos la contraseña, enviamos al usuario al login con mensaje
-        router.push('/auth/login?verified=true&email=' + encodeURIComponent(email));
-      } catch (e) {
-        router.push('/auth/login?verified=true');
-      }
+      router.push('/auth/login?verified=true&email=' + encodeURIComponent(email));
       reset();
     } catch (err) {
       setErrorMsg('Ocurrió un error inesperado');
@@ -128,7 +99,7 @@ export default function AuthOtpVerification() {
         {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         <Stack sx={{ gap: 0.5 }}>
           <Box
-            sx={{ '& input:focus-visible': { borderColor: `${theme.vars.palette.primary.main} !important`, borderWidth: '2px !important' } }}
+            sx={{ '& input:focus-visible': { borderColor: `${palette.primary.main} !important`, borderWidth: '2px !important' } }}
           >
             <Controller
               control={control}
@@ -152,7 +123,7 @@ export default function AuthOtpVerification() {
                     borderWidth: 1,
                     borderStyle: 'solid',
                     outline: 'none',
-                    borderColor: theme.vars.palette.divider,
+                    borderColor: palette.divider,
                     opacity: isLoading ? 0.5 : 1
                   }}
                   renderInput={(props) => <input {...props} aria-label="otp" />}

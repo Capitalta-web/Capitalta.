@@ -64,7 +64,7 @@ export default async function CitasAdminPage({ searchParams }) {
     notFound();
   }
 
-  const supabase = createSupabaseServerClient();
+  const supabase = createSupabaseServerClient({ admin: true });
 
   if (!supabase) {
     notFound();

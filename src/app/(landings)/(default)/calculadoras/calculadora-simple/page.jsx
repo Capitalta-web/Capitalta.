@@ -102,14 +102,14 @@ function formatearFecha(fecha) {
 export default function CalculadoraSimplePage() {
   const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual, setTasaAnual] = useState(36);
+  const [tasaAnual] = useState(36);
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [empresa, setEmpresa] = useState('');
   const [leadEnviado, setLeadEnviado] = useState(false);
-  const [leadCargando, setLeadCargando] = useState(false);
+  const [, setLeadCargando] = useState(false);
   const [leadError, setLeadError] = useState('');
 
   const montoAjustado = useMemo(() => {

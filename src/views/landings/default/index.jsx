@@ -2,11 +2,8 @@
 
 import { useState } from 'react';
 
-// @third-party
-import { motion } from 'framer-motion';
-
 // @mui
-import { useTheme, alpha } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -18,15 +15,13 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 // @project
-import { Feature15, FeatureProducts } from '@/blocks/feature';
+import { FeatureProducts } from '@/blocks/feature';
 import { Hero16 } from '@/blocks/hero';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import LazySection from '@/components/LazySection';
-import SvgIcon from '@/components/SvgIcon';
-import { IconType } from '@/enum';
 
 // @data
-import { metrics, faq, aboutCapitalta, feature20, hero } from './data';
+import { metrics, faq, feature20, hero } from './data';
 
 /***************************  PAGE - MAIN  ***************************/
 

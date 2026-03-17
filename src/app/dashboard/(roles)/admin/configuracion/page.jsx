@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Typography, Box, Grid, Switch, FormControlLabel, Divider, Alert, CircularProgress, Snackbar } from '@mui/material';
+import { Typography, Box, Grid, Switch, FormControlLabel, Divider, Alert, CircularProgress } from '@mui/material';
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
@@ -32,7 +32,7 @@ export default function ConfiguracionPage() {
     setLoading(true);
     try {
       // 1. Fetch System Config (Maintenance Mode)
-      const { data: systemConfig, error: systemError } = await supabase.from('system_config').select('*');
+      const { data: systemConfig } = await supabase.from('system_config').select('*');
 
       if (systemConfig) {
         const maintMode = systemConfig.find((c) => c.key === 'maintenance_mode');
@@ -44,7 +44,7 @@ export default function ConfiguracionPage() {
         data: { user }
       } = await supabase.auth.getUser();
       if (user) {
-        const { data: profile, error: profileError } = await supabase.from('profiles').select('preferences').eq('id', user.id).single();
+        const { data: profile } = await supabase.from('profiles').select('preferences').eq('id', user.id).single();
 
         if (profile?.preferences) {
           // Merge with defaults to ensure all keys exist

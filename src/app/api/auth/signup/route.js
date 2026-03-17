@@ -19,7 +19,7 @@ export async function POST(request) {
     }
 
     // Usar cliente con Service Role Key (Admin)
-    const supabase = createSupabaseServerClient();
+    const supabase = createSupabaseServerClient({ admin: true });
 
     if (!supabase) {
       console.error('Supabase server client could not be initialized.');
@@ -53,6 +53,7 @@ export async function POST(request) {
     // 3. Guardar código en tabla otp_codes (usando supabase server client para bypass RLS si es necesario)
     const { error: otpError } = await supabase.from('otp_codes').insert({
       email,
+      user_id: data.user.id,
       code: verificationCode,
       // expires_at: new Date(Date.now() + 10 * 60000).toISOString() // Expiración en 10 min
     });

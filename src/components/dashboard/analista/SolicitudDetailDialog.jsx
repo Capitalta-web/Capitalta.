@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
-  DialogContent,
   DialogActions,
   Button,
   Typography,
@@ -18,8 +17,6 @@ import {
   CircularProgress,
   TextField,
   IconButton,
-  Tooltip,
-  Link,
   Alert
 } from '@mui/material';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
@@ -70,7 +67,7 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
   const [documents, setDocuments] = useState([]);
   const [avaluo, setAvaluo] = useState(null);
   const [loadingDocs, setLoadingDocs] = useState(false);
-  const [loadingAvaluo, setLoadingAvaluo] = useState(false);
+  const [, setLoadingAvaluo] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Avaluo Form State

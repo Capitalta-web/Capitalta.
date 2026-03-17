@@ -16,7 +16,7 @@ export default function TestSupabase() {
           return;
         }
 
-        const { data, error } = await supabase.from('solicitudes_credito').select('count', { count: 'exact', head: true });
+        const { error } = await supabase.from('solicitudes_credito').select('count', { count: 'exact', head: true });
 
         if (error) {
           setError(error.message);

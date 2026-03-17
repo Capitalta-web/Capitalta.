@@ -33,6 +33,8 @@ export default function RegistrationPage() {
   const [success, setSuccess] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
 
+  const getBaseUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
+
   // Form State
   const [monto, setMonto] = useState(1000000);
   const [formData, setFormData] = useState({
@@ -64,7 +66,7 @@ export default function RegistrationPage() {
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${getBaseUrl()}/auth/callback`,
           data: {
             nombre_completo: formData.nombre,
             nombre: formData.nombre,
@@ -76,16 +78,39 @@ export default function RegistrationPage() {
 
       if (authError) throw authError;
 
-      if (data?.user) {
-        // Sin confirmación de email: redirigir directo al dashboard
-        setLoading(false);
+      if (data?.session) {
         router.push('/dashboard');
         return;
       }
+
+      setSuccess(true);
     } catch (err) {
       console.error(err);
       setError(err.message || 'Ocurrió un error al registrarse. Intenta nuevamente.');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) throw new Error('No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
+
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${getBaseUrl()}/auth/callback`,
+          queryParams: { access_type: 'offline', prompt: 'consent' }
+        }
+      });
+
+      if (oauthError) throw oauthError;
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'No se pudo iniciar sesión con Google. Intenta nuevamente.');
       setLoading(false);
     }
   };
@@ -99,7 +124,7 @@ export default function RegistrationPage() {
       const { error: resendError } = await supabase.auth.resend({
         type: 'signup',
         email: formData.email,
-        options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
+        options: { emailRedirectTo: `${getBaseUrl()}/auth/callback` }
       });
       if (resendError) throw resendError;
       setResendStatus('Correo reenviado. Revisa tu bandeja de entrada y spam.');
@@ -302,7 +327,8 @@ export default function RegistrationPage() {
                   size="large"
                   variant="outlined"
                   startIcon={<IconBrandGoogle />}
-                  onClick={() => alert('Próximamente: Registro con Google')}
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
                   sx={{ py: 1.5, color: 'text.primary', borderColor: 'divider' }}
                 >
                   Google

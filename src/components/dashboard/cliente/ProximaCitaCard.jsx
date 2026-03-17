@@ -3,10 +3,9 @@
 import { Card, CardContent, Box, Stack, Typography, Button, Chip } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PersonIcon from '@mui/icons-material/Person';
 
-export default function ProximaCitaCard({ cita, onAgendar }) {
+export default function ProximaCitaCard({ cita, onAgendar, canAgendar, onCompletarExpediente }) {
   if (!cita) {
     return (
       <Card sx={{ boxShadow: 2 }}>
@@ -16,11 +15,20 @@ export default function ProximaCitaCard({ cita, onAgendar }) {
               Agendar Cita
             </Typography>
             <Typography color="text.secondary">
-              No tienes citas agendadas. Agenda una cita con uno de nuestros asesores para continuar con tu solicitud.
+              {canAgendar
+                ? 'No tienes citas agendadas. Agenda una cita con uno de nuestros asesores para continuar con tu solicitud.'
+                : 'Para agendar una cita primero completa tu expediente con los documentos requeridos.'}
             </Typography>
-            <Button variant="contained" onClick={onAgendar}>
-              Agendar Cita Ahora
-            </Button>
+            <Stack direction="row" spacing={1}>
+              <Button variant="contained" onClick={onAgendar} disabled={!canAgendar}>
+                Agendar cita
+              </Button>
+              {!canAgendar && (
+                <Button variant="outlined" onClick={onCompletarExpediente}>
+                  Completar expediente
+                </Button>
+              )}
+            </Stack>
           </Stack>
         </CardContent>
       </Card>
@@ -91,11 +99,11 @@ export default function ProximaCitaCard({ cita, onAgendar }) {
 
           {/* Botones */}
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" fullWidth size="small">
+            <Button variant="outlined" fullWidth size="small" onClick={onAgendar}>
               Reprogramar
             </Button>
-            <Button variant="outlined" fullWidth size="small" color="error">
-              Cancelar
+            <Button variant="outlined" fullWidth size="small" color="error" onClick={onAgendar}>
+              Ver / gestionar
             </Button>
           </Stack>
         </Stack>

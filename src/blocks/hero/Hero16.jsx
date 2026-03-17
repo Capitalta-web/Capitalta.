@@ -1,7 +1,7 @@
 'use client';
 import PropTypes from 'prop-types';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 // @mui
 import Button from '@mui/material/Button';
@@ -11,8 +11,6 @@ import IconButton from '@mui/material/IconButton';
 // @project
 import ContainerWrapper from '@/components/ContainerWrapper';
 import GetImagePath from '@/utils/GetImagePath';
-import { GraphicsCard } from '@/components/cards';
-import { SECTION_COMMON_PY } from '@/utils/constant';
 import Typeset from '@/components/Typeset';
 
 // @assets
@@ -31,7 +29,6 @@ import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandWhat
 
 export default function Hero16({ heading, caption, secondaryBtn, poster, videoSrc }) {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const videoElement = videoRef.current;

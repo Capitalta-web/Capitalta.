@@ -29,6 +29,7 @@ import { CloseEye, OpenEye } from '@/icons';
 
 export default function AuthLogin({ inputSx }) {
   const theme = useTheme();
+  const palette = theme.vars ? theme.vars.palette : theme.palette;
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered');
@@ -80,11 +81,13 @@ export default function AuthLogin({ inputSx }) {
           console.log('🔵 Buscando perfil...');
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role,tipo_persona')
             .eq('id', user.id)
             .single();
 
-          const role = profile?.role || user.user_metadata?.role || 'cliente';
+          const legacyRole = profile?.tipo_persona;
+          const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
+          const role = profile?.role || mappedRole || user.user_metadata?.role || 'cliente';
           const dashboard =
             role === 'admin'
               ? '/dashboard/admin'
@@ -149,7 +152,7 @@ export default function AuthLogin({ inputSx }) {
             error={errors.password && Boolean(errors.password)}
             endAdornment={
               <IconButton onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
-                {isOpen ? <OpenEye color={theme.vars.palette.grey[700]} /> : <CloseEye color={theme.vars.palette.grey[700]} />}
+                {isOpen ? <OpenEye color={palette.grey[700]} /> : <CloseEye color={palette.grey[700]} />}
               </IconButton>
             }
             sx={inputSx}
@@ -167,7 +170,7 @@ export default function AuthLogin({ inputSx }) {
               component={NextLink}
               underline="hover"
               variant="caption2"
-              href=""
+              href="/auth/forgot-password"
               sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
             >
               Forgot Password?

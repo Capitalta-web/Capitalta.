@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Typography, Box, Grid, CardContent, CircularProgress } from '@mui/material';
+import { Typography, Box, Grid, CircularProgress } from '@mui/material';
 import SolicitudesList from '@/components/dashboard/analista/SolicitudesList';
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';

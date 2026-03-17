@@ -20,13 +20,17 @@ import {
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { obtenerProximasFechas, horasDisponibles, sucursalesMock, generarCodigoCita } from '@/utils/citas';
+import { DOCUMENTOS_REQUERIDOS } from '@/utils/documentosRequeridos';
+import { useRouter } from 'next/navigation';
 
 export default function CitasPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [citas, setCitas] = useState([]);
   const [user, setUser] = useState(null);
   const [activeApplication, setActiveApplication] = useState(null);
+  const [canAgendar, setCanAgendar] = useState(false);
   const [formData, setFormData] = useState({
     sucursal: '',
     fecha: '',
@@ -55,7 +59,7 @@ export default function CitasPage() {
       setUser(user);
 
       // Fetch active application
-      const { data: applications, error: appError } = await supabase
+      const { data: applications } = await supabase
         .from('solicitudes_credito')
         .select('*')
         .eq('cliente_id', user.id)
@@ -65,7 +69,20 @@ export default function CitasPage() {
         .limit(1);
 
       if (applications && applications.length > 0) {
-        setActiveApplication(applications[0]);
+        const app = applications[0];
+        setActiveApplication(app);
+
+        const { data: docs } = await supabase.from('documentos').select('*').eq('solicitud_id', app.id).order('created_at', { ascending: false });
+        const docsList = docs || [];
+        setCanAgendar(() => {
+          return DOCUMENTOS_REQUERIDOS.every((req) => {
+            const requiredCount = req.requiredCount || 1;
+            const count = docsList.filter((d) => d.tipo_documento === req.id && d.estado !== 'rechazado').length;
+            return count >= requiredCount;
+          });
+        });
+      } else {
+        setCanAgendar(false);
       }
 
       // Since we don't have a direct relation in schema yet, we search by email
@@ -144,12 +161,20 @@ export default function CitasPage() {
           Agendar Cita Presencial
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Reserva una cita con nuestros asesores en sucursal para revisar tu solicitud.
+          Reserva una cita con nuestros asesores en sucursal para revisar tu solicitud y tu expediente.
         </Typography>
         {activeApplication && (
           <Alert severity="info" sx={{ mt: 2 }}>
             Agendando cita para solicitud de crédito {activeApplication.tipo_credito.replace('_', ' ')} ($
             {activeApplication.monto_solicitado})
+          </Alert>
+        )}
+        {!canAgendar && (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            Para agendar tu cita primero completa tu expediente con los documentos requeridos.
+            <Button sx={{ ml: 1 }} size="small" onClick={() => router.push('/dashboard/cliente/documentos')}>
+              Ir a documentos
+            </Button>
           </Alert>
         )}
       </Grid>
@@ -171,6 +196,7 @@ export default function CitasPage() {
                 value={formData.sucursal}
                 onChange={(e) => setFormData({ ...formData, sucursal: e.target.value })}
                 required
+                disabled={!canAgendar}
               >
                 {sucursalesMock.map((sucursal) => (
                   <MenuItem key={sucursal.id} value={sucursal.id}>
@@ -186,7 +212,7 @@ export default function CitasPage() {
                 value={formData.fecha}
                 onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
                 required
-                disabled={!formData.sucursal}
+                disabled={!formData.sucursal || !canAgendar}
               >
                 {proximasFechas.map((fecha, index) => (
                   <MenuItem key={index} value={fecha.toISOString().split('T')[0]}>
@@ -202,7 +228,7 @@ export default function CitasPage() {
                 value={formData.hora}
                 onChange={(e) => setFormData({ ...formData, hora: e.target.value })}
                 required
-                disabled={!formData.fecha}
+                disabled={!formData.fecha || !canAgendar}
               >
                 {horasDisponibles.map((hora) => (
                   <MenuItem key={hora} value={hora}>
@@ -211,7 +237,7 @@ export default function CitasPage() {
                 ))}
               </TextField>
 
-              <Button variant="contained" size="large" type="submit" disabled={loading} fullWidth>
+              <Button variant="contained" size="large" type="submit" disabled={loading || !canAgendar} fullWidth>
                 {loading ? 'Agendando...' : 'Confirmar Cita'}
               </Button>
             </Stack>
