@@ -11,6 +11,57 @@ export const AuthProvider = ({ children }) => {
   const [isProcessing, setIsProcessing] = useState(true);
   const supabase = createSupabaseBrowserClient();
 
+  const attachLeadToUser = async (authUser, profile) => {
+    if (!authUser || !supabase || typeof window === 'undefined') return profile;
+
+    const leadId = window.localStorage.getItem('capitalta_lead_id');
+    const draftRaw = window.localStorage.getItem('capitalta_lead_draft');
+    let draft = null;
+    try {
+      draft = draftRaw ? JSON.parse(draftRaw) : null;
+    } catch {
+      draft = null;
+    }
+
+    if (!leadId && !draft) return profile;
+
+    try {
+      const res = await fetch('/api/leads/link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead_id: leadId, draft })
+      });
+
+      const payload = await res.json().catch(() => ({}));
+      if (res.ok && payload?.lead?.id) {
+        window.localStorage.setItem('capitalta_lead_id', payload.lead.id);
+      }
+
+      const finalLeadId = payload?.lead?.id || leadId;
+      if (finalLeadId && profile) {
+        const existingPrefs = profile.preferences && typeof profile.preferences === 'object' ? profile.preferences : {};
+        const nextPrefs = { ...existingPrefs, lead_id: finalLeadId };
+
+        const { data: updatedProfile } = await supabase
+          .from('profiles')
+          .update({ preferences: nextPrefs })
+          .eq('id', authUser.id)
+          .select()
+          .single();
+
+        if (updatedProfile) profile = updatedProfile;
+      }
+
+      if (res.ok) {
+        window.localStorage.removeItem('capitalta_lead_draft');
+      }
+    } catch {
+      return profile;
+    }
+
+    return profile;
+  };
+
   const fetchProfile = async (authUser) => {
     if (!authUser) return null;
 
@@ -39,14 +90,14 @@ export const AuthProvider = ({ children }) => {
             console.error('Error auto-creating profile:', insertError);
             return null;
           }
-          
-          return insertedProfile;
+
+          return attachLeadToUser(authUser, insertedProfile);
         }
 
         console.error('Error fetching profile:', error);
         return null;
       }
-      return profile;
+      return attachLeadToUser(authUser, profile);
     } catch (err) {
       if (err.name === 'AbortError') return null;
       console.error('Unexpected error fetching profile:', err);

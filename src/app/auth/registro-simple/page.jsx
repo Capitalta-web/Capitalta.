@@ -32,6 +32,16 @@ export default function SimpleRegistration() {
   const [success, setSuccess] = useState(false);
 
   const getBaseUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
+  const storeLeadDraft = (patch) => {
+    try {
+      const existingRaw = window.localStorage.getItem('capitalta_lead_draft');
+      const existing = existingRaw ? JSON.parse(existingRaw) : {};
+      window.localStorage.setItem(
+        'capitalta_lead_draft',
+        JSON.stringify({ ...existing, ...patch, source_path: window.location.pathname, updated_at: new Date().toISOString() })
+      );
+    } catch {}
+  };
 
   // Form State
   const [monto, setMonto] = useState(1000000);
@@ -54,12 +64,32 @@ export default function SimpleRegistration() {
 
     try {
       const supabase = createSupabaseBrowserClient();
+
+      try {
+        const leadResponse = await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email,
+            nombre: formData.nombre || 'Interesado',
+            telefono: formData.telefono || null,
+            monto_solicitado: monto,
+            tipo_credito: 'registro_simple',
+            origen: 'registro_manual'
+          })
+        });
+        const leadPayload = await leadResponse.json().catch(() => ({}));
+        if (leadResponse.ok && leadPayload?.lead?.id && typeof window !== 'undefined') {
+          window.localStorage.setItem('capitalta_lead_id', leadPayload.lead.id);
+        }
+      } catch {}
       
       // 1. Registro directo con Supabase Auth
       const { data, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${getBaseUrl()}/auth/callback`,
           data: {
             full_name: formData.nombre,
             phone: formData.telefono,
@@ -90,6 +120,8 @@ export default function SimpleRegistration() {
     try {
       const supabase = createSupabaseBrowserClient();
       if (!supabase) throw new Error('No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.');
+
+      storeLeadDraft({ origen: 'registro_simple_google', monto_solicitado: monto, tipo_credito: 'registro_simple' });
 
       const { error: oauthError } = await supabase.auth.signInWithOAuth({
         provider: 'google',

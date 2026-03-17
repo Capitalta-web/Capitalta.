@@ -46,6 +46,13 @@ export default function AuthSocial({ type = SocialTypes.VERTICAL, buttonSx }) {
 
       const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
 
+      try {
+        window.localStorage.setItem(
+          'capitalta_lead_draft',
+          JSON.stringify({ origen: 'auth_social', provider, source_path: window.location.pathname, started_at: new Date().toISOString() })
+        );
+      } catch {}
+
       await supabase.auth.signInWithOAuth({
         provider,
         options: {

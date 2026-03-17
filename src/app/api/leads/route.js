@@ -11,10 +11,10 @@ export async function POST(request) {
 
   const body = await request.json();
 
-  const { email, nombre, apellido, telefono, tipo_cliente, empresa, rfc, monto_solicitado, plazo_meses, tipo_credito } = body;
+  const { email, nombre, apellido, telefono, tipo_cliente, empresa, rfc, monto_solicitado, plazo_meses, tipo_credito, origen } = body;
 
-  if (!email || !nombre || !telefono) {
-    return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
+  if (!email) {
+    return NextResponse.json({ error: 'Email es obligatorio' }, { status: 400 });
   }
 
   // Validación de formato de email simple
@@ -23,13 +23,22 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Formato de email inválido' }, { status: 400 });
   }
 
+  let extraNotas = {};
+  try {
+    extraNotas = body.notas ? JSON.parse(body.notas) : {};
+  } catch {
+    extraNotas = {};
+  }
+
+  const safeNombre = (nombre && String(nombre).trim()) || 'Interesado';
+
   const { data, error } = await supabase
     .from('leads')
     .insert({
       email,
-      nombre,
-      apellido,
-      telefono,
+      nombre: safeNombre,
+      apellido: apellido || '',
+      telefono: telefono || null,
       tipo_cliente, // Asegurarse que coincida con el frontend (PF/PM) o ajustar schema si es necesario
       empresa,
       rfc,
@@ -59,8 +68,9 @@ export async function POST(request) {
         monto_solicitado,
         plazo_meses,
         tipo_credito,
-        ...JSON.parse(body.notas || '{}')
+        ...extraNotas
       }),
+      origen: (origen && String(origen).trim()) || 'web',
       estado: 'nuevo' // Corregido para coincidir con el ENUM ('nuevo', 'contactado', etc.)
     })
     .select()
