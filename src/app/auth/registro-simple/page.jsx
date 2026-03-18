@@ -17,6 +17,7 @@ import Alert from '@mui/material/Alert';
 import Slider from '@mui/material/Slider';
 import Paper from '@mui/material/Paper';
 import Divider from '@mui/material/Divider';
+import Collapse from '@mui/material/Collapse';
 
 // @icons
 import { IconEye, IconEyeOff, IconBrandGoogle, IconArrowRight, IconChecks } from '@tabler/icons-react';
@@ -30,6 +31,7 @@ export default function SimpleRegistration() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   const getBaseUrl = () => (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, '');
   const storeLeadDraft = (patch) => {
@@ -216,110 +218,123 @@ export default function SimpleRegistration() {
               </Typography>
             </Stack>
 
-            <form onSubmit={handleRegister}>
-              <Stack spacing={3}>
-                
-                {/* Monto Slider Section */}
-                <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 3, bgcolor: 'grey.50' }}>
-                  <Typography variant="subtitle2" gutterBottom>¿Cuánto capital necesitas?</Typography>
-                  <Typography variant="h4" color="primary.main" sx={{ mb: 2, fontWeight: 700 }}>
-                    ${monto.toLocaleString()} MXN
-                  </Typography>
-                  <Slider
-                    value={monto}
-                    min={50000}
-                    max={50000000}
-                    step={50000}
-                    onChange={(_, val) => setMonto(val)}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(val) => `$${val/1000000}M`}
-                  />
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="caption" color="text.secondary">$50k</Typography>
-                    <Typography variant="caption" color="text.secondary">$50M</Typography>
+            <Stack spacing={3}>
+              <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 3, bgcolor: 'grey.50' }}>
+                <Typography variant="subtitle2" gutterBottom>¿Cuánto capital necesitas?</Typography>
+                <Typography variant="h4" color="primary.main" sx={{ mb: 2, fontWeight: 700 }}>
+                  ${monto.toLocaleString()} MXN
+                </Typography>
+                <Slider
+                  value={monto}
+                  min={50000}
+                  max={50000000}
+                  step={50000}
+                  onChange={(_, val) => setMonto(val)}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(val) => `$${val / 1000000}M`}
+                />
+                <Stack direction="row" justifyContent="space-between">
+                  <Typography variant="caption" color="text.secondary">$50k</Typography>
+                  <Typography variant="caption" color="text.secondary">$50M</Typography>
+                </Stack>
+              </Box>
+
+              <Button
+                fullWidth
+                size="large"
+                variant="contained"
+                startIcon={<IconBrandGoogle />}
+                onClick={handleGoogleSignup}
+                disabled={loading}
+                sx={{ py: 1.5, fontSize: '1rem', fontWeight: 700 }}
+              >
+                Continuar con Google
+              </Button>
+
+              <Divider>
+                <Typography variant="caption" color="text.secondary">O</Typography>
+              </Divider>
+
+              <Button
+                fullWidth
+                size="medium"
+                variant="outlined"
+                disabled={loading}
+                onClick={() => setShowEmailForm((v) => !v)}
+                sx={{ py: 1.25, textTransform: 'none', fontWeight: 600 }}
+              >
+                Registrarme con correo
+              </Button>
+
+              {error && <Alert severity="error">{error}</Alert>}
+
+              <Collapse in={showEmailForm} unmountOnExit>
+                <Box component="form" onSubmit={handleRegister} sx={{ mt: 2 }}>
+                  <Stack spacing={3}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                      <TextField
+                        fullWidth
+                        label="Nombre completo"
+                        name="nombre"
+                        value={formData.nombre}
+                        onChange={handleChange}
+                        required
+                      />
+                      <TextField
+                        fullWidth
+                        label="Teléfono"
+                        name="telefono"
+                        value={formData.telefono}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Stack>
+
+                    <TextField
+                      fullWidth
+                      label="Correo electrónico"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+
+                    <TextField
+                      fullWidth
+                      label="Contraseña"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                              {showPassword ? <IconEyeOff size={20} /> : <IconEye size={20} />}
+                            </IconButton>
+                          </InputAdornment>
+                        )
+                      }}
+                      helperText="Mínimo 8 caracteres"
+                    />
+
+                    <Button
+                      fullWidth
+                      size="large"
+                      variant="contained"
+                      type="submit"
+                      disabled={loading}
+                      endIcon={!loading && <IconArrowRight size={20} />}
+                      sx={{ py: 1.5, fontSize: '1rem', fontWeight: 600 }}
+                    >
+                      {loading ? 'Procesando...' : 'Crear cuenta con correo'}
+                    </Button>
                   </Stack>
                 </Box>
-
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <TextField
-                    fullWidth
-                    label="Nombre completo"
-                    name="nombre"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    required
-                  />
-                  <TextField
-                    fullWidth
-                    label="Teléfono"
-                    name="telefono"
-                    value={formData.telefono}
-                    onChange={handleChange}
-                    required
-                  />
-                </Stack>
-
-                <TextField
-                  fullWidth
-                  label="Correo electrónico"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-
-                <TextField
-                  fullWidth
-                  label="Contraseña"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                          {showPassword ? <IconEyeOff size={20} /> : <IconEye size={20} />}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                  helperText="Mínimo 8 caracteres"
-                />
-
-                {error && <Alert severity="error">{error}</Alert>}
-
-                <Button
-                  fullWidth
-                  size="large"
-                  variant="contained"
-                  type="submit"
-                  disabled={loading}
-                  endIcon={!loading && <IconArrowRight size={20} />}
-                  sx={{ py: 1.5, fontSize: '1rem', fontWeight: 600 }}
-                >
-                  {loading ? 'Procesando...' : 'Crear cuenta y continuar'}
-                </Button>
-
-                <Divider>
-                  <Typography variant="caption" color="text.secondary">O regístrate con</Typography>
-                </Divider>
-
-                <Button
-                  fullWidth
-                  size="large"
-                  variant="outlined"
-                  startIcon={<IconBrandGoogle />}
-                  onClick={handleGoogleSignup}
-                  disabled={loading}
-                  sx={{ py: 1.5, color: 'text.primary', borderColor: 'divider' }}
-                >
-                  Google
-                </Button>
-              </Stack>
-            </form>
+              </Collapse>
+            </Stack>
 
             <Box sx={{ mt: 4, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">

@@ -133,7 +133,9 @@ export const feature20 = {
       description: 'Crédito amortizable con un solo desembolso y tasa fija del 36% anual.',
       monto: '$30,000–$10,000,000',
       plazo: '3–60 meses',
-      href: '/productos/credito-simple'
+      href: '/productos/credito-simple',
+      visual: 'revolvente',
+      recommended: true
     },
     {
       icon: 'tabler-building-bank',
@@ -141,7 +143,8 @@ export const feature20 = {
       description: 'Financiamiento a medida para empresas.',
       monto: '$500,000–$50,000,000',
       plazo: '12–120 meses',
-      href: '/productos/credito-empresarial'
+      href: '/productos/credito-empresarial',
+      visual: 'empresarial'
     }
   ]
 };

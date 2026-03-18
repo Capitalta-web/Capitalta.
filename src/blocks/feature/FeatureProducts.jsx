@@ -21,8 +21,23 @@ import SvgIcon from '@/components/SvgIcon';
 import Typeset from '@/components/Typeset';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
+import CreditEmpresarial from '@/images/graphics/CreditEmpresarial';
+import CreditRevolvente from '@/images/graphics/CreditRevolvente';
+
 export default function FeatureProducts({ heading, caption, features }) {
   const theme = useTheme();
+  const palette = theme.vars ? theme.vars.palette : theme.palette;
+
+  const getVisual = (item) => {
+    const key = item?.visual || item?.id || item?.href || item?.title;
+    if (key === 'empresarial' || String(key).includes('empresarial')) return 'empresarial';
+    return 'revolvente';
+  };
+
+  const renderVisual = (item) => {
+    const v = getVisual(item);
+    return v === 'empresarial' ? <CreditEmpresarial /> : <CreditRevolvente />;
+  };
 
   return (
     <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
@@ -61,25 +76,20 @@ export default function FeatureProducts({ heading, caption, features }) {
                     color: 'text.primary',
                     position: 'relative',
                     overflow: 'hidden',
-                    '&::before': {
+                    '&::before': { content: '""', position: 'absolute', inset: 0, bgcolor: alpha(palette.primary.main, 0.04) },
+                    '&::after': {
                       content: '""',
                       position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '4px',
-                      bgcolor: 'primary.main',
-                      transform: 'scaleX(0)',
-                      transformOrigin: 'left',
-                      transition: 'transform 0.4s ease'
+                      inset: 0,
+                      background:
+                        getVisual(item) === 'empresarial'
+                          ? `radial-gradient(600px circle at 85% 20%, ${alpha(palette.primary.main, 0.18)}, transparent 45%), radial-gradient(420px circle at 20% 80%, ${alpha(palette.primary.main, 0.1)}, transparent 55%)`
+                          : `radial-gradient(600px circle at 85% 20%, ${alpha(palette.primary.main, 0.2)}, transparent 45%), radial-gradient(520px circle at 15% 85%, ${alpha(palette.secondary?.main || palette.primary.dark, 0.12)}, transparent 55%)`
                     },
                     '&:hover': {
                       transform: 'translateY(-12px)',
                       boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)',
                       borderColor: 'primary.light',
-                      '&::before': {
-                        transform: 'scaleX(1)'
-                      },
                       '& .icon-avatar': {
                         bgcolor: 'primary.main',
                         color: 'common.white',
@@ -92,40 +102,72 @@ export default function FeatureProducts({ heading, caption, features }) {
                   }}
                   variant="outlined"
                 >
-                  <Stack direction="row" alignItems="center" justifyContent="space-between">
-                    <Avatar
-                      className="icon-avatar"
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        bgcolor: alpha(theme.palette.primary.main, 0.1),
-                        color: 'primary.main',
-                        borderRadius: 3,
-                        transition: 'all 0.4s ease'
-                      }}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: { xs: -14, md: -20 },
+                      right: { xs: -18, md: -26 },
+                      width: { xs: 180, md: 220 },
+                      height: { xs: 140, md: 160 },
+                      opacity: 0.95,
+                      pointerEvents: 'none',
+                      filter: 'saturate(1.05)'
+                    }}
+                  >
+                    <motion.div
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{ width: '100%', height: '100%' }}
                     >
-                      <SvgIcon name={item.icon} size={32} stroke={1.5} />
-                    </Avatar>
-                    {item.recommended && (
-                      <Chip 
-                        label="Recomendado" 
-                        color="primary" 
-                        size="small" 
-                        sx={{ fontWeight: 600, borderRadius: 1 }} 
-                      />
-                    )}
+                      {renderVisual(item)}
+                    </motion.div>
+                  </Box>
+
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ position: 'relative' }}>
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Avatar
+                        className="icon-avatar"
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          bgcolor: alpha(palette.primary.main, 0.1),
+                          color: 'primary.main',
+                          borderRadius: 3,
+                          transition: 'all 0.4s ease'
+                        }}
+                      >
+                        <SvgIcon name={item.icon} size={24} stroke={1.6} />
+                      </Avatar>
+                      <Stack spacing={0.25}>
+                        <Typography variant="overline" sx={{ letterSpacing: 1, color: 'text.secondary', lineHeight: 1 }}>
+                          Producto
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.6px' }}>
+                          {item.title}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                    {item.recommended && <Chip label="Recomendado" color="primary" size="small" sx={{ fontWeight: 700, borderRadius: 2 }} />}
                   </Stack>
 
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, letterSpacing: '-0.5px' }}>
-                      {item.title}
-                    </Typography>
                     <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', lineHeight: 1.6 }}>
                       {item.description || item.content}
                     </Typography>
 
                     {(item.monto || item.plazo) && (
-                      <Stack spacing={2} sx={{ mt: 2, p: 2.5, bgcolor: 'grey.50', borderRadius: 2 }}>
+                      <Stack
+                        spacing={2}
+                        sx={{
+                          mt: 2,
+                          p: 2.5,
+                          bgcolor: alpha(palette.primary.main, 0.04),
+                          border: '1px solid',
+                          borderColor: alpha(palette.primary.main, 0.12),
+                          borderRadius: 3,
+                          backdropFilter: 'blur(8px)'
+                        }}
+                      >
                         {item.monto && (
                           <Stack direction="row" alignItems="center" spacing={1.5}>
                             <SvgIcon name="tabler-coin" size={20} color="primary.main" />
@@ -154,7 +196,7 @@ export default function FeatureProducts({ heading, caption, features }) {
                     sx={{
                       mt: 'auto',
                       py: 1.5,
-                      borderRadius: 2,
+                      borderRadius: 3,
                       textTransform: 'none',
                       fontSize: '1rem',
                       fontWeight: 600,

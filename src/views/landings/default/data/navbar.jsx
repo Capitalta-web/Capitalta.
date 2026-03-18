@@ -5,9 +5,10 @@
 export const navbar = {
   customization: false,
   whatsappBtn: {
-    children: 'WhatsApp',
+    children: '',
     href: 'https://wa.me/525652016445?text=Hola%20Capitalta%2C%20quiero%20informaci%C3%B3n%20sobre%20un%20cr%C3%A9dito.',
-    target: '_blank'
+    target: '_blank',
+    sx: { minWidth: 40, width: 40, px: 0 }
   },
   secondaryBtn: { children: 'Brokers', href: '/brokers' },
   primaryBtn: { children: 'Solicitar crédito', href: '/auth/registro' },
