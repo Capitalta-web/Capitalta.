@@ -10,7 +10,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 
 // @third-party
 import { motion } from 'motion/react';
@@ -103,22 +102,6 @@ export default function FeatureProducts({ heading, caption, features }) {
                   }}
                   variant="outlined"
                 >
-                  {item.recommended && (
-                    <Chip
-                      label="Recomendado"
-                      color="primary"
-                      size="small"
-                      sx={{
-                        position: 'absolute',
-                        top: { xs: 14, md: 16 },
-                        left: { xs: 14, md: 16 },
-                        zIndex: 1,
-                        fontWeight: 700,
-                        borderRadius: 2
-                      }}
-                    />
-                  )}
-
                   <Box
                     sx={{
                       position: 'absolute',

@@ -135,7 +135,7 @@ export const feature20 = {
       plazo: '3–60 meses',
       href: '/productos/credito-simple',
       visual: 'revolvente',
-      recommended: true
+      recommended: false
     },
     {
       icon: 'tabler-building-bank',
