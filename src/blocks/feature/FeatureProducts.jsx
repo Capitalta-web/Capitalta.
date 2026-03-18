@@ -26,7 +26,8 @@ import CreditRevolvente from '@/images/graphics/CreditRevolvente';
 
 export default function FeatureProducts({ heading, caption, features }) {
   const theme = useTheme();
-  const palette = theme.vars ? theme.vars.palette : theme.palette;
+  const primaryMain = theme.palette.primary.main;
+  const secondaryMain = theme.palette.secondary?.main || theme.palette.primary.dark;
 
   const getVisual = (item) => {
     const key = item?.visual || item?.id || item?.href || item?.title;
@@ -76,15 +77,15 @@ export default function FeatureProducts({ heading, caption, features }) {
                     color: 'text.primary',
                     position: 'relative',
                     overflow: 'hidden',
-                    '&::before': { content: '""', position: 'absolute', inset: 0, bgcolor: alpha(palette.primary.main, 0.04) },
+                    '&::before': { content: '""', position: 'absolute', inset: 0, bgcolor: alpha(primaryMain, 0.04) },
                     '&::after': {
                       content: '""',
                       position: 'absolute',
                       inset: 0,
                       background:
                         getVisual(item) === 'empresarial'
-                          ? `radial-gradient(600px circle at 85% 20%, ${alpha(palette.primary.main, 0.18)}, transparent 45%), radial-gradient(420px circle at 20% 80%, ${alpha(palette.primary.main, 0.1)}, transparent 55%)`
-                          : `radial-gradient(600px circle at 85% 20%, ${alpha(palette.primary.main, 0.2)}, transparent 45%), radial-gradient(520px circle at 15% 85%, ${alpha(palette.secondary?.main || palette.primary.dark, 0.12)}, transparent 55%)`
+                          ? `radial-gradient(600px circle at 85% 20%, ${alpha(primaryMain, 0.18)}, transparent 45%), radial-gradient(420px circle at 20% 80%, ${alpha(primaryMain, 0.1)}, transparent 55%)`
+                          : `radial-gradient(600px circle at 85% 20%, ${alpha(primaryMain, 0.2)}, transparent 45%), radial-gradient(520px circle at 15% 85%, ${alpha(secondaryMain, 0.12)}, transparent 55%)`
                     },
                     '&:hover': {
                       transform: 'translateY(-12px)',
@@ -130,7 +131,7 @@ export default function FeatureProducts({ heading, caption, features }) {
                         sx={{
                           width: 48,
                           height: 48,
-                          bgcolor: alpha(palette.primary.main, 0.1),
+                          bgcolor: alpha(primaryMain, 0.1),
                           color: 'primary.main',
                           borderRadius: 3,
                           transition: 'all 0.4s ease'
@@ -161,9 +162,9 @@ export default function FeatureProducts({ heading, caption, features }) {
                         sx={{
                           mt: 2,
                           p: 2.5,
-                          bgcolor: alpha(palette.primary.main, 0.04),
+                          bgcolor: alpha(primaryMain, 0.04),
                           border: '1px solid',
-                          borderColor: alpha(palette.primary.main, 0.12),
+                          borderColor: alpha(primaryMain, 0.12),
                           borderRadius: 3,
                           backdropFilter: 'blur(8px)'
                         }}
