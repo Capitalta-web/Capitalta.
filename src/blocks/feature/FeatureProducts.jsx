@@ -103,6 +103,22 @@ export default function FeatureProducts({ heading, caption, features }) {
                   }}
                   variant="outlined"
                 >
+                  {item.recommended && (
+                    <Chip
+                      label="Recomendado"
+                      color="primary"
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: { xs: 14, md: 16 },
+                        left: { xs: 14, md: 16 },
+                        zIndex: 1,
+                        fontWeight: 700,
+                        borderRadius: 2
+                      }}
+                    />
+                  )}
+
                   <Box
                     sx={{
                       position: 'absolute',
@@ -148,7 +164,6 @@ export default function FeatureProducts({ heading, caption, features }) {
                         </Typography>
                       </Stack>
                     </Stack>
-                    {item.recommended && <Chip label="Recomendado" color="primary" size="small" sx={{ fontWeight: 700, borderRadius: 2 }} />}
                   </Stack>
 
                   <Box sx={{ flexGrow: 1 }}>
