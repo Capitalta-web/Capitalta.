@@ -1,0 +1,201 @@
+'use client';
+
+import Button from '@mui/material/Button';
+import NextLink from 'next/link';
+
+// @mui
+import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+
+// @third-party
+import { motion } from 'framer-motion';
+
+import { useColorScheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import { ThemeMode } from '@/config';
+
+// @project
+import { GraphicsCard } from '@/components/cards';
+import ContainerWrapper from '@/components/ContainerWrapper';
+import { Copyright, FollowUS, Sitemap } from '@/components/footer';
+import LogoSection from '@/components/logo';
+import SvgIcon from '@/components/SvgIcon';
+
+import { CopyrightType } from '@/enum';
+import { SECTION_COMMON_PY } from '@/utils/constant';
+
+/***************************  FOOTER - 7 DATA  ***************************/
+
+/**
+ *
+ * Demos:
+ * - [Footer7](https://www.Capitalta.io/blocks/footer/footer7)
+ */
+
+const data = [
+  {
+    id: 'navegacion',
+    grid: { size: { xs: 6, sm: 'auto' } },
+    title: 'Navegación',
+    menu: [
+      {
+        label: 'Inicio',
+        link: { href: '/' }
+      },
+      {
+        label: 'Productos',
+        link: { href: '/productos' }
+      },
+      {
+        label: 'Calculadoras',
+        link: { href: '/calculadoras/calculadora-simple' }
+      }
+    ]
+  },
+  {
+    id: 'capitalta',
+    grid: { size: { xs: 6, sm: 'auto' } },
+    title: 'Capitalta',
+    menu: [
+      {
+        label: 'Sobre Nosotros',
+        link: { href: '/sobre-nosotros' }
+      },
+      {
+        label: 'Blog',
+        link: { href: '/blog' }
+      },
+      {
+        label: 'Contacto',
+        link: { href: '/contacto' }
+      }
+    ]
+  },
+  {
+    id: 'legales',
+    grid: { size: { xs: 6, sm: 'auto' } },
+    title: 'Legales',
+    menu: [
+      {
+        label: 'Aviso de Privacidad',
+        link: { href: '/aviso-de-privacidad' }
+      },
+      {
+        label: 'Términos y Condiciones',
+        link: { href: '/legales/terminos-y-condiciones' }
+      },
+      {
+        label: 'Aviso UNE',
+        link: { href: '/assets/docs/AVISO_UNE.pdf', target: '_blank', rel: 'noopener noreferrer' }
+      },
+      {
+        label: 'REDECO',
+        link: { href: '/assets/docs/REDECO_ACUSE.pdf', target: '_blank', rel: 'noopener noreferrer' }
+      }
+    ]
+  }
+];
+
+/***************************  FOOTER - 7  ***************************/
+
+export default function Footer7() {
+  const { mode, setMode } = useColorScheme();
+
+  const toggleMode = () => {
+    const nextMode = mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK;
+    setMode(nextMode);
+  };
+
+  const logoFollowContent = (
+    <Stack sx={{ alignItems: 'flex-start', gap: { xs: 1.5, sm: 3 } }}>
+      <LogoSection />
+      <Typography variant="body2" sx={{ maxWidth: { sm: 280 } }}>
+        Soluciones financieras claras y transparentes para impulsar tu crecimiento.
+      </Typography>
+      <Button 
+        component={NextLink} 
+        href="/auth/login" 
+        variant="outlined" 
+        color="inherit" 
+        size="small"
+        sx={{ 
+          borderColor: 'divider',
+          '&:hover': { borderColor: 'primary.main', bgcolor: 'transparent', color: 'primary.main' }
+        }}
+      >
+        Iniciar sesión
+      </Button>
+    </Stack>
+  );
+
+  return (
+    <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{
+          duration: 0.5,
+          delay: 0.4
+        }}
+      >
+        <Stack id="footer-7" role="contentinfo" rel="noopener noreferrer" aria-label="Footer 7" sx={{ gap: { xs: 3, sm: 4, md: 5 } }}>
+          <Grid container spacing={{ xs: 4, md: 3 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Stack direction={{ sm: 'row', md: 'column' }} sx={{ gap: 3, justifyContent: 'space-between', height: 1 }}>
+                {logoFollowContent}
+              </Stack>
+            </Grid>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Sitemap list={data} isMenuDesign />
+            </Grid>
+          </Grid>
+          <GraphicsCard sx={{ borderRadius: { xs: 6, sm: 8 } }}>
+            <Stack
+              direction={{ sm: 'row' }}
+              sx={{
+                alignItems: 'center',
+                justifyContent: { xs: 'center', sm: 'space-between' },
+                gap: 1.5,
+                py: { xs: 2, sm: 1.5 },
+                px: { xs: 2, sm: 3 }
+              }}
+            >
+              <Copyright type={CopyrightType.TYPE3} />
+              <Stack direction="row" alignItems="center" gap={2}>
+                <IconButton
+                  size="small"
+                  aria-label="Cambiar tema claro/oscuro"
+                  onClick={toggleMode}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    bgcolor: 'grey.100',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'grey.300',
+                    '&:hover': { borderColor: 'grey.600', bgcolor: 'grey.100' }
+                  }}
+                >
+                  {mode === ThemeMode.DARK ? (
+                    <SvgIcon name="tabler-sun" size={16} color="text.primary" />
+                  ) : (
+                    <SvgIcon name="tabler-moon" size={16} color="text.primary" />
+                  )}
+                </IconButton>
+                <FollowUS heading={false} />
+              </Stack>
+            </Stack>
+          </GraphicsCard>
+          <Typography
+            variant="caption"
+            sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: 1100, mx: 'auto', whiteSpace: 'pre-line' }}
+          >
+            {`ALTA CAPITAL S.A . DE C.V. SOFOM ENR, para su constitución y operación con carácter de Sociedad Financiera de Objeto Múltiple, Entidad No Regulada, de conformidad con el Artículo 87-J de la Ley General de Organizaciones y Actividades Auxiliares de Crédito, no requiere autorización de la Secretaría de Hacienda y Crédito Público para su constitución y operación y; está sujeta a la supervisión y vigilancia de la Comisión Nacional Bancaria y de Valores para efectos del artículo 56, párrafo segundo y 95 Bis de dicha Ley.\n\nTodos los derechos reservados. Prohibida la reproducción total o parcial del contenido de este sitio.`}
+          </Typography>
+        </Stack>
+      </motion.div>
+    </ContainerWrapper>
+  );
+}

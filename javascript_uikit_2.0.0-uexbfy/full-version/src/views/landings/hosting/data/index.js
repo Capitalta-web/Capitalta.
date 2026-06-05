@@ -1,0 +1,15 @@
+export { metrics5, metrics } from './metrics';
+export { blog5, blog2 } from './blog';
+export { blogDetails } from './blog-details';
+export { clientele5 } from './clientele';
+export { contactUs1 } from './contactUs';
+export { cta, cta9, cta12, cta1, solutionsCta1, cta11 } from './cta';
+export { faq, faq1, pricingFaq1 } from './faq';
+export { feature6, feature8, feature20, serviceFeature20, feature24, feature9, aboutFeature24 } from './feature';
+export { hero, hero19, aboutHero19, pricingHero19, contacthero19 } from './hero';
+export { integration, integration3 } from './integration';
+export { navbar } from './navbar';
+export { pricing3, pricing5 } from './pricing';
+export { process7, process4, process8 } from './process';
+export { smallHero5 } from './smallHero';
+export { testimonial3, testimonial6, serviceTestimonial3, testimonial10 } from './testimonial';

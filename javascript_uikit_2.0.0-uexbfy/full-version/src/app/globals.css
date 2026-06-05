@@ -1,0 +1,45 @@
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
+@import 'yet-another-react-lightbox/styles.css';
+@import '../styles/yet-another-react-lightbox.css';
+@import '../styles/scrollbar.css';
+@import 'leaflet/dist/leaflet.css';
+
+@font-face {
+  font-family: 'Alta';
+  src: url('/assets/fonts/alta/alta_regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+body * {
+  &:focus-visible,
+  &:focus {
+    outline: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+[dir='rtl'] {
+  .slick-slider .slick-slide {
+    float: left;
+    direction: rtl;
+  }
+
+  .rfm-marquee-container {
+    direction: ltr;
+  }
+
+  .rfm-marquee-container .rfm-child {
+    direction: rtl;
+  }
+}
+

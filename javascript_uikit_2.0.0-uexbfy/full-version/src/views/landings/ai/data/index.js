@@ -1,0 +1,14 @@
+export { about } from './about';
+export { blog } from './blog';
+export { blogDetails } from './blog-details';
+export { clientele } from './clientele';
+export { cta, cta9, cta11 } from './cta';
+export { contactUs } from './contact-us';
+export { faq, faq1 } from './faq';
+export { feature, feature4, feature6, feature9, feature11, feature25 } from './feature';
+export { hero } from './hero';
+export { integration } from './integration';
+export { navbar } from './navbar';
+export { pricing5 } from './pricing';
+export { smallHero, smallHero1, smallHero2, smallHero3 } from './small-hero';
+export { testimonial, testimonial9 } from './testimonial';

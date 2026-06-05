@@ -1,0 +1,10 @@
+export { default as Pricing1 } from './Pricing1';
+export { default as Pricing2 } from './Pricing2';
+export { default as Pricing3 } from './Pricing3';
+export { default as Pricing4 } from './Pricing4';
+export { default as Pricing5 } from './Pricing5';
+export { default as Pricing6 } from './Pricing6';
+export { default as Pricing7 } from './Pricing7';
+export { default as Pricing8 } from './Pricing8';
+export { default as Pricing9 } from './Pricing9';
+export { default as Pricing10 } from './Pricing10';

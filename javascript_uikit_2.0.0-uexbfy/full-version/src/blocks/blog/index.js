@@ -1,0 +1,10 @@
+export { default as Blog1 } from './Blog1';
+export { default as Blog2 } from './Blog2';
+export { default as Blog3 } from './Blog3';
+export { default as Blog4 } from './Blog4';
+export { default as Blog5 } from './Blog5';
+export { default as Blog6 } from './Blog6';
+export { default as Blog7 } from './Blog7';
+export { default as Blog8 } from './Blog8';
+export { default as Blog9 } from './Blog9';
+export { default as Blog10 } from './Blog10';

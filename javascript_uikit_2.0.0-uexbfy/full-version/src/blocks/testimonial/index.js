@@ -1,0 +1,13 @@
+export { default as Testimonial1 } from './Testimonial1';
+export { default as Testimonial2 } from './Testimonial2';
+export { default as Testimonial3 } from './Testimonial3';
+export { default as Testimonial4 } from './Testimonial4';
+export { default as Testimonial5 } from './Testimonial5';
+export { default as Testimonial6 } from './Testimonial6';
+export { default as Testimonial7 } from './Testimonial7';
+export { default as Testimonial8 } from './Testimonial8';
+export { default as Testimonial9 } from './Testimonial9';
+export { default as Testimonial10 } from './Testimonial10';
+export { default as Testimonial11 } from './Testimonial11';
+export { default as Testimonial12 } from './Testimonial12';
+export { default as Testimonial13 } from './Testimonial13';

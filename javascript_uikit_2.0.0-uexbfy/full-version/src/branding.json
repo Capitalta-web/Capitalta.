@@ -1,0 +1,25 @@
+{
+  "brandName": "Capitalta",
+  "title": "Soluciones Financieras",
+  "company": {
+    "name": "Capitalta",
+    "url": "https://capitalta.com.mx",
+    "socialLink": {
+      "linkedin": "#",
+      "instagram": "#",
+      "facebook": "#",
+      "youtube": "#",
+      "github": "#",
+      "dribble": "#",
+      "discord": "#",
+      "support": "#"
+    }
+  },
+  "logo": {
+    "main": "/assets/images/capitalta/logo.svg",
+    "logoIcon": "/assets/images/capitalta/logo.svg",
+    "logoFab": "",
+    "logoWatermark": ""
+  }
+}
+

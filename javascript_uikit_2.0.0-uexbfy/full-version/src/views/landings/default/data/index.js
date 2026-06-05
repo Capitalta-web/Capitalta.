@@ -1,0 +1,14 @@
+export { metrics } from './metrics';
+export { clientele, clientele2 } from './clientele';
+export { contactUS } from './contact-us';
+export { cta4, cta5, cta10, cta13 } from './cta';
+export { faq } from './faq';
+export { feature, feature7, feature2, feature5, feature18, feature20, feature23, aboutCapitalta } from './feature';
+export { hero } from './hero';
+export { integration } from './integration';
+export { navbar } from './navbar';
+export { other } from './other';
+export { pricing } from './pricing';
+export { smallHero, smallHero1, smallHero4 } from './small-hero';
+export { team } from './team';
+export { testimonial } from './testimonial';

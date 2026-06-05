@@ -1,0 +1,11 @@
+export { metrics } from './metrics';
+export { cta4 } from './cta';
+export { cta5 } from './cta';
+export { faq } from './faq';
+export { feature7 } from './feature';
+export { feature16 } from './feature';
+export { hero } from './hero';
+export { navbar } from './navbar';
+export { pricing } from './pricing';
+export { process } from './process';
+export { testimonial } from './testimonial';

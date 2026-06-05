@@ -1,0 +1,14 @@
+export { blog, blog3 } from './blog';
+export { blogDetails } from './blog-details';
+export { clientele, clientele3 } from './clientele';
+export { cta, cta1, cta2, cta12 } from './cta';
+export { contactUS } from './contact-us';
+export { faq, faq1 } from './faq';
+export { feature10, feature12, feature19 } from './feature';
+export { hero } from './hero';
+export { integration2, integration4 } from './integration';
+export { navbar } from './navbar';
+export { pricing, pricing7 } from './pricing';
+export { process, process4 } from './process';
+export { smallHero, smallHero2, smallHero3, smallHero4, smallHero5, smallHero6 } from './small-hero';
+export { testimonial } from './testimonial';
