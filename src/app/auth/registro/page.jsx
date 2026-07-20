@@ -285,21 +285,26 @@ export default function RegistrationPage() {
                 </Stack>
               </Box>
 
-              <Button
-                fullWidth
-                size="large"
-                variant="contained"
-                startIcon={<IconBrandGoogle />}
-                onClick={handleGoogleSignup}
-                disabled={loading}
-                sx={{ py: 1.5, fontSize: '1rem', fontWeight: 700 }}
-              >
-                Continuar con Google
-              </Button>
+              {/* Google OAuth ocultado temporalmente */}
+              {false && (
+                <Button
+                  fullWidth
+                  size="large"
+                  variant="contained"
+                  startIcon={<IconBrandGoogle />}
+                  onClick={handleGoogleSignup}
+                  disabled={loading}
+                  sx={{ py: 1.5, fontSize: '1rem', fontWeight: 700 }}
+                >
+                  Continuar con Google
+                </Button>
+              )}
 
-              <Divider>
-                <Typography variant="caption" color="text.secondary">O</Typography>
-              </Divider>
+              {false && (
+                <Divider>
+                  <Typography variant="caption" color="text.secondary">O</Typography>
+                </Divider>
+              )}
 
               <Button
                 fullWidth
