@@ -326,9 +326,10 @@ export default function Main() {
               { src: '/assets/images/capitalta/logo-azul.png', alt: 'Aliado Estratégico' },
               { src: '/assets/images/capitalta/check-logo.png', alt: 'Aliado Estratégico' },
               { src: '/assets/images/capitalta/Yl6dShQz0v_20230403191604.png', alt: 'Aliado Estratégico' },
-              { src: '/assets/images/capitalta/cisa.png', alt: 'CISA' }
+              { src: '/assets/images/capitalta/cisa.png', alt: 'CISA' },
+              { src: '/assets/images/capitalta/asofom.jpg', alt: 'ASOFOM' }
             ].map((logo, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex' }}>
+              <Grid item xs={12} sm={6} md={2.4} key={index} sx={{ display: 'flex' }}>
                 <Box
                   sx={{
                     width: 1,
