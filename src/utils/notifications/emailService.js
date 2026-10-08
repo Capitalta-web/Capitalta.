@@ -1,36 +1,7 @@
 /**
  * Email Notification Service
- * Handles sending notification emails to admin
+ * Plantillas y formato de los correos de notificación (el envío se hace en el servidor con utils/nodemailer)
  */
-
-export async function sendAdminNotificationEmail({
-  subject,
-  htmlContent,
-  adminEmail = 'contacto@capitalta.mx'
-}) {
-  try {
-    const response = await fetch('/api/notifications/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        to: adminEmail,
-        subject,
-        htmlContent,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to send email');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Email notification error:', error);
-    throw error;
-  }
-}
 
 export function formatCurrency(value) {
   return new Intl.NumberFormat('es-MX', {
@@ -124,12 +95,12 @@ export const emailTemplates = {
 
   statusChanged: ({ solicitudId, clienteNombre, newStatus, notes }) => {
     const statusLabels = {
-      'pendiente': '⏳ Pendiente',
+      pendiente: '⏳ Pendiente',
       'en-revision': '🔍 En Revisión',
-      'aprobada': '✅ Aprobada',
-      'rechazada': '❌ Rechazada',
-      'activo': '✅ Activo',
-      'cerrado': '📊 Cerrado'
+      aprobada: '✅ Aprobada',
+      rechazada: '❌ Rechazada',
+      activo: '✅ Activo',
+      cerrado: '📊 Cerrado'
     };
 
     return `

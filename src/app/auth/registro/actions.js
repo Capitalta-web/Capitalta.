@@ -2,6 +2,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
+import { sendWelcomeEmail } from '@/utils/nodemailer';
+
 export async function resendOtpAction(email) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -249,25 +251,10 @@ export async function updateUserAndCreateRequestAction({ userId, userData, reque
 }
 
 export async function sendWelcomeEmailAction(email, nombre) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.capitalta.mx'}/api/email/welcome`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, nombre })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error('Error sending welcome email:', result.error);
-      return { success: false, error: result.error || 'Error al enviar correo de bienvenida' };
-    }
-
-    return { success: true };
-  } catch (err) {
-    console.error('Error in sendWelcomeEmailAction:', err);
+  const result = await sendWelcomeEmail(email, nombre);
+  if (!result?.success) {
+    console.error('Error sending welcome email:', result?.error);
     return { success: false, error: 'Error al enviar correo de bienvenida' };
   }
+  return { success: true };
 }

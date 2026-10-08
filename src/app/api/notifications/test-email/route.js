@@ -3,25 +3,33 @@
  * Use this to verify email configuration is working
  */
 
+import { getAdminContext } from '@/utils/buro/server-auth';
+import { sendEmail } from '@/utils/nodemailer';
+
 export async function POST(request) {
+  // Solo administradores
+  const context = await getAdminContext();
+  if (context.error) {
+    return new Response(JSON.stringify({ error: context.error }), {
+      status: context.status,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
   try {
     const { to } = await request.json();
 
     if (!to) {
-      return new Response(
-        JSON.stringify({ error: 'Missing email address in "to" field' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: 'Missing email address in "to" field' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
 
-    // Call the send-email endpoint
-    const response = await fetch(new URL('/api/notifications/send-email', request.url), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: to,
-        subject: '🧪 Test Email - Capitalta SMTP Configuration',
-        htmlContent: `
+    const result = await sendEmail({
+      to: to,
+      subject: '🧪 Test Email - Capitalta SMTP Configuration',
+      html: `
           <html>
             <body style="font-family: Arial, sans-serif; color: #333;">
               <div style="max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
@@ -37,7 +45,7 @@ export async function POST(request) {
                   <div style="background: #d4edda; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #28a745;">
                     <p style="margin: 0; color: #155724;">
                       ✅ <strong>Email enviado desde:</strong> contacto@capitalta.mx<br>
-                      ✅ <strong>SMTP Host:</strong> smtp.gmail.com:587<br>
+                      ✅ <strong>SMTP Host:</strong> smtp.gmail.com:465<br>
                       ✅ <strong>Autenticación:</strong> App Password funcionando
                     </p>
                   </div>
@@ -54,19 +62,14 @@ export async function POST(request) {
             </body>
           </html>
         `
-      })
     });
 
-    const result = await response.json();
     return new Response(JSON.stringify(result), {
-      status: response.status,
+      status: result?.success ? 200 : 502,
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (err) {
     console.error('Error in test-email:', err);
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }

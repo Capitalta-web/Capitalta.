@@ -3,34 +3,43 @@
  * Sends a daily summary of solicitudes to admin (9:00 AM)
  */
 
+import { getAdminContext } from '@/utils/buro/server-auth';
+import { sendEmail } from '@/utils/nodemailer';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { emailTemplates } from '@/utils/notifications/emailService';
 
 export async function POST(request) {
+  // Solo administradores o el cron (Authorization: Bearer CRON_SECRET)
+  const cronSecret = process.env.CRON_SECRET;
+  const isCron = Boolean(cronSecret) && request.headers.get('authorization') === `Bearer ${cronSecret}`;
+  if (!isCron) {
+    const context = await getAdminContext();
+    if (context.error) {
+      return new Response(JSON.stringify({ error: context.error }), {
+        status: context.status,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
   try {
     // Create Supabase admin client
     const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch (error) {
-              console.error('Error setting cookies:', error);
-            }
-          },
+    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
         },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          } catch (error) {
+            console.error('Error setting cookies:', error);
+          }
+        }
       }
-    );
+    });
 
     // Get today's date
     const today = new Date();
@@ -49,9 +58,9 @@ export async function POST(request) {
     if (fetchError) throw fetchError;
 
     // Calculate metrics
-    const pendientes = solicitudes?.filter(s => s.status === 'pendiente').length || 0;
-    const aprobadas = solicitudes?.filter(s => s.status === 'aprobada').length || 0;
-    const rechazadas = solicitudes?.filter(s => s.status === 'rechazada').length || 0;
+    const pendientes = solicitudes?.filter((s) => s.status === 'pendiente').length || 0;
+    const aprobadas = solicitudes?.filter((s) => s.status === 'aprobada').length || 0;
+    const rechazadas = solicitudes?.filter((s) => s.status === 'rechazada').length || 0;
     const totalMonto = solicitudes?.reduce((sum, s) => sum + (s.monto_solicitado || 0), 0) || 0;
 
     // Get admin email from config
@@ -66,17 +75,12 @@ export async function POST(request) {
     });
 
     // Send email
-    const response = await fetch(new URL('/api/notifications/send-email', request.url), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: adminEmail,
-        subject: `📊 Resumen Diario de Solicitudes - ${today.toLocaleDateString('es-MX')}`,
-        htmlContent: htmlContent
-      })
+    const response = await sendEmail({
+      to: adminEmail,
+      subject: `📊 Resumen Diario de Solicitudes - ${today.toLocaleDateString('es-MX')}`,
+      html: htmlContent
     });
-
-    if (!response.ok) {
+    if (!response?.success) {
       throw new Error('Failed to send summary email');
     }
 
@@ -97,9 +101,6 @@ export async function POST(request) {
     );
   } catch (err) {
     console.error('Error in daily-summary:', err);
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }

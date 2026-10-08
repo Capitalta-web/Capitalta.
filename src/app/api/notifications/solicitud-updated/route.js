@@ -1,39 +1,52 @@
 /**
  * Solicitud Status Updated Notification
- * Triggered when admin changes solicitud status
+ * Triggered when admin changes solicitud status.
+ * Solo administradores. El correo y nombre del cliente se leen de la base (no del navegador).
  */
 
+import { NextResponse } from 'next/server';
+
+import { getAdminContext } from '@/utils/buro/server-auth';
+import { sendEmail } from '@/utils/nodemailer';
+import { CONTACT_EMAIL, escapeHtml } from '@/utils/emailHtml';
 import { emailTemplates } from '@/utils/notifications/emailService';
 
 export async function POST(request) {
-  try {
-    const {
-      solicitudId,
-      clienteEmail,
-      clienteNombre,
-      newStatus,
-      notes
-    } = await request.json();
+  const context = await getAdminContext();
+  if (context.error) {
+    return NextResponse.json({ error: context.error }, { status: context.status });
+  }
 
-    if (!solicitudId || !clienteEmail || !newStatus) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+  try {
+    const body = await request.json().catch(() => ({}));
+    const solicitudId = String(body?.solicitudId || '');
+    const newStatus = String(body?.newStatus || '').slice(0, 40);
+    const notes = escapeHtml(String(body?.notes || '').slice(0, 2000)).replaceAll('\n', '<br/>');
+
+    if (!solicitudId || !newStatus) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get admin config
-    const config = request.headers.get('X-Admin-Config');
-    const parsedConfig = config ? JSON.parse(config) : {};
-    const adminEmail = process.env.ADMIN_EMAIL || 'contacto@capitalta.mx';
+    const { data: solicitud } = await context.admin
+      .from('solicitudes')
+      .select('id, cliente_id, profiles:cliente_id ( full_name, email )')
+      .eq('id', solicitudId)
+      .maybeSingle();
+
+    const clienteEmail = solicitud?.profiles?.email;
+    if (!clienteEmail) {
+      return NextResponse.json({ error: 'Solicitud o cliente no encontrado' }, { status: 404 });
+    }
+    const clienteNombre = escapeHtml(solicitud.profiles.full_name || clienteEmail);
+    const adminEmail = process.env.ADMIN_EMAIL || CONTACT_EMAIL;
 
     // Email templates for status changes
     const statusEmails = {
-      'aprobada': {
+      aprobada: {
         subject: '✅ ¡Tu solicitud ha sido APROBADA!',
         greeting: 'Buenas noticias'
       },
-      'rechazada': {
+      rechazada: {
         subject: '❌ Tu solicitud ha sido revisada',
         greeting: 'Información importante'
       },
@@ -41,7 +54,7 @@ export async function POST(request) {
         subject: '🔍 Tu solicitud está en revisión',
         greeting: 'Actualización'
       },
-      'activo': {
+      activo: {
         subject: '✅ Tu crédito ha sido activado',
         greeting: 'Información importante'
       }
@@ -65,16 +78,20 @@ export async function POST(request) {
 
               <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;">
                 <p style="margin: 0; font-size: 18px; font-weight: bold; color: #667eea;">
-                  ${newStatus.toUpperCase()}
+                  ${escapeHtml(newStatus.toUpperCase())}
                 </p>
               </div>
 
-              ${notes ? `
+              ${
+                notes
+                  ? `
                 <div style="background: #fff3cd; padding: 15px; border-radius: 5px; margin: 20px 0;">
                   <p style="margin: 0; font-weight: bold; color: #856404;">Comentarios:</p>
                   <p style="margin: 5px 0 0 0; color: #856404;">${notes}</p>
                 </div>
-              ` : ''}
+              `
+                  : ''
+              }
 
               <p style="margin-top: 20px;">
                 <a href="https://capitalta.mx/dashboard/cliente" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
@@ -91,34 +108,16 @@ export async function POST(request) {
       </html>
     `;
 
-    // Send to client
-    await fetch(new URL('/api/notifications/send-email', request.url), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: clienteEmail,
-        subject: emailConfig.subject,
-        htmlContent: clientHtmlContent
+    const [toClient, toAdmin] = await Promise.all([
+      sendEmail({ to: clienteEmail, subject: emailConfig.subject, html: clientHtmlContent }),
+      sendEmail({
+        to: adminEmail,
+        subject: `Solicitud actualizada - ${solicitud.profiles.full_name || clienteEmail}`,
+        html: emailTemplates.statusChanged({ solicitudId: escapeHtml(solicitudId), clienteNombre, newStatus: escapeHtml(newStatus), notes })
       })
-    });
-
-    // Also send to admin
-    const adminHtmlContent = emailTemplates.statusChanged({
-      solicitudId,
-      clienteNombre,
-      newStatus,
-      notes
-    });
-
-    await fetch(new URL('/api/notifications/send-email', request.url), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: parsedConfig.email_notificaciones || adminEmail,
-        subject: `Solicitud Actualizada - ${clienteNombre}`,
-        htmlContent: adminHtmlContent
-      })
-    });
+    ]);
+    if (!toClient?.success) console.error('[notifications/solicitud-updated] No se envió al cliente:', toClient?.error);
+    if (!toAdmin?.success) console.error('[notifications/solicitud-updated] No se envió al admin:', toAdmin?.error);
 
     return new Response(
       JSON.stringify({
@@ -129,9 +128,6 @@ export async function POST(request) {
     );
   } catch (err) {
     console.error('Error in solicitud-updated notification:', err);
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }

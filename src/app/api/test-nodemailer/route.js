@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getAdminContext } from '@/utils/buro/server-auth';
 import { sendVerificationCode } from '@/utils/nodemailer';
 
 /**
@@ -6,11 +7,16 @@ import { sendVerificationCode } from '@/utils/nodemailer';
  * GET /api/test-nodemailer
  */
 export async function GET(request) {
+  // Solo administradores
+  const context = await getAdminContext();
+  if (context.error) {
+    return NextResponse.json({ error: context.error }, { status: context.status });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
-    const testEmail = searchParams.get('email') || 'abalderas10@gmail.com';
+    const testEmail = searchParams.get('email') || context.user.email;
     const testCode = '999888';
-
 
     const result = await sendVerificationCode(testEmail, testCode);
 

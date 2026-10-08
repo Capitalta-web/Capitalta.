@@ -3,34 +3,43 @@
  * Sends a weekly summary of solicitudes to admin (Monday 8:00 AM)
  */
 
+import { getAdminContext } from '@/utils/buro/server-auth';
+import { sendEmail } from '@/utils/nodemailer';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { emailTemplates } from '@/utils/notifications/emailService';
 
 export async function POST(request) {
+  // Solo administradores o el cron (Authorization: Bearer CRON_SECRET)
+  const cronSecret = process.env.CRON_SECRET;
+  const isCron = Boolean(cronSecret) && request.headers.get('authorization') === `Bearer ${cronSecret}`;
+  if (!isCron) {
+    const context = await getAdminContext();
+    if (context.error) {
+      return new Response(JSON.stringify({ error: context.error }), {
+        status: context.status,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
   try {
     // Create Supabase admin client
     const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch (error) {
-              console.error('Error setting cookies:', error);
-            }
-          },
+    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
         },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          } catch (error) {
+            console.error('Error setting cookies:', error);
+          }
+        }
       }
-    );
+    });
 
     // Get this week's dates (Monday to Sunday)
     const today = new Date();
@@ -53,16 +62,13 @@ export async function POST(request) {
     if (fetchError) throw fetchError;
 
     // Fetch week's clientes
-    const { data: profiles, error: profileError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('role', 'cliente');
+    const { data: profiles, error: profileError } = await supabase.from('profiles').select('*').eq('role', 'cliente');
 
     if (profileError) throw profileError;
 
     // Calculate metrics
     const totalSolicitudes = solicitudes?.length || 0;
-    const aprobadas = solicitudes?.filter(s => s.status === 'aprobada').length || 0;
+    const aprobadas = solicitudes?.filter((s) => s.status === 'aprobada').length || 0;
     const tasaAprobacion = totalSolicitudes > 0 ? Math.round((aprobadas / totalSolicitudes) * 100) : 0;
     const totalClientes = profiles?.length || 0;
 
@@ -78,17 +84,12 @@ export async function POST(request) {
     });
 
     // Send email
-    const response = await fetch(new URL('/api/notifications/send-email', request.url), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: adminEmail,
-        subject: `📈 Resumen Semanal de Solicitudes - Semana del ${startOfWeek.toLocaleDateString('es-MX')}`,
-        htmlContent: htmlContent
-      })
+    const response = await sendEmail({
+      to: adminEmail,
+      subject: `📈 Resumen Semanal de Solicitudes - Semana del ${startOfWeek.toLocaleDateString('es-MX')}`,
+      html: htmlContent
     });
-
-    if (!response.ok) {
+    if (!response?.success) {
       throw new Error('Failed to send summary email');
     }
 
@@ -110,9 +111,6 @@ export async function POST(request) {
     );
   } catch (err) {
     console.error('Error in weekly-summary:', err);
-    return new Response(
-      JSON.stringify({ error: err.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }

@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 
+import { escapeHtml } from '@/utils/emailHtml';
+
 /**
  * Utilidad para envío de correos usando SMTP (Google Workspace).
  * Requiere SMTP_USER y SMTP_PASS (App Password) en .env.
@@ -9,8 +11,9 @@ import nodemailer from 'nodemailer';
  * Envía un correo electrónico genérico.
  */
 export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
+  // Acepta las variables de ambas versiones del proyecto (SMTP_* o GOOGLE_*)
+  const user = process.env.SMTP_USER || process.env.GOOGLE_EMAIL;
+  const pass = process.env.SMTP_PASS || process.env.GOOGLE_APP_PASSWORD;
 
   if (!user || !pass) {
     console.error('[Nodemailer Config Error]: Faltan variables SMTP_USER o SMTP_PASS en el entorno.');
@@ -80,7 +83,11 @@ export async function sendVerificationCode(email, code) {
  * Envía una confirmación de cita.
  */
 export async function sendAppointmentConfirmation(cita) {
-  const { nombre_cliente, email, fecha, hora, codigo_cita, sucursal_id } = cita;
+  const { email, sucursal_id } = cita;
+  const nombre_cliente = escapeHtml(cita.nombre_cliente);
+  const fecha = escapeHtml(cita.fecha);
+  const hora = escapeHtml(cita.hora);
+  const codigo_cita = escapeHtml(cita.codigo_cita);
   const sucursalNombre = sucursal_id === 'satelite' ? 'Oficinas Satélite' : 'Oficinas Centrales';
 
   const subject = `Confirmación de Cita - Capitalta (${codigo_cita})`;
@@ -108,7 +115,8 @@ export async function sendAppointmentConfirmation(cita) {
 /**
  * Envía un correo de bienvenida después del registro exitoso.
  */
-export async function sendWelcomeEmail(email, nombre) {
+export async function sendWelcomeEmail(email, nombreSinEscapar) {
+  const nombre = escapeHtml(nombreSinEscapar);
   const subject = '¡Bienvenido a Capitalta! Tu cuenta está lista';
 
   const html = `
