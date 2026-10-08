@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo } from 'react';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-import ComingSoon from '@/blocks/ComingSoon';
+import BrokerForm from '@/components/brokers/BrokerForm';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import SvgIcon from '@/components/SvgIcon';
 import { IconType } from '@/enum';
@@ -23,24 +23,7 @@ import { SECTION_COMMON_PY } from '@/utils/constant';
 export default function Brokers() {
   const theme = useTheme();
 
-  const form = useMemo(
-    () => ({
-      submitUrl: '/api/leads',
-      submitPayload: {
-        nombre: 'Broker',
-        apellido: '',
-        telefono: null,
-        tipo_cliente: null,
-        empresa: null,
-        rfc: null,
-        origen: 'broker',
-        notas: JSON.stringify({ interes: 'broker', source_path: '/quiero-ser-broker' })
-      },
-      placeholder: 'Tu correo electrónico',
-      successMessage: 'Gracias. Te contactaremos para iniciar tu registro como bróker.'
-    }),
-    []
-  );
+  const highlights = ['Comisiones por operación cerrada', 'Respaldo legal y administrativo', 'Acompañamiento en cada expediente'];
 
   const benefits = [
     {
@@ -94,20 +77,62 @@ export default function Brokers() {
       a: 'Diversificación del portafolio, acceso a oportunidades por debajo del valor de mercado y un modelo flexible, con respaldo legal y seguimiento.'
     },
     {
-      q: '¿Qué pasa después de dejar mi correo?',
-      a: 'Nuestro equipo te contacta para conocer tu perfil, resolver dudas y darte acceso al proceso de integración.'
+      q: '¿Qué pasa después de enviar mis datos?',
+      a: 'Recibes un correo de confirmación y nuestro equipo te contacta para conocer tu perfil, resolver dudas y darte acceso al proceso de integración.'
     }
   ];
 
   return (
     <>
-      <ComingSoon
-        chip={{ chipCaption: 'Programa de Brókers' }}
-        heading="Únete a nuestra red de brókers"
-        description="Déjanos tu correo y un asesor te contactará para explicarte el proceso, comisiones y requisitos."
-        primaryBtn={{ children: 'Suscribirse', sx: { px: 2.5, fontSize: 12, whiteSpace: 'nowrap' } }}
-        form={form}
-      />
+      <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
+        <Grid container spacing={{ xs: 4, md: 6 }} sx={{ alignItems: 'center', minHeight: { md: '80vh' } }}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Stack sx={{ gap: 3 }}>
+              <Chip
+                variant="outlined"
+                label="Programa de Brókers"
+                size="small"
+                slotProps={{ label: { sx: { px: 2, py: 1, color: 'text.secondary', typography: 'caption1' } } }}
+                sx={{ bgcolor: 'background.default', alignSelf: 'flex-start', borderColor: 'grey.600' }}
+              />
+              <Typography variant="h2">Únete a nuestra red de brókers</Typography>
+              <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                Déjanos tus datos y un asesor te contactará para explicarte el proceso, comisiones y requisitos.
+              </Typography>
+              <Stack sx={{ gap: 1.5 }}>
+                {highlights.map((h) => (
+                  <Stack key={h} direction="row" sx={{ gap: 1.5, alignItems: 'center' }}>
+                    <SvgIcon name="tabler-circle-check" type={IconType.STROKE} size={22} stroke={1.8} color={theme.palette.primary.main} />
+                    <Typography variant="body1">{h}</Typography>
+                  </Stack>
+                ))}
+              </Stack>
+            </Stack>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box
+              id="registro"
+              sx={{
+                p: { xs: 2.5, sm: 4 },
+                borderRadius: 4,
+                border: '1px solid',
+                borderColor: alpha(theme.palette.primary.main, 0.2),
+                bgcolor: 'background.paper',
+                position: 'relative'
+              }}
+            >
+              <Typography variant="h4" sx={{ mb: 0.5 }}>
+                Regístrate como bróker
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+                Completa tus datos y un asesor te contactará.
+              </Typography>
+              <BrokerForm />
+            </Box>
+          </Grid>
+        </Grid>
+      </ContainerWrapper>
 
       <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
         <Stack sx={{ gap: { xs: 4, md: 6 } }}>
@@ -120,7 +145,7 @@ export default function Brokers() {
 
           <Grid container spacing={2.5} alignItems="stretch">
             {benefits.map((b) => (
-              <Grid key={b.title} item xs={12} md={4} sx={{ display: 'flex' }}>
+              <Grid key={b.title} size={{ xs: 12, md: 4 }} sx={{ display: 'flex' }}>
                 <Box
                   sx={{
                     p: 3,
@@ -160,7 +185,7 @@ export default function Brokers() {
           <Divider />
 
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h4" sx={{ mb: 1.5 }}>
                 ¿Cómo funciona?
               </Typography>
@@ -190,7 +215,7 @@ export default function Brokers() {
               </Stack>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h4" sx={{ mb: 1.5 }}>
                 Requisitos
               </Typography>

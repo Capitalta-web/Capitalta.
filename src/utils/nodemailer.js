@@ -8,7 +8,7 @@ import nodemailer from 'nodemailer';
 /**
  * Envía un correo electrónico genérico.
  */
-export async function sendEmail({ to, subject, html, text, cc }) {
+export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
@@ -40,7 +40,7 @@ export async function sendEmail({ to, subject, html, text, cc }) {
       from: `"Capitalta" <${fromEmail}>`,
       to,
       cc,
-      replyTo: fromEmail,
+      replyTo: replyTo || fromEmail,
       subject,
       text: text || '',
       html: html || `<p>${text}</p>`
