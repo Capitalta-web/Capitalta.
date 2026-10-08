@@ -25,6 +25,7 @@ import { IconEye, IconEyeOff, IconBrandGoogle, IconArrowRight, IconChecks } from
 // @project
 import Logo from '@/components/logo';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { notifyRegistroCredito } from '@/utils/notifyRegistro';
 
 export default function RegistrationPage() {
   const router = useRouter();
@@ -108,6 +109,8 @@ export default function RegistrationPage() {
       });
 
       if (authError) throw authError;
+
+      notifyRegistroCredito(data?.user?.id);
 
       if (data?.session) {
         router.push('/dashboard');

@@ -4,7 +4,8 @@ const Brokers = dynamic(() => import('@/views/landings/default/brokers'));
 
 export const metadata = {
   title: 'Brokers | Capitalta',
-  description: 'Únete a nuestra red de brókers. Deja tu correo y te contactamos para iniciar el proceso.'
+  description:
+    'Súmate a nuestra red de brokers financieros: identifica necesidades de financiamiento, orienta al cliente con claridad y canaliza operaciones con transparencia.'
 };
 
 export default function BrokersPage() {
