@@ -23,7 +23,13 @@ import { useForm, Controller } from 'react-hook-form';
 
 const EXPERIENCE_OPTIONS = ['Sin experiencia', 'Menos de 1 año', '1 a 3 años', 'Más de 3 años'];
 
-const PROFILE_OPTIONS = ['Asesor inmobiliario', 'Asesor financiero o de crédito', 'Abogado', 'Cesión de derechos / recuperación', 'Otro'];
+const PROFILE_OPTIONS = [
+  'Asesor financiero o de crédito',
+  'Ejecutivo bancario o de financiera',
+  'Asesor inmobiliario',
+  'Contador o despacho',
+  'Otro'
+];
 
 // Acepta acentos, ñ, espacios, apóstrofos, puntos y guiones (ej. "José María", "Peña-López")
 const NAME_PATTERN = /^[\p{L}][\p{L}\s.'-]*$/u;
@@ -113,16 +119,16 @@ export default function BrokerForm() {
 
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(result?.error || 'No pudimos enviar tu registro. Intenta de nuevo.');
+        throw new Error(result?.error || 'No pudimos enviar tu postulación. Intenta de nuevo.');
       }
 
       setSubmitStatus({
         type: 'success',
-        message: '¡Listo! Recibimos tu registro. Te enviamos un correo de confirmación y un asesor te contactará pronto.'
+        message: '¡Listo! Recibimos tu postulación. Te enviamos un correo de confirmación y un asesor te contactará pronto.'
       });
       reset();
     } catch (err) {
-      setSubmitStatus({ type: 'error', message: err?.message || 'Ocurrió un error al enviar tu registro.' });
+      setSubmitStatus({ type: 'error', message: err?.message || 'Ocurrió un error al enviar tu postulación.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -228,7 +234,7 @@ export default function BrokerForm() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 0.5 }}>
-              <FieldLabel name="Experiencia como bróker" htmlFor="broker-experiencia" />
+              <FieldLabel name="Experiencia como broker" htmlFor="broker-experiencia" />
               <Controller
                 control={control}
                 name="experiencia"
@@ -335,7 +341,7 @@ export default function BrokerForm() {
         </Grid>
 
         <Button type="submit" color="primary" size="large" variant="contained" fullWidth disabled={isSubmitting}>
-          {isSubmitting ? 'Enviando…' : 'Quiero ser bróker'}
+          {isSubmitting ? 'Enviando…' : 'Enviar mi postulación'}
         </Button>
       </Stack>
     </form>

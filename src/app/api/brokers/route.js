@@ -66,14 +66,14 @@ export async function POST(request) {
 
   if (error) {
     console.error('[api/brokers] Error al guardar:', { code: error.code, message: error.message });
-    return NextResponse.json({ error: 'No pudimos guardar tu registro. Intenta de nuevo en unos minutos.' }, { status: 500 });
+    return NextResponse.json({ error: 'No pudimos guardar tu postulación. Intenta de nuevo en unos minutos.' }, { status: 500 });
   }
 
   const fullName = `${broker.nombre} ${broker.apellido}`;
 
   const internalHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 16px;">
-      <h2 style="margin: 0 0 12px 0;">Nuevo registro al Programa de Brókers</h2>
+      <h2 style="margin: 0 0 12px 0;">Nueva postulación a la red de brokers</h2>
       <div style="padding: 12px; border: 1px solid #eee; border-radius: 8px;">
         ${row('Nombre', fullName)}
         ${row('Correo', broker.email)}
@@ -90,8 +90,8 @@ export async function POST(request) {
   const confirmationHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 16px;">
       <h2 style="margin: 0 0 12px 0;">Registro recibido</h2>
-      <p>Hola ${escapeHtml(broker.nombre)}, recibimos tu registro al Programa de Brókers de Capitalta.</p>
-      <p>Un asesor te contactará para continuar con tu onboarding y compartirte inventario, proceso y comisiones.</p>
+      <p>Hola ${escapeHtml(broker.nombre)}, recibimos tu postulación a la red de brokers financieros de Capitalta.</p>
+      <p>Un asesor revisará tu perfil y te contactará para explicarte nuestra manera de trabajar y los siguientes pasos.</p>
       <div style="margin-top:16px;padding:12px;border:1px solid #eee;border-radius:8px;">
         ${row('Nombre', fullName)}
         ${row('Correo', broker.email)}
@@ -102,11 +102,11 @@ export async function POST(request) {
   `;
 
   const [internal, confirmation] = await Promise.all([
-    sendEmail({ to: CONTACT_EMAIL, replyTo: broker.email, subject: `Nuevo bróker: ${fullName}`, html: internalHtml }),
-    sendEmail({ to: broker.email, subject: 'Gracias por tu interés en el Programa de Brókers de Capitalta', html: confirmationHtml })
+    sendEmail({ to: CONTACT_EMAIL, replyTo: broker.email, subject: `Nueva postulación de broker: ${fullName}`, html: internalHtml }),
+    sendEmail({ to: broker.email, subject: 'Recibimos tu postulación a la red de brokers de Capitalta', html: confirmationHtml })
   ]);
   if (!internal?.success) console.error('[api/brokers] No se envió el aviso interno:', internal?.error);
-  if (!confirmation?.success) console.error('[api/brokers] No se envió la confirmación al bróker:', confirmation?.error);
+  if (!confirmation?.success) console.error('[api/brokers] No se envió la confirmación al broker:', confirmation?.error);
 
   return NextResponse.json({ broker: { id: data?.id } }, { status: 201 });
 }
