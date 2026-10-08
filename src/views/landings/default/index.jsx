@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -33,7 +33,16 @@ export default function Main() {
   const [monto, setMonto] = useState(250000);
   const [plazo, setPlazo] = useState(24);
   const [tipoCredito, setTipoCredito] = useState('simple');
-  const [tasaAnual, setTasaAnual] = useState(36);
+  const [tasaAnual, setTasaAnual] = useState(24);
+
+  useEffect(() => {
+    // Set rate based on credit type
+    if (tipoCredito === 'simple') {
+      setTasaAnual(24);
+    } else if (tipoCredito === 'empresarial') {
+      setTasaAnual(24);
+    }
+  }, [tipoCredito]);
 
   const tasaMensual = tasaAnual / 12 / 100;
   const pagoMensual =

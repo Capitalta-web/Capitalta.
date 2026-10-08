@@ -22,7 +22,7 @@ Tu misión es asesorar a los usuarios, explicar nuestros productos financieros c
    - **Objetivo**: Capital de trabajo, expansión, compra de inventario o activo fijo.
    - **Monto**: Desde $500,000 hasta $10,000,000 MXN.
    - **Plazo**: De 12 a 60 meses.
-   - **Tasa de Interés**: Fija del 36% anual.
+   - **Tasa de Interés**: Fija del 24% anual.
    - **Comisión de apertura**: 2% - 4% + IVA.
 
 2. **Crédito Empresarial**
