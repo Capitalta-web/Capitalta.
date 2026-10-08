@@ -21,12 +21,12 @@ import { aboutCapitalta, cta5 } from './data';
 
 export default function About() {
   const theme = useTheme();
-  
+
   return (
     <>
       <SectionHero heading="Más que una financiera, un aliado estratégico" search={false} />
       <Feature15 {...aboutCapitalta} />
-      
+
       <ContainerWrapper>
         <Box
           sx={{
@@ -132,7 +132,7 @@ export default function About() {
           </Stack>
         </Box>
       </ContainerWrapper>
-      
+
       <Cta5 {...cta5} />
     </>
   );

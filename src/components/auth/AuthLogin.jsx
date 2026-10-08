@@ -70,25 +70,14 @@ export default function AuthLogin({ inputSx }) {
         return;
       } else {
         // Get user and determine dashboard route
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
         if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role,tipo_persona')
-            .eq('id', user.id)
-            .single();
+          const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
-          const legacyRole = profile?.tipo_persona;
-          const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
-          const role = profile?.role || mappedRole || user.user_metadata?.role || 'cliente';
-          const dashboard =
-            role === 'admin'
-              ? '/dashboard/admin'
-              : role === 'analista'
-                ? '/dashboard/analista'
-                : role === 'notario'
-                  ? '/dashboard/notario'
-                  : '/dashboard/cliente';
+          const role = profile?.role || user.user_metadata?.role || 'cliente';
+          const dashboard = role === 'admin' ? '/dashboard/admin' : '/dashboard/cliente';
           router.refresh();
           router.replace(dashboard);
         } else {

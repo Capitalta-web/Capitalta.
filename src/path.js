@@ -27,7 +27,6 @@ export const PAGE_PATH = {
   login: path([SECTION_PATH, AUTH_PATH, 'login']),
   forgotPassword: path([SECTION_PATH, AUTH_PATH, 'forgot-password']),
   newPassword: path([SECTION_PATH, AUTH_PATH, 'new-password']),
-  otpVerification: path([SECTION_PATH, AUTH_PATH, 'otp-verification']),
   register: path([SECTION_PATH, AUTH_PATH, 'register']),
 
   about: path([SECTION_PATH, 'about']),
@@ -91,8 +90,7 @@ export const PRIVIEW_PATH = {
     },
     register: path([BLOCK_PATH, AUTH_PATH, 'register']),
     forgotPassword: path([BLOCK_PATH, AUTH_PATH, 'forgot-password']),
-    newPassword: path([BLOCK_PATH, AUTH_PATH, 'new-password']),
-    otpVerification: path([BLOCK_PATH, AUTH_PATH, 'otp-verification'])
+    newPassword: path([BLOCK_PATH, AUTH_PATH, 'new-password'])
   },
   metrics: {
     metrics1: path([BLOCK_PATH, 'metrics', 'metrics1']),

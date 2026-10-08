@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { Suspense, useEffect, useState } from 'react';
 
 // @mui
-import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -52,19 +51,16 @@ export default function ThemeProviders({ children }) {
    */
 
   return (
-    <>
-      <InitColorSchemeScript modeStorageKey={modeStorageKey} attribute="data-color-scheme" defaultMode={DEFAULT_THEME_MODE} />
-      <Suspense fallback={<Loader />}>
-        {loader ? (
-          <Loader />
-        ) : (
-          <ThemeProvider disableTransitionOnChange theme={selectedTheme} modeStorageKey={modeStorageKey} defaultMode={DEFAULT_THEME_MODE}>
-            <CssBaseline enableColorScheme />
-            <RTLLayout>{children}</RTLLayout>
-          </ThemeProvider>
-        )}
-      </Suspense>
-    </>
+    <Suspense fallback={<Loader />}>
+      {loader ? (
+        <Loader />
+      ) : (
+        <ThemeProvider disableTransitionOnChange theme={selectedTheme} modeStorageKey={modeStorageKey} defaultMode={DEFAULT_THEME_MODE}>
+          <CssBaseline enableColorScheme />
+          <RTLLayout>{children}</RTLLayout>
+        </ThemeProvider>
+      )}
+    </Suspense>
   );
 }
 

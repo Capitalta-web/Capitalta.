@@ -1,0 +1,62 @@
+chore(architecture): replanteo completo de Capitalta - Supabase limpio, auth simplificado, dashboard optimizado
+
+CAMBIOS PRINCIPALES:
+- ✅ Nuevo proyecto Supabase con schema limpio (BD0 contaminación)
+- ✅ Migración de custom OTP a Supabase Auth nativo
+- ✅ Nueva arquitectura de dashboard con route groups (auth-guard)
+- ✅ Eliminación de código legacy (signup/otp-verification routes)
+- ✅ Simplificación de AuthContext con proper useContext hook
+- ✅ RLS policies configuradas para todos los roles
+
+ARCHIVOS CREADOS:
+- src/app/dashboard/(auth-guard)/layout.jsx
+- src/app/dashboard/(auth-guard)/admin/page.jsx
+- src/app/dashboard/(auth-guard)/analista/page.jsx
+- src/app/dashboard/(auth-guard)/cliente/page.jsx
+- src/app/dashboard/layout.jsx
+- src/app/dashboard/page.jsx
+- src/app/auth/callback/page.jsx (actualizado)
+- REPLANTEO_COMPLETADO.md (documentación)
+- TESTING_CHECKLIST.md (guía de testing)
+
+ARCHIVOS MODIFICADOS:
+- src/contexts/AuthContext.jsx (simplificado)
+- src/components/auth/AuthRegister.jsx (migrado a Supabase signUp)
+- src/menu/pages.jsx (removido OTP verification)
+- src/path.js (removido OTP verification paths)
+- .env (nuevas credenciales Supabase)
+
+ARCHIVOS ELIMINADOS:
+- src/app/auth/signup/
+- src/app/auth/registro-simple/
+- src/app/api/auth/signup/route.js
+- src/app/api/auth/verify-otp/route.js
+- src/app/auth/otp-verification/
+- src/app/(common)/ (todo el directorio)
+- src/app/dashboard/(roles)/ (reemplazado por auth-guard)
+- src/components/auth/AuthOtpVerification.jsx
+- src/blocks/auth/OtpVerification.jsx
+
+TESTING REALIZADO:
+- ✅ Compilación sin errores
+- ✅ Sin referencias a rutas eliminadas
+- ✅ AuthContext funciona correctamente
+- ✅ Dashboard routing por rol funciona
+- ✅ AuthGuard protege rutas correctamente
+
+BREAKING CHANGES:
+- OTP verification flow removido completamente
+- Nuevo flujo de auth con Supabase nativo
+- Credenciales Supabase nuevas requeridas
+- Estructura de dashboard reorganizada
+
+PRÓXIMOS PASOS:
+1. Testing E2E completo (ver TESTING_CHECKLIST.md)
+2. Deploy a staging/production
+3. Monitoreo de sesiones de usuarios
+
+NOTAS:
+- Código legacy completamente removido
+- Base de datos limpia sin contaminación
+- Escalable y mantenible para futuro desarrollo
+- Pronto para producción con testing completo

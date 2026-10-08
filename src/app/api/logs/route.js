@@ -83,7 +83,6 @@ export async function POST(request) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error('Error in /api/logs:', err);
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 }

@@ -33,7 +33,16 @@ import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
  * - [NavbarContent10 API](https://capitalta.gitbook.io/Capitalta/ui-kit/development/components/navbar/navbar-content/navbarcontent10#props-details)
  */
 
-export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, secondaryBtn, whatsappBtn, customization, selectedTheme, animated }) {
+export default function NavbarContent10({
+  landingBaseUrl,
+  navItems,
+  primaryBtn,
+  secondaryBtn,
+  whatsappBtn,
+  customization,
+  selectedTheme,
+  animated
+}) {
   const theme = useTheme();
   const palette = theme.vars ? theme.vars.palette : theme.palette;
 
@@ -81,7 +90,9 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
         {customization && <Customization selectedTheme={selectedTheme} />}
         {!downSM && (
           <>
-            {!isAuthed && whatsappBtn && <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />}
+            {!isAuthed && whatsappBtn && (
+              <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />
+            )}
             {secondaryBtn && <NavSecondaryButton {...secondaryBtn} />}
             <ButtonAnimationWrapper>
               {animated ? (
@@ -129,11 +140,11 @@ export default function NavbarContent10({ landingBaseUrl, navItems, primaryBtn, 
                 )}
                 {downSM && (
                   <Stack direction="row" sx={{ justifyContent: 'space-between', gap: 1, px: 2, py: 2.5, mx: -2, bgcolor: 'grey.100' }}>
-                    {!isAuthed && whatsappBtn && <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />}
+                    {!isAuthed && whatsappBtn && (
+                      <NavSecondaryButton {...whatsappBtn} startIcon={<SvgIcon name="tabler-brand-whatsapp" size={18} />} />
+                    )}
                     {secondaryBtn && <NavSecondaryButton {...secondaryBtn} />}
-                    <ButtonAnimationWrapper>
-                      {effectivePrimaryBtn && <NavPrimaryButton {...effectivePrimaryBtn} />}
-                    </ButtonAnimationWrapper>
+                    <ButtonAnimationWrapper>{effectivePrimaryBtn && <NavPrimaryButton {...effectivePrimaryBtn} />}</ButtonAnimationWrapper>
                   </Stack>
                 )}
               </ContainerWrapper>

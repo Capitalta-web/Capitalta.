@@ -11,7 +11,6 @@ export async function GET(request) {
     const testEmail = searchParams.get('email') || 'abalderas10@gmail.com';
     const testCode = '999888';
 
-    console.log(`[Test Endpoint] Intentando enviar a: ${testEmail}`);
 
     const result = await sendVerificationCode(testEmail, testCode);
 
@@ -32,7 +31,6 @@ export async function GET(request) {
       );
     }
   } catch (error) {
-    console.error('Error en endpoint de prueba Nodemailer:', error);
     return NextResponse.json(
       {
         success: false,

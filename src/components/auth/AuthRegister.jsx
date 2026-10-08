@@ -2,11 +2,11 @@
 import PropTypes from 'prop-types';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Added
+import { useRouter } from 'next/navigation';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
-import Alert from '@mui/material/Alert'; // Added
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form';
 
 // @project
 import { emailSchema, passwordSchema, firstNameSchema, lastNameSchema } from '@/utils/validationSchema';
+import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
@@ -28,11 +29,12 @@ import { CloseEye, OpenEye } from '@/icons';
 export default function AuthRegister({ inputSx }) {
   const theme = useTheme();
   const palette = theme.vars ? theme.vars.palette : theme.palette;
-  const router = useRouter(); // Added
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenConfirm, setIsOpenConfirm] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Added
-  const [errorMsg, setErrorMsg] = useState(''); // Added
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   // Initialize react-hook-form
   const {
@@ -51,37 +53,37 @@ export default function AuthRegister({ inputSx }) {
 
     setIsLoading(true);
     setErrorMsg('');
+    setSuccessMsg('');
 
     try {
-      // Llamar a nuestro endpoint /api/auth/signup (que envía email con OTP)
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          options: {
-            data: {
-              full_name: `${data.firstname} ${data.lastname}`,
-              avatar_url: ''
-            }
-          }
-        })
+      const supabase = createSupabaseBrowserClient();
+
+      // Sign up with Supabase native method
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: `${data.firstname} ${data.lastname}`
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        setErrorMsg(result.error || 'Error al registrarse');
+      if (error) {
+        setErrorMsg(error.message || 'Error al registrarse');
         return;
       }
 
-      // Si el signup fue exitoso, ir a página de verificación OTP
-      // Pasar el email para que se muestre en el formulario de verificación
-      router.push(`/auth/otp-verification?email=${encodeURIComponent(data.email)}`);
-      reset();
+      if (authData?.user) {
+        setSuccessMsg('¡Registro exitoso! Verifica tu email para confirmar tu cuenta.');
+        reset();
+
+        // Redirect to login after a short delay
+        setTimeout(() => {
+          router.push('/auth/login?registered=true');
+        }, 2000);
+      }
     } catch (err) {
       setErrorMsg('Ocurrió un error inesperado');
       console.error(err);
@@ -94,6 +96,7 @@ export default function AuthRegister({ inputSx }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack sx={{ gap: 2.5 }}>
         {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+        {successMsg && <Alert severity="success">{successMsg}</Alert>}
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>

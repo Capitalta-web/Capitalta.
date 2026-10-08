@@ -8,7 +8,17 @@ export default function CreditoActualCard({ solicitud, onViewDetails, onNewSolic
   if (!solicitud) {
     return (
       <Card sx={{ boxShadow: 2, borderRadius: 3, height: 1, minHeight: { xs: 'auto', md: 360 } }}>
-        <CardContent sx={{ height: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', p: 3, textAlign: 'center' }}>
+        <CardContent
+          sx={{
+            height: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            p: 3,
+            textAlign: 'center'
+          }}
+        >
           <AccountBalanceIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Sin créditos activos

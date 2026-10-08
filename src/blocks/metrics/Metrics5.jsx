@@ -97,79 +97,79 @@ export default function Metrics5({ heading, caption, blockDetail }) {
         />
 
         <Stack sx={{ gap: { xs: 3, sm: 4 }, position: 'relative', p: { xs: 3, sm: 4, md: 5 } }}>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <Typeset
-            {...{
-              heading,
-              caption,
-              stackProps: { sx: { alignItems: 'center', textAlign: 'center' } },
-              headingProps: {
-                sx: {
-                  background: `linear-gradient(90deg, ${primaryMain} 0%, ${primaryDark} 55%, ${primaryMain} 100%)`,
-                  WebkitBackgroundClip: 'text',
-                  color: 'transparent',
-                  letterSpacing: '-0.6px'
-                }
-              },
-              captionProps: { sx: { width: { xs: 1, sm: '80%', md: '65%' } } }
-            }}
-          />
-        </motion.div>
-        <Grid container spacing={1.5}>
-          {blockDetail.map((item, index) => (
-            <Grid key={index} size={{ xs: 6, md: 3 }}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, delay: index * 0.4, ease: [0.215, 0.61, 0.355, 1] }}
-                whileHover={{ y: -6, scale: 1.02 }}
-                whileTap={{ scale: 0.99 }}
-                style={{ height: '100%' }}
-              >
-                <GraphicsCard
-                  sx={{
-                    p: { xs: 2, sm: 2.25, md: 3 },
-                    height: 1,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    border: '1px solid',
-                    borderColor: alpha(primaryMain, 0.12),
-                    bgcolor: alpha(theme.palette.background.paper, 0.9),
-                    backdropFilter: 'blur(10px)',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      inset: 0,
-                      background: `radial-gradient(520px circle at 30% 0%, ${alpha(primaryMain, 0.16)}, transparent 55%)`,
-                      opacity: 0.9
-                    }
-                  }}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Typeset
+              {...{
+                heading,
+                caption,
+                stackProps: { sx: { alignItems: 'center', textAlign: 'center' } },
+                headingProps: {
+                  sx: {
+                    background: `linear-gradient(90deg, ${primaryMain} 0%, ${primaryDark} 55%, ${primaryMain} 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    color: 'transparent',
+                    letterSpacing: '-0.6px'
+                  }
+                },
+                captionProps: { sx: { width: { xs: 1, sm: '80%', md: '65%' } } }
+              }}
+            />
+          </motion.div>
+          <Grid container spacing={1.5}>
+            {blockDetail.map((item, index) => (
+              <Grid key={index} size={{ xs: 6, md: 3 }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.9, delay: index * 0.4, ease: [0.215, 0.61, 0.355, 1] }}
+                  whileHover={{ y: -6, scale: 1.02 }}
+                  whileTap={{ scale: 0.99 }}
+                  style={{ height: '100%' }}
                 >
-                  <Stack sx={{ gap: 0.5, alignItems: 'center' }}>
-                    <Stack direction="row" sx={{ alignItems: 'flex-end' }}>
-                      <Typography component="div" variant="h1">
-                        <AnimatedCounter startCount={0} endCount={item.counter} />
-                      </Typography>
-                      <Typography component="div" variant="h3" sx={{ color: 'text.secondary', mb: { xs: 0.25, md: 0.625 } }}>
-                        {item.defaultUnit}
+                  <GraphicsCard
+                    sx={{
+                      p: { xs: 2, sm: 2.25, md: 3 },
+                      height: 1,
+                      position: 'relative',
+                      overflow: 'hidden',
+                      border: '1px solid',
+                      borderColor: alpha(primaryMain, 0.12),
+                      bgcolor: alpha(theme.palette.background.paper, 0.9),
+                      backdropFilter: 'blur(10px)',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        inset: 0,
+                        background: `radial-gradient(520px circle at 30% 0%, ${alpha(primaryMain, 0.16)}, transparent 55%)`,
+                        opacity: 0.9
+                      }
+                    }}
+                  >
+                    <Stack sx={{ gap: 0.5, alignItems: 'center' }}>
+                      <Stack direction="row" sx={{ alignItems: 'flex-end' }}>
+                        <Typography component="div" variant="h1">
+                          <AnimatedCounter startCount={0} endCount={item.counter} />
+                        </Typography>
+                        <Typography component="div" variant="h3" sx={{ color: 'text.secondary', mb: { xs: 0.25, md: 0.625 } }}>
+                          {item.defaultUnit}
+                        </Typography>
+                      </Stack>
+                      <Typography align="center" sx={{ color: 'text.secondary' }}>
+                        {item.caption}
                       </Typography>
                     </Stack>
-                    <Typography align="center" sx={{ color: 'text.secondary' }}>
-                      {item.caption}
-                    </Typography>
-                  </Stack>
-                </GraphicsCard>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      </Stack>
+                  </GraphicsCard>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+        </Stack>
       </Box>
     </ContainerWrapper>
   );

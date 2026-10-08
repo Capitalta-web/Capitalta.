@@ -1,62 +1,61 @@
 'use client';
-
 import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-import PageLoader from '@/components/PageLoader';
-import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
-export default function AuthCallbackPage() {
+export default function AuthCallback() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { refreshUser } = useAuth();
 
   useEffect(() => {
-    const run = async () => {
-      const errorParam = searchParams.get('error');
-      const code = searchParams.get('code');
-      const type = searchParams.get('type');
-
-      if (errorParam) {
-        router.replace(`/auth/login?error=${encodeURIComponent(errorParam)}`);
-        return;
-      }
-
-      if (!code) {
-        router.replace('/auth/login');
-        return;
-      }
-
+    const handleCallback = async () => {
       const supabase = createSupabaseBrowserClient();
-      if (!supabase) {
-        router.replace('/auth/login?error=supabase_not_configured');
-        return;
-      }
-
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) {
-        console.error('Exchange error:', error);
-        router.replace('/auth/login?error=callback_failed');
-        return;
-      }
-
-      // Pequeña pausa para asegurar persistencia de sesión antes de refrescar
-      await new Promise(resolve => setTimeout(resolve, 500));
 
       try {
-        await refreshUser();
-      } catch (err) {
-        console.error('Refresh error:', err);
-      }
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user;
 
-      // Redirección forzada para evitar bucles de carga
-      window.location.href = type === 'recovery' ? '/auth/update-password' : '/dashboard';
+        if (!user) {
+          router.replace('/auth/login');
+          return;
+        }
+
+        // Check if profile exists
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        // If profile doesn't exist, create it
+        if (!profile) {
+          const newProfile = {
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || 'Usuario',
+            role: 'cliente'
+          };
+
+          await supabase
+            .from('profiles')
+            .insert([newProfile]);
+        }
+
+        // Redirect to dashboard
+        router.replace('/dashboard');
+      } catch (err) {
+        console.error('Callback error:', err);
+        router.replace('/auth/login');
+      }
     };
 
-    run();
-  }, [refreshUser, router, searchParams]);
+    handleCallback();
+  }, [router]);
 
-  return <PageLoader message="Conectando tu cuenta y preparando tu panel..." />;
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 2 }}>
+      <CircularProgress />
+      <Typography>Confirmando tu cuenta...</Typography>
+    </Box>
+  );
 }
-

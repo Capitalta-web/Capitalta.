@@ -49,7 +49,7 @@ export default function Locales({ children }) {
           messages={messages || {}}
           onError={(err) => {
             if (err && err.code === 'MISSING_TRANSLATION') return;
-            // eslint-disable-next-line no-console
+
             console.warn(err);
           }}
         >

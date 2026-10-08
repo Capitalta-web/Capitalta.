@@ -85,10 +85,7 @@ export default function ProfileSection() {
   }, [userData]);
 
   const initials = useMemo(() => {
-    const parts = String(displayName)
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
+    const parts = String(displayName).trim().split(/\s+/).filter(Boolean);
     const first = parts[0]?.[0] || 'U';
     const last = parts[1]?.[0] || parts[0]?.[1] || '';
     return `${first}${last}`.toUpperCase();
@@ -195,7 +192,12 @@ export default function ProfileSection() {
           .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
           .eq('id', userData.id);
 
-        if (profileError && !String(profileError.message || '').toLowerCase().includes('avatar_url')) {
+        if (
+          profileError &&
+          !String(profileError.message || '')
+            .toLowerCase()
+            .includes('avatar_url')
+        ) {
           setUploadError(profileError.message);
           return;
         }
@@ -280,93 +282,6 @@ export default function ProfileSection() {
                             </ListItemIcon>
                             <ListItemText primary={uploading ? 'Subiendo foto...' : 'Cambiar foto'} />
                           </ListItemButton>
-                          <ListItem
-                            secondaryAction={
-                              <Switch
-                                size="small"
-                                checked={theme.direction === ThemeDirection.RTL}
-                                onChange={() =>
-                                  setField(
-                                    'themeDirection',
-                                    themeDirection === ThemeDirection.RTL ? ThemeDirection.LTR : ThemeDirection.RTL
-                                  )
-                                }
-                              />
-                            }
-                            sx={{ py: 1, pl: 1, '& .MuiListItemSecondaryAction-root': { right: 8 } }}
-                          >
-                            <ListItemIcon>
-                              <IconTextDirectionLtr size={16} />
-                            </ListItemIcon>
-                            <ListItemText primary="RTL" />
-                          </ListItem>
-                          <ListItemButton sx={buttonStyle} onClick={handleInnerActionClick}>
-                            <ListItemIcon>
-                              <IconLanguage size={16} />
-                            </ListItemIcon>
-                            <ListItemText primary="Language" />
-                            <Chip
-                              label={languageList.filter((item) => item.key === i18n)[0]?.value.slice(0, 3)}
-                              variant="text"
-                              size="small"
-                              color="secondary"
-                              icon={<IconChevronRight size={16} />}
-                              position={ChipIconPosition.RIGHT}
-                              sx={{ textTransform: 'capitalize' }}
-                            />
-                            <AnimatePresence>
-                              <Fragment>
-                                <Popper
-                                  placement="left-start"
-                                  id={innerId}
-                                  open={innerOpen}
-                                  anchorEl={innerAnchorEl}
-                                  transition
-                                  popperOptions={{
-                                    modifiers: [
-                                      {
-                                        name: 'preventOverflow',
-                                        options: {
-                                          boundary: 'clippingParents'
-                                        }
-                                      },
-                                      { name: 'offset', options: { offset: [0, 8] } }
-                                    ]
-                                  }}
-                                >
-                                  {({ TransitionProps }) => (
-                                    <Fade in={innerOpen} {...TransitionProps}>
-                                      <motion.div
-                                        variants={varSlide('slideInLeft', { distance: 10 })}
-                                        initial="initial"
-                                        animate="animate"
-                                        exit="exit"
-                                      >
-                                        <MainCard
-                                          sx={{ borderRadius: 2, boxShadow: tooltipShadow, minWidth: 150, p: 0.5 }}
-                                        >
-                                          <ClickAwayListener onClickAway={() => setInnerAnchorEl(null)}>
-                                            <List disablePadding>
-                                              {languageList.map((item, index) => (
-                                                <ListItemButton
-                                                  selected={item.key === i18n}
-                                                  key={index}
-                                                  sx={buttonStyle}
-                                                  onClick={(event) => i18nHandler(event, item.key)}
-                                                >
-                                                  <ListItemText>{item.value}</ListItemText>
-                                                </ListItemButton>
-                                              ))}
-                                            </List>
-                                          </ClickAwayListener>
-                                        </MainCard>
-                                      </motion.div>
-                                    </Fade>
-                                  )}
-                                </Popper>
-              </Fragment>
-            </AnimatePresence>
-                          </ListItemButton>
                           <ListItem disablePadding>
                             <Button
                               fullWidth
@@ -376,7 +291,7 @@ export default function ProfileSection() {
                               endIcon={<IconLogout size={16} />}
                               onClick={logoutAccount}
                             >
-                              Logout
+                              Cerrar Sesión
                             </Button>
                           </ListItem>
                         </List>

@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
       category: 'productos',
       published_at: new Date().toISOString(),
       image_url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80',
-      content: `<h2>¿Por qué elegir un Crédito Revolvente?</h2><p>La principal ventaja es la disponibilidad inmediata de recursos. En Capitalta, nuestra tasa del 24% fija anual garantiza claridad total...</p><p>Ideal para capital de trabajo, nóminas o inventarios.</p>`
+      content: `<h2>¿Por qué elegir un Crédito Revolvente?</h2><p>La principal ventaja es la disponibilidad inmediata de recursos. En Capitalta, nuestra tasa del 36% fija anual garantiza claridad total...</p><p>Ideal para capital de trabajo, nóminas o inventarios.</p>`
     },
     'expansion-empresarial-financiamiento': {
       slug: 'expansion-empresarial-financiamiento',

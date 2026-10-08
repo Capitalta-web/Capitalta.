@@ -118,7 +118,12 @@ export default function DocumentosChecklist({ documentos = [] }) {
 
         {/* Botones */}
         <Stack direction="row" spacing={1}>
-          <Button variant="contained" startIcon={<CloudUploadIcon />} fullWidth onClick={() => router.push('/dashboard/cliente/documentos')}>
+          <Button
+            variant="contained"
+            startIcon={<CloudUploadIcon />}
+            fullWidth
+            onClick={() => router.push('/dashboard/cliente/documentos')}
+          >
             Subir documentos
           </Button>
           <Button variant="outlined" fullWidth onClick={() => router.push('/dashboard/cliente/documentos')}>

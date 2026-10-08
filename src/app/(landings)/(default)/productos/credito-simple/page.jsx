@@ -90,7 +90,7 @@ function formatoMoneda(valor) {
 export default function CreditoSimplePage() {
   const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual] = useState(24);
+  const [tasaAnual] = useState(36);
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -145,7 +145,7 @@ export default function CreditoSimplePage() {
                 </Typography>
                 <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 600 }}>
-                  Impulsa tus ideas o capital de trabajo con un solo desembolso, plazos definidos y una tasa fija del 24% anual desde el
+                  Impulsa tus ideas o capital de trabajo con un solo desembolso, plazos definidos y una tasa fija del 36% anual desde el
                   inicio.
                 </Typography>
                 <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', pt: 1 }}>
@@ -412,7 +412,7 @@ export default function CreditoSimplePage() {
                 InputProps={{
                   readOnly: true
                 }}
-                helperText="La tasa de interés para este producto es fija del 24% anual."
+                helperText="La tasa de interés para este producto es fija del 36% anual."
               />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>

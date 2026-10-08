@@ -25,7 +25,6 @@ import { IconEye, IconEyeOff, IconBrandGoogle, IconArrowRight, IconChecks } from
 // @project
 import Logo from '@/components/logo';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
-import { notifyRegistroCredito } from '@/utils/notifyRegistro';
 
 export default function RegistrationPage() {
   const router = useRouter();
@@ -34,7 +33,7 @@ export default function RegistrationPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
-  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(true);
 
   const getBaseUrl = () => window.location.origin.replace(/\/$/, '').replace('https://www.capitalta.mx', 'https://capitalta.mx');
   const storeLeadDraft = (patch) => {
@@ -110,8 +109,6 @@ export default function RegistrationPage() {
 
       if (authError) throw authError;
 
-      notifyRegistroCredito(data?.user?.id);
-
       if (data?.session) {
         router.push('/dashboard');
         return;
@@ -180,12 +177,23 @@ export default function RegistrationPage() {
             <Box sx={{ mb: 3, display: 'inline-flex', p: 2, borderRadius: '50%', bgcolor: 'success.lighter', color: 'success.main' }}>
               <IconChecks size={48} />
             </Box>
-            <Typography variant="h3" gutterBottom>¡Registro Exitoso!</Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Si tu cuenta requiere confirmación, recibirás un correo en <strong>{formData.email}</strong>. Revisa tu bandeja de entrada y spam.
+            <Typography variant="h3" gutterBottom>
+              ¡Registro Exitoso!
             </Typography>
-            {resendStatus && <Alert severity="success" sx={{ mb: 2 }}>{resendStatus}</Alert>}
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              Si tu cuenta requiere confirmación, recibirás un correo en <strong>{formData.email}</strong>. Revisa tu bandeja de entrada y
+              spam.
+            </Typography>
+            {resendStatus && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {resendStatus}
+              </Alert>
+            )}
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
             <Stack spacing={1.5}>
               <Button variant="outlined" fullWidth size="large" disabled={loading} onClick={handleResend}>
                 {loading ? 'Enviando...' : 'Reenviar correo de confirmación'}
@@ -215,11 +223,32 @@ export default function RegistrationPage() {
             flexShrink: 0
           }}
         >
-          <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0.1, background: 'radial-gradient(circle at top right, #ffffff 0%, transparent 40%)' }} />
-          
-          <Box sx={{ p: 6, zIndex: 1, height: '100vh', position: 'sticky', top: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              opacity: 0.1,
+              background: 'radial-gradient(circle at top right, #ffffff 0%, transparent 40%)'
+            }}
+          />
+
+          <Box
+            sx={{
+              p: 6,
+              zIndex: 1,
+              height: '100vh',
+              position: 'sticky',
+              top: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}
+          >
             <Logo isIcon={false} sx={{ width: 140, filter: 'brightness(0) invert(1)' }} />
-            
+
             <Box>
               <Typography variant="h2" sx={{ mb: 3, fontWeight: 700 }}>
                 Impulsa tu negocio hoy mismo.
@@ -227,10 +256,22 @@ export default function RegistrationPage() {
               <Stack spacing={2}>
                 {['Aprobación en 48 horas', 'Sin costos ocultos', 'Trámite 100% digital', 'Asesoría personalizada'].map((item, index) => (
                   <Stack key={index} direction="row" alignItems="center" spacing={1.5}>
-                    <Box sx={{ width: 24, height: 24, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Box
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        bgcolor: 'rgba(255,255,255,0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
                       <IconChecks size={14} />
                     </Box>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>{item}</Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {item}
+                    </Typography>
                   </Stack>
                 ))}
               </Stack>
@@ -243,8 +284,12 @@ export default function RegistrationPage() {
               <Stack direction="row" alignItems="center" spacing={2}>
                 <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.2)' }} />
                 <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Carlos Mendoza</Typography>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>Director General, TechSolutions</Typography>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                    Carlos Mendoza
+                  </Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                    Director General, TechSolutions
+                  </Typography>
                 </Box>
               </Stack>
             </Box>
@@ -269,7 +314,9 @@ export default function RegistrationPage() {
 
             <Stack spacing={3}>
               <Box sx={{ p: { xs: 2, sm: 3 }, border: '1px solid', borderColor: 'divider', borderRadius: 3, bgcolor: 'grey.50' }}>
-                <Typography variant="subtitle2" gutterBottom>¿Cuánto capital necesitas?</Typography>
+                <Typography variant="subtitle2" gutterBottom>
+                  ¿Cuánto capital necesitas?
+                </Typography>
                 <Typography variant="h4" color="primary.main" sx={{ mb: 2, fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
                   ${monto.toLocaleString()} MXN
                 </Typography>
@@ -283,42 +330,15 @@ export default function RegistrationPage() {
                   valueLabelFormat={(val) => `$${val / 1000000}M`}
                 />
                 <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="caption" color="text.secondary">$50k</Typography>
-                  <Typography variant="caption" color="text.secondary">$50M</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    $50k
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    $50M
+                  </Typography>
                 </Stack>
               </Box>
 
-              {/* Google OAuth ocultado temporalmente */}
-              {false && (
-                <Button
-                  fullWidth
-                  size="large"
-                  variant="contained"
-                  startIcon={<IconBrandGoogle />}
-                  onClick={handleGoogleSignup}
-                  disabled={loading}
-                  sx={{ py: 1.5, fontSize: '1rem', fontWeight: 700 }}
-                >
-                  Continuar con Google
-                </Button>
-              )}
-
-              {false && (
-                <Divider>
-                  <Typography variant="caption" color="text.secondary">O</Typography>
-                </Divider>
-              )}
-
-              <Button
-                fullWidth
-                size="medium"
-                variant="outlined"
-                disabled={loading}
-                onClick={() => setShowEmailForm((v) => !v)}
-                sx={{ py: 1.25, textTransform: 'none', fontWeight: 600 }}
-              >
-                Registrarme con correo
-              </Button>
 
               {error && <Alert severity="error">{error}</Alert>}
 
@@ -326,22 +346,8 @@ export default function RegistrationPage() {
                 <Box component="form" onSubmit={handleRegister} sx={{ mt: 2 }}>
                   <Stack spacing={3}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                      <TextField
-                        fullWidth
-                        label="Nombre completo"
-                        name="nombre"
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        required
-                      />
-                      <TextField
-                        fullWidth
-                        label="Teléfono"
-                        name="telefono"
-                        value={formData.telefono}
-                        onChange={handleChange}
-                        required
-                      />
+                      <TextField fullWidth label="Nombre completo" name="nombre" value={formData.nombre} onChange={handleChange} required />
+                      <TextField fullWidth label="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} required />
                     </Stack>
 
                     <TextField

@@ -54,12 +54,11 @@ export default function Login1({ heading, caption, signupLink }) {
             <Box>
               <Stack sx={{ gap: { xs: 4, sm: 6 } }}>
                 <Typeset {...{ heading, caption }} captionProps={{ variant: 'body1' }} />
-                <AuthSocial />
               </Stack>
 
               <Divider sx={{ mt: { xs: 4, sm: 5 }, mb: 3 }}>
                 <Typography variant="subtitle2" sx={{ color: 'text.secondary', px: 1.25 }}>
-                  Continue with email
+                  Inicia sesión con tu email
                 </Typography>
               </Divider>
               <AuthLogin />

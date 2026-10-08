@@ -17,13 +17,22 @@ export default function AuthGuard({ children }) {
   const router = useRouter();
   const { isProcessing, userData, refreshUser } = useCurrentUser();
   const [stalled, setStalled] = useState(false);
+  const [didAttemptRefresh, setDidAttemptRefresh] = useState(false);
 
   useEffect(() => {
-    if (!isProcessing && (!userData || Object.keys(userData).length === 0) && pathname !== '/auth/login') {
+    const isEmptyUser = !userData || Object.keys(userData).length === 0;
+    if (pathname === '/auth/login') return;
+
+    if (!isProcessing && isEmptyUser) {
+      if (!didAttemptRefresh) {
+        setDidAttemptRefresh(true);
+        refreshUser?.();
+        return;
+      }
       router.replace('/auth/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData, pathname, isProcessing]);
+  }, [userData, pathname, isProcessing, didAttemptRefresh]);
 
   useEffect(() => {
     if (!isProcessing) {

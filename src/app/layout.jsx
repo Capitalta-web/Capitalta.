@@ -5,12 +5,14 @@ import './globals.css';
 
 // @mui
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 
 // @project
 import Metrics from './metrics';
 import ProviderWrapper from './ProviderWrapper';
 import ThemeProviders from '@/components/ThemeProvider';
 import { mainMetadata } from '@/metadata';
+import { DEFAULT_THEME_MODE } from '@/config';
 
 /***************************  METADATA - MAIN  ***************************/
 
@@ -36,6 +38,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Initialize Color Scheme Script - Must be in head */}
+        <InitColorSchemeScript modeStorageKey="theme-mode" attribute="data-color-scheme" defaultMode={DEFAULT_THEME_MODE} />
         {/* Preconnect and DNS Prefetch */}
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />

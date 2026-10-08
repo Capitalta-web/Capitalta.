@@ -13,10 +13,7 @@ export async function POST(request) {
 
     // Validación
     if (!email || !nombre) {
-      return NextResponse.json(
-        { error: 'Email y nombre son requeridos' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email y nombre son requeridos' }, { status: 400 });
     }
 
     // Enviar correo de bienvenida
@@ -24,10 +21,7 @@ export async function POST(request) {
 
     if (!result.success) {
       console.error('Error sending welcome email:', result.error);
-      return NextResponse.json(
-        { error: 'Error al enviar correo de bienvenida' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Error al enviar correo de bienvenida' }, { status: 500 });
     }
 
     console.log(`[Welcome Email] Correo de bienvenida enviado a: ${email}`);

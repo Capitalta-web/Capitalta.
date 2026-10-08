@@ -26,8 +26,22 @@ export default function CreditRevolvente({ width = 220, height = 160 }) {
         strokeLinecap="round"
       />
 
-      <path d="M164 48v26h-26" stroke={palette.primary.main} strokeOpacity="0.3" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M56 112v-26h26" stroke={palette.primary.main} strokeOpacity="0.22" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M164 48v26h-26"
+        stroke={palette.primary.main}
+        strokeOpacity="0.3"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M56 112v-26h26"
+        stroke={palette.primary.main}
+        strokeOpacity="0.22"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
 
       <path
         d="M96 102c0 7 6 12 14 12s14-5 14-12-6-12-14-12-14-5-14-12 6-12 14-12 14 5 14 12"
@@ -42,4 +56,3 @@ export default function CreditRevolvente({ width = 220, height = 160 }) {
     </svg>
   );
 }
-

@@ -15,15 +15,20 @@
 -- Extiende los datos del usuario de Supabase Auth
 -- ============================================
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   role TEXT NOT NULL CHECK (role IN ('cliente', 'analista', 'admin', 'notario')) DEFAULT 'cliente',
+  email TEXT,
   nombre_completo TEXT,
   telefono TEXT,
+  tipo_persona TEXT,
   rfc TEXT,
   curp TEXT,
   direccion TEXT,
   avatar_url TEXT,
+  preferences JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -67,6 +72,7 @@ CREATE TABLE IF NOT EXISTS solicitudes_credito (
     'en_comite',
     'aprobado',
     'rechazado',
+    'cancelado',
     'formalizacion_notarial',
     'cita_agendada',
     'cita_completada',
@@ -172,33 +178,37 @@ CREATE TRIGGER update_avaluos_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
--- 5. TABLA: citas_presenciales
--- Almacena las citas para firma de contratos
+-- 5. TABLA: citas
+-- Almacena las citas presenciales (sucursal)
 -- ============================================
 
-CREATE TABLE IF NOT EXISTS citas_presenciales (
+CREATE TABLE IF NOT EXISTS citas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  solicitud_id UUID NOT NULL REFERENCES solicitudes_credito(id) ON DELETE CASCADE,
-  cliente_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  fecha_cita TIMESTAMP WITH TIME ZONE NOT NULL,
-  ubicacion TEXT NOT NULL,
-  estado TEXT NOT NULL CHECK (estado IN ('pendiente', 'confirmada', 'completada', 'cancelada')) DEFAULT 'pendiente',
-  notas TEXT,
-  completada_por UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  fecha DATE NOT NULL,
+  hora TEXT NOT NULL,
+  sucursal_id TEXT NOT NULL,
+  nombre_cliente TEXT NOT NULL,
+  email TEXT,
+  telefono TEXT,
+  codigo_cita TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'programada',
+  notas TEXT,
+  cliente_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  solicitud_id UUID REFERENCES solicitudes_credito(id) ON DELETE SET NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Índices
-CREATE INDEX IF NOT EXISTS idx_citas_solicitud_id ON citas_presenciales(solicitud_id);
-CREATE INDEX IF NOT EXISTS idx_citas_cliente_id ON citas_presenciales(cliente_id);
-CREATE INDEX IF NOT EXISTS idx_citas_fecha ON citas_presenciales(fecha_cita);
-CREATE INDEX IF NOT EXISTS idx_citas_estado ON citas_presenciales(estado);
+CREATE INDEX IF NOT EXISTS idx_citas_solicitud_id ON citas(solicitud_id);
+CREATE INDEX IF NOT EXISTS idx_citas_cliente_id ON citas(cliente_id);
+CREATE INDEX IF NOT EXISTS idx_citas_fecha ON citas(fecha);
+CREATE INDEX IF NOT EXISTS idx_citas_status ON citas(status);
 
 -- Trigger para actualizar updated_at
-DROP TRIGGER IF EXISTS update_citas_presenciales_updated_at ON citas_presenciales;
-CREATE TRIGGER update_citas_presenciales_updated_at
-  BEFORE UPDATE ON citas_presenciales
+DROP TRIGGER IF EXISTS update_citas_updated_at ON citas;
+CREATE TRIGGER update_citas_updated_at
+  BEFORE UPDATE ON citas
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
@@ -315,7 +325,7 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE solicitudes_credito ENABLE ROW LEVEL SECURITY;
 ALTER TABLE documentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE avaluos ENABLE ROW LEVEL SECURITY;
-ALTER TABLE citas_presenciales ENABLE ROW LEVEL SECURITY;
+ALTER TABLE citas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE creditos_activos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pagos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comentarios_internos ENABLE ROW LEVEL SECURITY;
@@ -508,32 +518,32 @@ CREATE POLICY "Staff gestiona avalúos"
   );
 
 -- ============================================
--- POLÍTICAS PARA: citas_presenciales
+-- POLÍTICAS PARA: citas
 -- ============================================
 
 -- Los clientes ven sus propias citas
-DROP POLICY IF EXISTS "Clientes ven sus citas" ON citas_presenciales;
+DROP POLICY IF EXISTS "Clientes ven sus citas" ON citas;
 CREATE POLICY "Clientes ven sus citas"
-  ON citas_presenciales FOR SELECT
-  USING (cliente_id = auth.uid());
+  ON citas FOR SELECT
+  USING (cliente_id = auth.uid() OR (select auth.jwt() ->> 'email') = email);
 
 -- Los clientes pueden crear citas para sus solicitudes
-DROP POLICY IF EXISTS "Clientes crean citas" ON citas_presenciales;
+DROP POLICY IF EXISTS "Clientes crean citas" ON citas;
 CREATE POLICY "Clientes crean citas"
-  ON citas_presenciales FOR INSERT
+  ON citas FOR INSERT
   WITH CHECK (
     cliente_id = auth.uid()
     AND EXISTS (
       SELECT 1 FROM solicitudes_credito
-      WHERE id = citas_presenciales.solicitud_id
+      WHERE id = citas.solicitud_id
       AND cliente_id = auth.uid()
     )
   );
 
 -- El staff ve todas las citas
-DROP POLICY IF EXISTS "Staff ve todas las citas" ON citas_presenciales;
+DROP POLICY IF EXISTS "Staff ve todas las citas" ON citas;
 CREATE POLICY "Staff ve todas las citas"
-  ON citas_presenciales FOR SELECT
+  ON citas FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM profiles
@@ -543,9 +553,9 @@ CREATE POLICY "Staff ve todas las citas"
   );
 
 -- El staff puede actualizar citas
-DROP POLICY IF EXISTS "Staff actualiza citas" ON citas_presenciales;
+DROP POLICY IF EXISTS "Staff actualiza citas" ON citas;
 CREATE POLICY "Staff actualiza citas"
-  ON citas_presenciales FOR UPDATE
+  ON citas FOR UPDATE
   USING (
     EXISTS (
       SELECT 1 FROM profiles
@@ -649,8 +659,13 @@ CREATE POLICY "Sistema crea notificaciones"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, role, nombre_completo)
-  VALUES (NEW.id, 'cliente', NEW.raw_user_meta_data->>'nombre_completo');
+  INSERT INTO public.profiles (id, role, nombre_completo, email)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'role', 'cliente'),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'nombre_completo', 'Usuario Nuevo'),
+    NEW.email
+  );
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

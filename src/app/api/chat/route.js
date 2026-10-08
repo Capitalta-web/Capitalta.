@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendAppointmentConfirmation, sendVerificationCode } from '@/utils/nodemailer';
 import { sendSMS } from '@/utils/sms';
 
-    // Configuración del cliente OpenAI para x.ai (Grok)
+// Configuración del cliente OpenAI para x.ai (Grok)
 // Si no hay XAI_API_KEY, intentará usar OPENAI_API_KEY o fallará controladamente.
 const client = new OpenAI({
   apiKey: process.env.XAI_API_KEY || process.env.OPENAI_API_KEY || 'dummy-key',
@@ -22,7 +22,7 @@ Tu misión es asesorar a los usuarios, explicar nuestros productos financieros c
    - **Objetivo**: Capital de trabajo, expansión, compra de inventario o activo fijo.
    - **Monto**: Desde $500,000 hasta $10,000,000 MXN.
    - **Plazo**: De 12 a 60 meses.
-   - **Tasa de Interés**: Fija del 24% anual.
+   - **Tasa de Interés**: Fija del 36% anual.
    - **Comisión de apertura**: 2% - 4% + IVA.
 
 2. **Crédito Empresarial**
@@ -176,12 +176,11 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
           });
         }
       } catch (err) {
-        console.error('Error guardando chat:', err);
       }
     };
 
     if (!process.env.XAI_API_KEY && !process.env.OPENAI_API_KEY) {
-    // Fallback Mock para demostración si no hay API Key configurada
+      // Fallback Mock para demostración si no hay API Key configurada
       const lastMessage = messages[messages.length - 1].content.toLowerCase();
       let mockResponse =
         'Lo siento, no tengo configurada mi API Key de IA en este momento. Por favor configura XAI_API_KEY en el archivo .env.';
@@ -225,7 +224,6 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
           const { email } = args;
           const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-          console.log(`[Verification Code Flow]: Generando código para ${email}`);
 
           const supabase = createSupabaseServerClient({ admin: true });
           if (supabase) {
@@ -233,29 +231,23 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
             const { error } = await supabase.from('temp_verification_codes').insert({ email, code });
 
             if (error) {
-              console.error('[Supabase Error]: Error al guardar código de verificación:', error);
               return JSON.stringify({ success: false, error: 'Error interno al generar código' });
             }
 
-            console.log(`[Verification Code Flow]: Código guardado en Supabase para ${email}. Procediendo a enviar email...`);
 
             // Enviar por Nodemailer
             const result = await sendVerificationCode(email, code);
             if (result.success) {
-              console.log(`[Verification Code Flow]: Email enviado exitosamente a ${email}`);
               return JSON.stringify({ success: true, message: `Código enviado a ${email}. Por favor ingrésalo para continuar.` });
             } else {
-              console.error('[Verification Code Flow]: Falló el envío de email:', result.error);
             }
           } else {
-            console.error('[Supabase Error]: No se pudo inicializar el cliente de Supabase.');
           }
           return JSON.stringify({ success: false, error: 'No se pudo enviar el código' });
         },
         verifyCode: async (args) => {
           const { email, code } = args;
-          console.log(`[Verification Code Flow]: Verificando código ${code} para ${email}`);
-          
+
           const supabase = createSupabaseServerClient({ admin: true });
           if (supabase) {
             // Buscamos el código más reciente que coincida, no haya sido usado y no haya expirado
@@ -270,30 +262,29 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
               .single();
 
             if (error || !data) {
-              console.error(`[OTP Error]: Código inválido o no encontrado para ${email}. Detalle:`, error?.message);
-              return JSON.stringify({ success: false, error: 'Código inválido o expirado. Por favor, asegúrate de copiar el último código recibido.' });
+              return JSON.stringify({
+                success: false,
+                error: 'Código inválido o expirado. Por favor, asegúrate de copiar el último código recibido.'
+              });
             }
 
             // Validar expiración manualmente por seguridad extra
             const now = new Date();
             const expiresAt = new Date(data.expires_at);
             if (now > expiresAt) {
-              console.error(`[OTP Error]: Código expirado para ${email}. Expiró el: ${data.expires_at}`);
               return JSON.stringify({ success: false, error: 'El código ha expirado. Por favor solicita uno nuevo.' });
             }
 
             // Marcar como usado
-            const { error: updateError } = await supabase
-              .from('temp_verification_codes')
-              .update({ is_used: true })
-              .eq('id', data.id);
+            const { error: updateError } = await supabase.from('temp_verification_codes').update({ is_used: true }).eq('id', data.id);
 
             if (updateError) {
-              console.error('[Supabase Error]: No se pudo marcar el código como usado:', updateError);
             }
 
-            console.log(`[Verification Code Flow]: Verificación exitosa para ${email}`);
-            return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente. Ahora podemos proceder con tu solicitud.' });
+            return JSON.stringify({
+              success: true,
+              message: 'Identidad verificada exitosamente. Ahora podemos proceder con tu solicitud.'
+            });
           }
           return JSON.stringify({ success: false, error: 'Error de conexión con el servicio de verificación.' });
         },
@@ -315,7 +306,6 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
             });
 
             if (error) {
-              console.error('Error guardando cita en Supabase:', error);
               return JSON.stringify({ success: false, error: 'No se pudo guardar la cita en la base de datos.' });
             }
 
@@ -389,7 +379,6 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
     return NextResponse.json({ message: responseMessage });
   } catch (error) {
-    console.error('Error en API Chat:', error);
     return NextResponse.json({ error: 'Error interno del servidor', details: error.message }, { status: 500 });
   }
 }

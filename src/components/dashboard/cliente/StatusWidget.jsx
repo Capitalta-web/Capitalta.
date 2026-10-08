@@ -223,9 +223,7 @@ export default function StatusWidget({ application }) {
           </Stepper>
         </Box>
 
-        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-          {renderActionButton()}
-        </Box>
+        <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>{renderActionButton()}</Box>
       </CardContent>
     </Card>
   );

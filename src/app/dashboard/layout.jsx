@@ -1,17 +1,15 @@
 'use client';
 import PropTypes from 'prop-types';
+import { Box } from '@mui/material';
 
-import AuthGuard from '@/utils/route-guard/AuthGuard';
-import AdminLayout from '@/layouts/AdminLayout';
-
-export default function Layout({ children }) {
+export default function DashboardLayout({ children }) {
   return (
-    <AuthGuard>
-      <AdminLayout>{children}</AdminLayout>
-    </AuthGuard>
+    <Box sx={{ width: '100%', height: '100%' }}>
+      {children}
+    </Box>
   );
 }
 
-Layout.propTypes = {
+DashboardLayout.propTypes = {
   children: PropTypes.node
 };

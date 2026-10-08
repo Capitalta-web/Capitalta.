@@ -130,7 +130,11 @@ export default function MisSolicitudesTable({ solicitudes = [], onViewDetails })
                         variant="text"
                         endIcon={<OpenInNewIcon fontSize="small" />}
                         onClick={() =>
-                          onViewDetails ? onViewDetails(solicitud) : solicitud?.id ? router.push(`/dashboard/cliente/solicitudes/${solicitud.id}`) : null
+                          onViewDetails
+                            ? onViewDetails(solicitud)
+                            : solicitud?.id
+                              ? router.push(`/dashboard/cliente/solicitudes/${solicitud.id}`)
+                              : null
                         }
                         sx={{ textTransform: 'none' }}
                       >

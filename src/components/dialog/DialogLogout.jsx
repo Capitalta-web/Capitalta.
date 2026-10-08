@@ -17,7 +17,7 @@ import RollerSkatingDoodle from '@/images/illustration/RollerSkatingDoodle';
 export default function DialogLogout({ title, heading, open, description, onClose, onLogout }) {
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description" maxWidth="sm">
-      <DialogTitle id="delete-dialog-title">{title || 'Logout'}</DialogTitle>
+      <DialogTitle id="delete-dialog-title">{title || 'Cerrar Sesión'}</DialogTitle>
       <DialogContent dividers>
         <Stack sx={{ gap: 2.5, alignItems: 'center' }}>
           <Box sx={{ width: 230 }}>
@@ -25,7 +25,7 @@ export default function DialogLogout({ title, heading, open, description, onClos
           </Box>
           <Stack sx={{ gap: 1, textAlign: 'center', alignItems: 'center' }}>
             <Typography id="delete-dialog-description" variant="h5" sx={{ color: 'text.primary' }}>
-              {heading || 'Are you sure you want to logout?'}
+              {heading || '¿Estás seguro de que deseas cerrar sesión?'}
             </Typography>
             {description && (
               <Typography variant="body1" color="grey.700" sx={{ width: '90%' }}>
@@ -37,10 +37,10 @@ export default function DialogLogout({ title, heading, open, description, onClos
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <Button variant="outlined" color="secondary" onClick={onClose} autoFocus>
-          Cancel
+          Cancelar
         </Button>
         <Button variant="contained" sx={{ ml: 0 }} onClick={onLogout}>
-          Logout
+          Cerrar Sesión
         </Button>
       </DialogActions>
     </Dialog>

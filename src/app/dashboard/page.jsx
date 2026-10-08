@@ -1,67 +1,42 @@
 'use client';
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
-import { CircularProgress, Box, Typography } from '@mui/material';
+import { useAuth } from '@/contexts/AuthContext';
+import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 
-export default function DashboardRedirect() {
+export default function DashboardIndex() {
   const router = useRouter();
+  const { user, isProcessing } = useAuth();
 
   useEffect(() => {
-    const checkUser = async () => {
-      const supabase = createSupabaseBrowserClient();
-      if (!supabase) {
-        router.replace('/auth/login');
-        return;
-      }
+    // If still processing, wait
+    if (isProcessing) return;
 
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
+    // If no user after processing is done, redirect to login
+    if (!user) {
+      router.replace('/auth/login');
+      return;
+    }
 
-      if (!user) {
-        router.replace('/auth/login');
-        return;
-      }
-
-      const { data: profile, error } = await supabase.from('profiles').select('role,tipo_persona').eq('id', user.id).single();
-
-      if (error || !profile) {
-        const roleFromJwt = user.user_metadata?.role || 'cliente';
-        const dashboard =
-          roleFromJwt === 'admin'
-            ? '/dashboard/admin'
-            : roleFromJwt === 'analista'
-              ? '/dashboard/analista'
-              : roleFromJwt === 'notario'
-                ? '/dashboard/notario'
-                : '/dashboard/cliente';
-        router.replace(dashboard);
-      } else {
-        const legacyRole = profile.tipo_persona;
-        const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
-        const role = profile.role || mappedRole || 'cliente';
-
-        if (role === 'admin') {
-          router.replace('/dashboard/admin');
-        } else if (role === 'analista') {
-          router.replace('/dashboard/analista');
-        } else if (role === 'notario') {
-          router.replace('/dashboard/notario');
-        } else {
-          router.replace('/dashboard/cliente');
-        }
-      }
+    // Redirect based on role
+    const role = user.role || 'cliente';
+    const routes = {
+      admin: '/dashboard/admin',
+      cliente: '/dashboard/cliente'
     };
 
-    checkUser();
-  }, [router]);
+    const targetRoute = routes[role] || routes.cliente;
+    router.replace(targetRoute);
+  }, [user, isProcessing, router]);
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 2 }}>
-      <CircularProgress />
-      <Typography>Redirigiendo a tu panel...</Typography>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <Stack alignItems="center" spacing={2}>
+        <CircularProgress />
+        <Typography variant="body2" color="textSecondary">
+          Cargando...
+        </Typography>
+      </Stack>
     </Box>
   );
 }

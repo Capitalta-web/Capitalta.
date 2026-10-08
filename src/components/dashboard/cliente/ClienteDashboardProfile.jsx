@@ -54,20 +54,9 @@ export default function ClienteDashboardProfile({ profile, onEditClick }) {
               <Typography variant="body2" color="text.secondary">
                 Mantén tus datos actualizados para acelerar la evaluación.
               </Typography>
-              <Chip
-                label={getTipoClienteLabel(profile?.tipo_persona)}
-                color="primary"
-                variant="outlined"
-                size="small"
-                sx={{ mt: 1 }}
-              />
+              <Chip label={getTipoClienteLabel(profile?.tipo_persona)} color="primary" variant="outlined" size="small" sx={{ mt: 1 }} />
             </Box>
-            <Button
-              variant="text"
-              startIcon={<EditIcon />}
-              onClick={onEditClick}
-              sx={{ textTransform: 'none' }}
-            >
+            <Button variant="text" startIcon={<EditIcon />} onClick={onEditClick} sx={{ textTransform: 'none' }}>
               Editar
             </Button>
           </Box>

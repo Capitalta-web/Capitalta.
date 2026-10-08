@@ -88,12 +88,7 @@ export default function UpdatePasswordPage() {
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
                   Nueva contraseña
                 </Typography>
-                <OutlinedInput
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
-                />
+                <OutlinedInput type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
               </Stack>
               <Stack spacing={0.75}>
                 <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
@@ -116,4 +111,3 @@ export default function UpdatePasswordPage() {
     </Box>
   );
 }
-

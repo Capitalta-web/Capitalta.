@@ -57,16 +57,16 @@ export default function FollowUS({ heading = true, color }) {
                 height: { xs: 40, sm: 52, lg: 56 },
                 borderRadius: 3,
                 color: 'text.primary',
-                ':hover': { 
-                  bgcolor: 'primary.main', 
+                ':hover': {
+                  bgcolor: 'primary.main',
                   color: 'common.white'
                 },
                 transition: 'all 0.3s ease'
               }}
             >
-              <SvgIcon 
-                type={IconType.STROKE} 
-                {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} 
+              <SvgIcon
+                type={IconType.STROKE}
+                {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })}
                 size={24}
                 stroke={1.5}
               />

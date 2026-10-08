@@ -31,38 +31,38 @@ export default function PageLoader({ message, actionLabel, onAction }) {
     <Stack sx={{ height: '100vh', width: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Stack sx={{ alignItems: 'center', gap: 2.5 }}>
         <Stack direction="row" sx={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
-        <Avatar
-          sx={(theme) => ({
-            width: 65,
-            height: 65,
-            bgcolor: 'primary.lighter',
-            '& .MuiBox-root': { height: 30, width: 30 },
-            '& svg': { width: 1, height: 1 },
-            ...theme.applyStyles('dark', { bgcolor: 'primary.lighter' })
-          })}
-        >
-          <LogoIcon />
-        </Avatar>
-        <CircularProgress
-          {...commonProps}
-          value={100}
-          sx={{
-            position: 'absolute',
-            zIndex: 1,
-            '& .MuiCircularProgress-circle': { strokeLinecap: 'round', strokeDasharray: '6 9.5 !important' },
-            animation: `${dotAnimation} 6s linear infinite`
-          }}
-        />
-        <CircularProgress
-          {...commonProps}
-          value={60}
-          sx={{
-            position: 'absolute',
-            zIndex: 1,
-            '& .MuiCircularProgress-circle': { strokeLinecap: 'round' },
-            animation: `${rotateAnimation} 35s linear infinite`
-          }}
-        />
+          <Avatar
+            sx={(theme) => ({
+              width: 65,
+              height: 65,
+              bgcolor: 'primary.lighter',
+              '& .MuiBox-root': { height: 30, width: 30 },
+              '& svg': { width: 1, height: 1 },
+              ...theme.applyStyles('dark', { bgcolor: 'primary.lighter' })
+            })}
+          >
+            <LogoIcon />
+          </Avatar>
+          <CircularProgress
+            {...commonProps}
+            value={100}
+            sx={{
+              position: 'absolute',
+              zIndex: 1,
+              '& .MuiCircularProgress-circle': { strokeLinecap: 'round', strokeDasharray: '6 9.5 !important' },
+              animation: `${dotAnimation} 6s linear infinite`
+            }}
+          />
+          <CircularProgress
+            {...commonProps}
+            value={60}
+            sx={{
+              position: 'absolute',
+              zIndex: 1,
+              '& .MuiCircularProgress-circle': { strokeLinecap: 'round' },
+              animation: `${rotateAnimation} 35s linear infinite`
+            }}
+          />
         </Stack>
         {message ? (
           <Stack sx={{ alignItems: 'center', gap: 1 }}>

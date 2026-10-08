@@ -115,4 +115,3 @@ export async function POST(request) {
 
   return NextResponse.json({ lead: created }, { status: 201 });
 }
-

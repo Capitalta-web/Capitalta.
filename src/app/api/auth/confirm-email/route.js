@@ -51,12 +51,9 @@ export async function POST(request) {
     }
 
     // Confirmar email del usuario
-    const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(
-      user.id,
-      {
-        email_confirm: true
-      }
-    );
+    const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
+      email_confirm: true
+    });
 
     if (updateError) {
       console.error('Error confirming email:', updateError);
@@ -76,9 +73,12 @@ export async function POST(request) {
     });
   } catch (err) {
     console.error('API Route Error:', err.message || err);
-    return NextResponse.json({
-      error: 'Ocurrió un error inesperado',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Ocurrió un error inesperado',
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+      },
+      { status: 500 }
+    );
   }
 }

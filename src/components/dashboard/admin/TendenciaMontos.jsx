@@ -34,7 +34,7 @@ export default function TendenciaMontos({ data, months = 12 }) {
       const date = new Date(now.getFullYear(), now.getMonth() - (months - 1 - i), 1);
       const mesIndex = date.getMonth();
       const baseAmount = 500000 + Math.random() * 1000000;
-      const variation = Math.sin(i / months * Math.PI) * 300000;
+      const variation = Math.sin((i / months) * Math.PI) * 300000;
       return {
         mes: MESES[mesIndex],
         monto: Math.max(100000, baseAmount + variation),
@@ -46,7 +46,7 @@ export default function TendenciaMontos({ data, months = 12 }) {
   }
 
   // Calcular máximo y mínimo para estadísticas
-  const montos = chartData.map(d => d.monto);
+  const montos = chartData.map((d) => d.monto);
   const montoMax = Math.max(...montos);
   const montoMin = Math.min(...montos);
   const montoPromedio = montos.reduce((a, b) => a + b, 0) / montos.length;
@@ -92,16 +92,8 @@ export default function TendenciaMontos({ data, months = 12 }) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-              <XAxis
-                dataKey="mes"
-                stroke="#9e9e9e"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <YAxis
-                stroke="#9e9e9e"
-                style={{ fontSize: '0.875rem' }}
-                tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
-              />
+              <XAxis dataKey="mes" stroke="#9e9e9e" style={{ fontSize: '0.875rem' }} />
+              <YAxis stroke="#9e9e9e" style={{ fontSize: '0.875rem' }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Line

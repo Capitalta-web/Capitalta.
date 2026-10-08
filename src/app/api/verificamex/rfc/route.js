@@ -68,6 +68,9 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch {
-    return NextResponse.json({ isValid: true, isRegistered: null, rfc: local.normalized, type: local.type, error: 'upstream_failed' }, { status: 200 });
+    return NextResponse.json(
+      { isValid: true, isRegistered: null, rfc: local.normalized, type: local.type, error: 'upstream_failed' },
+      { status: 200 }
+    );
   }
 }

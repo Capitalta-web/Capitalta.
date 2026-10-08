@@ -12,4 +12,3 @@ const data = {
 export default function ForgotPasswordPage() {
   return <ForgotPassword {...data} />;
 }
-

@@ -8,7 +8,7 @@ import nodemailer from 'nodemailer';
 /**
  * Envía un correo electrónico genérico.
  */
-export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
+export async function sendEmail({ to, subject, html, text, cc }) {
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
@@ -32,7 +32,7 @@ export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
   });
 
   // Usamos el correo que sí tenemos controlado en Google Workspace
-  const fromEmail = "contacto@capitalta.mx";
+  const fromEmail = 'contacto@capitalta.mx';
 
   try {
     console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail} (via ${user})...`);
@@ -40,7 +40,7 @@ export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
       from: `"Capitalta" <${fromEmail}>`,
       to,
       cc,
-      replyTo: replyTo || fromEmail,
+      replyTo: fromEmail,
       subject,
       text: text || '',
       html: html || `<p>${text}</p>`

@@ -113,13 +113,13 @@ export default function Footer7() {
       <Typography variant="body2" sx={{ maxWidth: { sm: 280 } }}>
         Soluciones financieras claras y transparentes para impulsar tu crecimiento.
       </Typography>
-      <Button 
-        component={NextLink} 
-        href="/auth/login" 
-        variant="outlined" 
-        color="inherit" 
+      <Button
+        component={NextLink}
+        href="/auth/login"
+        variant="outlined"
+        color="inherit"
         size="small"
-        sx={{ 
+        sx={{
           borderColor: 'divider',
           '&:hover': { borderColor: 'primary.main', bgcolor: 'transparent', color: 'primary.main' }
         }}

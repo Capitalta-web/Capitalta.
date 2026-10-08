@@ -91,5 +91,18 @@
   "forgot-password": "Forgot Password",
   "password-recovery": "Password Recovery",
   "otp-verification": "Otp Verification",
-  "onboarding": "Onboarding"
+  "onboarding": "Onboarding",
+
+  "Inicio": "Inicio",
+  "Nueva Solicitud": "Nueva Solicitud",
+  "Mis Solicitudes": "Mis Solicitudes",
+  "Documentos": "Documentos",
+  "Mis Créditos": "Mis Créditos",
+  "Gestionar Usuarios": "Gestionar Usuarios",
+  "Reportes": "Reportes",
+  "Mi Perfil": "Mi Perfil",
+  "Capitalta": "Capitalta",
+  "Solicitudes": "Solicitudes",
+  "Dashboard": "Dashboard",
+  "Configuración": "Configuración"
 }

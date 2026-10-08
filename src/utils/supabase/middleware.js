@@ -32,17 +32,12 @@ export async function updateSession(request) {
   }
 
   if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const { data: profile } = await supabase.from('profiles').select('role,tipo_persona').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
-    const legacyRole = profile?.tipo_persona;
-    const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
-    const role = profile?.role || mappedRole || (user.user_metadata && user.user_metadata.role) || 'cliente';
+    const role = profile?.role || (user.user_metadata && user.user_metadata.role) || 'cliente';
     const path = request.nextUrl.pathname;
 
     if (path.startsWith('/dashboard/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard/cliente', request.url));
-    }
-    if (path.startsWith('/dashboard/analista') && role !== 'analista') {
       return NextResponse.redirect(new URL('/dashboard/cliente', request.url));
     }
     if (path.startsWith('/dashboard/cliente') && role === 'admin') {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import DOMPurify from 'dompurify';
 
 // @mui
 import Box from '@mui/material/Box';
@@ -124,7 +125,7 @@ export default function BlogDetail() {
         </GraphicsCard>
 
         <Box sx={{ typography: 'body1', fontSize: '1.125rem', lineHeight: 1.8, color: 'text.primary' }}>
-          <div dangerouslySetInnerHTML={{ __html: article.content }} />
+          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }} />
         </Box>
 
         <Divider sx={{ my: 6 }} />

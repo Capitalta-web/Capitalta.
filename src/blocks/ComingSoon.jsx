@@ -73,10 +73,7 @@ export default function ComingSoon({ chip, primaryBtn, heading, description, for
       }
     } catch (error) {
       const message =
-        error?.response?.data?.error ||
-        error?.response?.data?.message ||
-        error?.message ||
-        'No se pudo enviar. Intenta de nuevo.';
+        error?.response?.data?.error || error?.response?.data?.message || error?.message || 'No se pudo enviar. Intenta de nuevo.';
       setSnackbar({ open: true, message, severity: 'error' });
     }
   };
@@ -119,7 +116,15 @@ export default function ComingSoon({ chip, primaryBtn, heading, description, for
                 sx={{ bgcolor: 'background.default', alignSelf: 'center', borderColor: 'grey.600' }}
               />
             )}
-            {illustration ? illustration : heading ? <Typography variant="h2" align="center">{heading}</Typography> : <Comingsoon />}
+            {illustration ? (
+              illustration
+            ) : heading ? (
+              <Typography variant="h2" align="center">
+                {heading}
+              </Typography>
+            ) : (
+              <Comingsoon />
+            )}
             <Typography variant="h6" sx={{ color: 'text.secondary', textAlign: 'center', maxWidth: { xs: '80%', sm: '60%' } }}>
               {description}
             </Typography>

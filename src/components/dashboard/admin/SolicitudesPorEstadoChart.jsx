@@ -42,7 +42,7 @@ export default function SolicitudesPorEstadoChart({ data }) {
   }));
 
   // Filtrar estados con 0 solicitudes
-  const filteredData = chartData.filter(item => item.value > 0);
+  const filteredData = chartData.filter((item) => item.value > 0);
 
   const totalSolicitudes = filteredData.reduce((acc, item) => acc + item.value, 0);
 

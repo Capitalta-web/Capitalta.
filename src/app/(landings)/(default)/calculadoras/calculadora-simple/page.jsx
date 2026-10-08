@@ -29,8 +29,8 @@ const MONTO_MIN = 500000;
 const MONTO_MAX = 50000000;
 const PLAZO_MIN = 12;
 const PLAZO_MAX = 60;
-const TASA_MIN = 24;
-const TASA_MAX = 24;
+const TASA_MIN = 36;
+const TASA_MAX = 36;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -102,7 +102,7 @@ function formatearFecha(fecha) {
 export default function CalculadoraSimplePage() {
   const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual] = useState(24);
+  const [tasaAnual] = useState(36);
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -375,7 +375,7 @@ export default function CalculadoraSimplePage() {
                 </Typography>
                 <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 640 }}>
-                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del 24% anual, revisa la tabla de
+                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del 36% anual, revisa la tabla de
                   amortización completa y descarga una cotización en PDF para compartirla o analizarla con tu equipo.
                 </Typography>
               </Stack>
@@ -474,7 +474,7 @@ export default function CalculadoraSimplePage() {
                     <Typography variant="body2">{tasaAjustada}% (Fija)</Typography>
                   </Stack>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                    La tasa de interés para este producto es fija del 24% anual.
+                    La tasa de interés para este producto es fija del 36% anual.
                   </Typography>
                 </Box>
               </Stack>

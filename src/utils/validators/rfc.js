@@ -71,15 +71,7 @@ export function validateRfc(rfcInput) {
   const actualDigit = rfc.slice(-1);
   if (!expectedDigit || expectedDigit !== actualDigit) errors.push('Dígito verificador inválido');
 
-  const type =
-    rfc === 'XAXX010101000'
-      ? 'generic'
-      : rfc === 'XEXX010101000'
-        ? 'foreign'
-        : isPerson
-          ? 'person'
-          : 'company';
+  const type = rfc === 'XAXX010101000' ? 'generic' : rfc === 'XEXX010101000' ? 'foreign' : isPerson ? 'person' : 'company';
 
   return { isValid: errors.length === 0, normalized: rfc, errors, type };
 }
-

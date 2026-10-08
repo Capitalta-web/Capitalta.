@@ -1,11 +1,21 @@
-import { IconDashboard, IconFilePlus, IconFiles, IconUser, IconFolders, IconCalendar, IconSettings, IconUsers, IconCreditCard } from '@tabler/icons-react';
+import {
+  IconDashboard,
+  IconFilePlus,
+  IconFiles,
+  IconUser,
+  IconFolders,
+  IconSettings,
+  IconUsers,
+  IconCreditCard,
+  IconChartBar
+} from '@tabler/icons-react';
 
 const dashboard = {
   id: 'dashboard-group',
   title: 'Capitalta',
   type: 'group',
   children: [
-    // CLIENTE
+    // ========== CLIENTE MENU ==========
     {
       id: 'cliente-home',
       title: 'Inicio',
@@ -15,15 +25,15 @@ const dashboard = {
       roles: ['cliente']
     },
     {
-      id: 'nueva-solicitud',
+      id: 'cliente-nueva',
       title: 'Nueva Solicitud',
       type: 'item',
-      url: '/dashboard/cliente/solicitud/nueva',
+      url: '/dashboard/cliente/nueva',
       icon: IconFilePlus,
       roles: ['cliente']
     },
     {
-      id: 'mis-solicitudes',
+      id: 'cliente-solicitudes',
       title: 'Mis Solicitudes',
       type: 'item',
       url: '/dashboard/cliente/solicitudes',
@@ -31,7 +41,7 @@ const dashboard = {
       roles: ['cliente']
     },
     {
-      id: 'mis-documentos',
+      id: 'cliente-documentos',
       title: 'Documentos',
       type: 'item',
       url: '/dashboard/cliente/documentos',
@@ -39,72 +49,64 @@ const dashboard = {
       roles: ['cliente']
     },
     {
-      id: 'mis-citas',
-      title: 'Agendar Cita',
-      type: 'item',
-      url: '/dashboard/cliente/citas',
-      icon: IconCalendar,
-      roles: ['cliente']
-    },
-    {
-      id: 'mis-creditos',
+      id: 'cliente-creditos',
       title: 'Mis Créditos',
       type: 'item',
       url: '/dashboard/cliente/creditos',
       icon: IconCreditCard,
       roles: ['cliente']
     },
-    {
-      id: 'mi-perfil',
-      title: 'Mi Perfil',
-      type: 'item',
-      url: '/dashboard/profile',
-      icon: IconUser,
-      roles: ['cliente']
-    },
 
-    // ANALISTA
+    // ========== ADMIN MENU ==========
     {
-      id: 'analista-home',
-      title: 'Bandeja de Entrada',
+      id: 'admin-dashboard',
+      title: 'Dashboard',
       type: 'item',
-      url: '/dashboard/analista',
+      url: '/dashboard/admin',
       icon: IconDashboard,
-      roles: ['analista', 'admin']
+      roles: ['admin']
     },
     {
-      id: 'analista-solicitudes',
+      id: 'admin-solicitudes',
       title: 'Solicitudes',
       type: 'item',
-      url: '/dashboard/analista/solicitudes',
+      url: '/dashboard/admin/solicitudes',
       icon: IconFiles,
-      roles: ['analista', 'admin']
+      roles: ['admin']
     },
-    {
-      id: 'analista-calendario',
-      title: 'Calendario',
-      type: 'item',
-      url: '/dashboard/analista/calendario',
-      icon: IconCalendar,
-      roles: ['analista', 'admin']
-    },
-
-    // ADMIN
     {
       id: 'admin-usuarios',
-      title: 'Usuarios',
+      title: 'Gestionar Usuarios',
       type: 'item',
       url: '/dashboard/admin/usuarios',
       icon: IconUsers,
       roles: ['admin']
     },
     {
-      id: 'admin-config',
+      id: 'admin-reportes',
+      title: 'Reportes',
+      type: 'item',
+      url: '/dashboard/admin/reportes',
+      icon: IconChartBar,
+      roles: ['admin']
+    },
+    {
+      id: 'admin-configuracion',
       title: 'Configuración',
       type: 'item',
       url: '/dashboard/admin/configuracion',
       icon: IconSettings,
       roles: ['admin']
+    },
+
+    // ========== SHARED ==========
+    {
+      id: 'profile',
+      title: 'Mi Perfil',
+      type: 'item',
+      url: '/dashboard/profile',
+      icon: IconUser,
+      roles: ['cliente', 'admin']
     }
   ]
 };

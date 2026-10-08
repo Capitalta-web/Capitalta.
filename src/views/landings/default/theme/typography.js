@@ -9,7 +9,7 @@ export default function typography(theme) {
 
     // Capitalta brand specific
     brand: {
-      fontFamily: FONT_ALTA.style.fontFamily,
+      fontFamily: FONT_ALTA.style.fontFamily
     },
 
     // heading - large

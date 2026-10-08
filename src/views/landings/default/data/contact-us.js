@@ -40,7 +40,12 @@ export const contactUS = {
       icon: 'tabler-map-pin',
       title: 'Ubicación',
       content: 'Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite, Naucalpan Estado de México, C.P. 53310',
-      link: { children: 'Ver mapa', href: 'https://maps.google.com/?q=Circuito+Circunvalación+Poniente+16,+Naucalpan', target: '_blank', rel: 'noopener noreferrer' }
+      link: {
+        children: 'Ver mapa',
+        href: 'https://maps.google.com/?q=Circuito+Circunvalación+Poniente+16,+Naucalpan',
+        target: '_blank',
+        rel: 'noopener noreferrer'
+      }
     }
   ]
 };

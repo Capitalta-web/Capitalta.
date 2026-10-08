@@ -76,7 +76,6 @@ export async function GET(request) {
   const { data, error, count } = await query;
 
   if (error) {
-    console.error('Supabase error, returning mock data:', error.message);
     return NextResponse.json({
       data: mockArticles,
       meta: {

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -7,7 +7,6 @@ import Button from '@mui/material/Button';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -21,7 +20,6 @@ import ContainerWrapper from '@/components/ContainerWrapper';
 import { GraphicsCard } from '@/components/cards';
 import { NextLink } from '@/components/routes';
 import SectionHero from '@/components/SectionHero';
-import SvgIcon from '@/components/SvgIcon';
 
 import useFocusWithin from '@/hooks/useFocusWithin';
 import { PAGE_PATH } from '@/path';
@@ -337,42 +335,17 @@ export default function Sections() {
   const [filterBy, setFilterBy] = useState('');
   const [filterSections, setFilterSections] = useState(sections);
 
-  const [searchValue, setSearchValue] = useState('');
-
-  const handleSearchValue = (event) => {
-    const search = event.target.value.trim().toLowerCase();
-    setSearchValue(search);
-  };
-
-  useEffect(() => {
-    const newData = sections.filter((value) => {
-      if (searchValue) {
-        return value.title.toLowerCase().includes(searchValue.toLowerCase());
-      } else {
-        return value;
-      }
-    });
-    setFilterSections(newData);
-  }, [searchValue]);
-
   const isFocusWithin = useFocusWithin();
 
   return (
     <>
-      <SectionHero heading={`Craft Stunning Design with ${branding.brandName} Blocks`} search={false} offer />
+      <SectionHero heading={`Craft Stunning Design with ${branding.brandName} Blocks`} offer />
       <ContainerWrapper>
         <Stack sx={{ py: 6, gap: { xs: 3, sm: 4, md: 5 } }}>
           <Stack
             direction={{ xs: 'column', md: 'row' }}
             sx={{ alignItems: 'center', justifyContent: 'space-between', gap: { xs: 2.5, md: 1.5 } }}
           >
-            <OutlinedInput
-              placeholder="Search for blocks... (e.g., Hero, Testimonial, Pricing)"
-              slotProps={{ input: { 'aria-label': 'Search blocks', sx: { pl: 1.5 } } }}
-              sx={{ width: { sm: 456, xs: 1 } }}
-              startAdornment={<SvgIcon name="tabler-search" color="grey.700" />}
-              onChange={handleSearchValue}
-            />
             <Stack direction="row" sx={{ gap: 1.5, flexWrap: 'wrap' }}>
               {filterList.map((item, index) => (
                 <Button

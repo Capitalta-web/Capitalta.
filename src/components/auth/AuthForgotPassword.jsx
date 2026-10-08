@@ -65,21 +65,21 @@ export default function AuthForgotPassword({ inputSx }) {
         {successMsg && <Alert severity="success">{successMsg}</Alert>}
         {errorMsg && <Alert severity="error">{errorMsg}</Alert>}
         <Stack sx={{ gap: 0.5 }}>
-        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-          Email
-        </Typography>
-        <OutlinedInput
-          {...register('email', emailSchema)}
-          placeholder="example@gmail.com"
-          slotProps={{ input: { 'aria-label': 'Email address' } }}
-          error={errors.email && Boolean(errors.email)}
-          sx={{ ...inputSx }}
-        />
-        {errors.email?.message && (
-          <Typography variant="caption" sx={{ color: 'error.main' }}>
-            {errors.email?.message}
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            Email
           </Typography>
-        )}
+          <OutlinedInput
+            {...register('email', emailSchema)}
+            placeholder="example@gmail.com"
+            slotProps={{ input: { 'aria-label': 'Email address' } }}
+            error={errors.email && Boolean(errors.email)}
+            sx={{ ...inputSx }}
+          />
+          {errors.email?.message && (
+            <Typography variant="caption" sx={{ color: 'error.main' }}>
+              {errors.email?.message}
+            </Typography>
+          )}
         </Stack>
       </Stack>
       <Button fullWidth type="submit" color="primary" variant="contained" disabled={isLoading} sx={{ mt: { xs: 3, sm: 4 } }}>

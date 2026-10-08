@@ -32,7 +32,6 @@ export async function POST(request) {
     return NextResponse.json({ message: 'Subscribed successfully!' }, { status: 200 });
   } catch (error) {
     // Handle failure response
-    console.error('Error subscribing:', error);
     return NextResponse.json({ error }, { status: 500 });
   }
 }

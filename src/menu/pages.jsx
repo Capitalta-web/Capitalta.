@@ -43,13 +43,6 @@ const pages = {
           type: 'item',
           url: '/auth/password-recovery',
           target: true
-        },
-        {
-          id: 'otp-verification',
-          title: 'otp-verification',
-          type: 'item',
-          url: '/auth/otp-verification?email=demo@saasable.io',
-          target: true
         }
       ]
     },
