@@ -130,7 +130,7 @@ export const feature20 = {
     {
       icon: 'tabler-currency-dollar',
       title: 'Crédito Revolvente',
-      description: 'Crédito amortizable con un solo desembolso y tasa fija del 36% anual.',
+      description: 'Crédito amortizable con un solo desembolso y tasa fija del 24% anual.',
       monto: '$30,000–$10,000,000',
       plazo: '3–60 meses',
       href: '/productos/credito-simple',
