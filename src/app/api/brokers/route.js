@@ -2,22 +2,11 @@ import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendEmail } from '@/utils/nodemailer';
+import { CONTACT_EMAIL, escapeHtml, row } from '@/utils/emailHtml';
 
-const CONTACT_EMAIL = 'contacto@capitalta.mx';
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const clean = (value, max = 200) => (value === undefined || value === null ? '' : String(value).trim().slice(0, max));
-
-const escapeHtml = (value) =>
-  String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-
-const row = (label, value) =>
-  `<p style="margin: 6px 0;"><strong>${label}:</strong> ${escapeHtml(value || '-').replaceAll('\n', '<br/>')}</p>`;
 
 export async function POST(request) {
   let body;

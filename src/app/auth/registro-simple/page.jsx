@@ -25,6 +25,7 @@ import { IconEye, IconEyeOff, IconBrandGoogle, IconArrowRight, IconChecks } from
 // @project
 import Logo from '@/components/logo';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { notifyRegistroCredito } from '@/utils/notifyRegistro';
 
 export default function SimpleRegistration() {
   const [showPassword, setShowPassword] = useState(false);
@@ -101,6 +102,8 @@ export default function SimpleRegistration() {
       });
 
       if (authError) throw authError;
+
+      notifyRegistroCredito(data?.user?.id);
 
       // 2. Si el registro es exitoso, mostramos mensaje o redirigimos
       if (data?.user) {
