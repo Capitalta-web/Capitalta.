@@ -45,8 +45,8 @@ El sistema implementa un proceso de registro en cinco pasos bien estructurado qu
 
 La conexión con la base de datos Supabase funciona correctamente desde el backend. Durante la prueba, se creó exitosamente un usuario con los siguientes datos:
 
-- **ID**: 891a5c03-0eb6-44db-9c71-125586d0d7d8
-- **Email**: test.manus.capitalta@gmail.com
+- **ID**: [REDACTADO]
+- **Email**: [REDACTADO]
 - **Estado**: No confirmado (pendiente de verificación)
 - **Fecha de creación**: 2026-02-21T20:06:37.544122Z
 
