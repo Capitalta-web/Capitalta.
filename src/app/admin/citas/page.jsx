@@ -99,7 +99,7 @@ export default async function CitasAdminPage() {
               Vista interna para revisar las citas presenciales agendadas a través del asistente virtual y del portal de Mi Cuenta.
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Para acceder, utiliza la URL con el parámetro de seguridad configurado en ADMIN_CITAS_TOKEN.
+              Acceso exclusivo para administradores con sesión iniciada.
             </Typography>
           </Stack>
 
