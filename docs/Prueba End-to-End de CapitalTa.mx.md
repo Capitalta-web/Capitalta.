@@ -56,7 +56,7 @@ Continuando con el flujo...
 ### Datos Ingresados:
 - Nombre: Test
 - Apellido: Manus
-- Email: test.manus.capitalta@gmail.com
+- Email: [REDACTADO]
 - Teléfono: 5512345678
 - Contraseña: [REDACTADO]
 
@@ -68,13 +68,13 @@ Continuando al siguiente paso...
 
 ### Observaciones:
 - ✅ Avanzó correctamente al paso 4
-- ✅ Mensaje claro: "Te enviamos un correo a test.manus.capitalta@gmail.com"
+- ✅ Mensaje claro: "Te enviamos un correo a [REDACTADO]"
 - ✅ Interfaz de ingreso de código OTP (6 dígitos)
 - ✅ Opción de "Reenviar En 59s" (countdown timer)
 - ⚠️ **PROBLEMA CRÍTICO**: No se recibió el correo electrónico
 
 ### Estado Actual:
-- Email enviado a: test.manus.capitalta@gmail.com
+- Email enviado a: [REDACTADO]
 - Esperando código OTP de 6 dígitos
 - **Problema**: El correo no llegó (verificar bandeja de spam y configuración SMTP)
 
@@ -84,8 +84,8 @@ Esperando para verificar si llega el correo...
 
 ### Verificación en Base de Datos:
 ✅ **Usuario creado exitosamente en Supabase**
-- ID: 891a5c03-0eb6-44db-9c71-125586d0d7d8
-- Email: test.manus.capitalta@gmail.com
+- ID: [REDACTADO]
+- Email: [REDACTADO]
 - Estado: **No confirmado** (esperando verificación)
 - Fecha de creación: 2026-02-21T20:06:37.544122Z
 
