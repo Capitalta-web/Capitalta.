@@ -26,7 +26,7 @@ import { IconBrandFacebook, IconBrandInstagram, IconBrandLinkedin, IconBrandWhat
  * - [Hero16 API](https://capitalta.gitbook.io/Capitalta/ui-kit/development/components/hero/hero16#props-details)
  */
 
-export default function Hero16({ heading, caption, secondaryBtn, poster, videoSrc }) {
+export default function Hero16({ heading, caption, secondaryBtn, poster, videoSrc, videoSrcWebm }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -58,8 +58,9 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
           zIndex: 0
         }}
       >
+        {videoSrcWebm && <source src={videoSrcWebm} type="video/webm" />}
         <source src={GetImagePath(videoSrc)} type="video/mp4" />
-        Your browser does not support the video tag.
+        Tu navegador no soporta la reproducción de video.
       </video>
 
       {/* Overlay Overlay Dark */}
@@ -76,27 +77,36 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
       />
 
       {/* Content Overlay */}
-      <ContainerWrapper sx={{ position: 'relative', zIndex: 2, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', py: { xs: 4, md: 8 } }}>
-        
+      <ContainerWrapper
+        sx={{
+          position: 'relative',
+          zIndex: 2,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          py: { xs: 4, md: 8 }
+        }}
+      >
         {/* Top Left Content */}
         <Stack sx={{ maxWidth: { xs: '100%', md: '700px' }, mt: { xs: 8, md: 12 }, gap: 2 }}>
           <Typeset
             heading="Capitalta"
-            caption="Tu crecimiento no se detiene, Nuestro apoyo tampoco..."
-            headingProps={{ 
-              variant: 'h1', 
-              sx: { color: 'common.white', fontSize: { xs: '3rem', md: '5rem' }, fontWeight: 700, mb: 1 } 
+            caption={heading}
+            headingProps={{
+              variant: 'h1',
+              sx: { color: 'common.white', fontSize: { xs: '3rem', md: '5rem' }, fontWeight: 700, mb: 1 }
             }}
-            captionProps={{ 
-              variant: 'h2', 
-              sx: { color: 'common.white', fontSize: { xs: '1.5rem', md: '2.5rem' }, fontWeight: 500, lineHeight: 1.2 } 
+            captionProps={{
+              variant: 'h2',
+              sx: { color: 'common.white', fontSize: { xs: '1.5rem', md: '2.5rem' }, fontWeight: 500, lineHeight: 1.2 }
             }}
           />
           <Typeset
-            caption="Soluciones financieras ágiles y flexibles para personas y negocios en México."
-            captionProps={{ 
-              variant: 'h3', 
-              sx: { color: 'common.white', fontSize: { xs: '1.1rem', md: '1.5rem' }, fontWeight: 400, opacity: 0.9, mt: 2 } 
+            caption={caption}
+            captionProps={{
+              variant: 'h3',
+              sx: { color: 'common.white', fontSize: { xs: '1.1rem', md: '1.5rem' }, fontWeight: 400, opacity: 0.9, mt: 2 }
             }}
           />
 
@@ -132,7 +142,6 @@ export default function Hero16({ heading, caption, secondaryBtn, poster, videoSr
             ))}
           </Stack>
         </Stack>
-
       </ContainerWrapper>
     </Stack>
   );
@@ -143,5 +152,6 @@ Hero16.propTypes = {
   caption: PropTypes.string,
   secondaryBtn: PropTypes.any,
   poster: PropTypes.any,
-  videoSrc: PropTypes.string
+  videoSrc: PropTypes.string,
+  videoSrcWebm: PropTypes.string
 };
