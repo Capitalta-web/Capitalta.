@@ -1,84 +1,56 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { isValidSharedToken } from '@/utils/auth/apiGuards';
+import { isValidEmail, maskEmail, normalizeEmail } from '@/utils/security/otp';
 
 /**
- * Endpoint INTERNO para confirmar email del usuario
- * Usa SUPABASE_SERVICE_ROLE_KEY (admin privileges)
+ * Endpoint INTERNO para confirmar el email de un usuario (service role).
+ * POST /api/auth/confirm-email  Header: x-internal-token  Body: { email }
  *
- * Este endpoint es llamado INTERNAMENTE después de verificar OTP
- * NO debe ser expuesto al público sin autenticación
- *
- * POST /api/auth/confirm-email
- * Body: { email }
+ * Falla cerrado: si INTERNAL_API_TOKEN no está configurado (o mide < 16 caracteres)
+ * o el header no coincide, responde 401 sin tocar nada. Ya NO acepta ADMIN_CITAS_TOKEN.
  */
 export async function POST(request) {
+  if (!isValidSharedToken(request.headers.get('x-internal-token'), process.env.INTERNAL_API_TOKEN)) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   try {
-    const internalToken = request.headers.get('x-internal-token');
-    const expectedToken = process.env.INTERNAL_API_TOKEN || process.env.ADMIN_CITAS_TOKEN;
-    if (expectedToken && internalToken !== expectedToken) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { email } = body;
-
-    // Validación
-    if (!email) {
+    const body = await request.json().catch(() => ({}));
+    const email = normalizeEmail(body?.email);
+    if (!isValidEmail(email)) {
       return NextResponse.json({ error: 'Email es requerido' }, { status: 400 });
     }
 
-    // Obtener cliente con Service Role Key
     const supabase = createSupabaseServerClient({ admin: true });
-
     if (!supabase) {
-      console.error('Supabase server client could not be initialized.');
-      return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
+      return NextResponse.json({ error: 'Servicio no disponible' }, { status: 503 });
     }
 
-    // Buscar usuario por email
-    const { data: users, error: listError } = await supabase.auth.admin.listUsers();
+    const { data: profile } = await supabase.from('profiles').select('id').eq('email', email).maybeSingle();
+    let userId = profile?.id || null;
 
-    if (listError) {
-      console.error('Error listing users:', listError);
-      return NextResponse.json({ error: 'Error al buscar usuario' }, { status: 500 });
+    if (!userId) {
+      const { data, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (listError) {
+        return NextResponse.json({ error: 'Error al buscar usuario' }, { status: 500 });
+      }
+      userId = (data?.users || []).find((u) => normalizeEmail(u.email) === email)?.id || null;
     }
 
-    const user = users.find((u) => u.email === email);
-
-    if (!user) {
-      console.error(`User not found: ${email}`);
+    if (!userId) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
-    // Confirmar email del usuario
-    const { data: updatedUser, error: updateError } = await supabase.auth.admin.updateUserById(
-      user.id,
-      {
-        email_confirm: true
-      }
-    );
-
+    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, { email_confirm: true });
     if (updateError) {
-      console.error('Error confirming email:', updateError);
       return NextResponse.json({ error: 'Error al confirmar email' }, { status: 500 });
     }
 
-    console.log(`[Confirm Email] Email confirmado para: ${email} (user_id: ${user.id})`);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Email confirmado exitosamente',
-      user: {
-        id: updatedUser.id,
-        email: updatedUser.email,
-        email_confirmed_at: updatedUser.email_confirmed_at
-      }
-    });
+    console.info('[Confirm Email] Email confirmado para', maskEmail(email));
+    return NextResponse.json({ success: true, message: 'Email confirmado exitosamente' });
   } catch (err) {
-    console.error('API Route Error:', err.message || err);
-    return NextResponse.json({
-      error: 'Ocurrió un error inesperado',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    }, { status: 500 });
+    console.error('[Confirm Email] Error inesperado:', err?.message || err);
+    return NextResponse.json({ error: 'Ocurrió un error inesperado' }, { status: 500 });
   }
 }
