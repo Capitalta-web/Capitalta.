@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { requirePageRole } from '@/utils/auth/serverAuth';
 import { sucursalesMock } from '@/utils/citas';
 
 function formatoFecha(fechaISO) {
@@ -56,13 +57,9 @@ function obtenerSucursal(sucursalId) {
 
 export const dynamic = 'force-dynamic';
 
-export default async function CitasAdminPage({ searchParams }) {
-  const token = searchParams?.token;
-  const expectedToken = process.env.ADMIN_CITAS_TOKEN;
-
-  if (expectedToken && token !== expectedToken) {
-    notFound();
-  }
+export default async function CitasAdminPage() {
+  // Solo administradores con sesión (falla cerrado). Ya no se usa ?token= en la URL.
+  await requirePageRole(['admin']);
 
   const supabase = createSupabaseServerClient({ admin: true });
 
@@ -93,7 +90,7 @@ export default async function CitasAdminPage({ searchParams }) {
               <Typography variant="overline" sx={{ letterSpacing: 1 }}>
                 Admin
               </Typography>
-              <Button component={Link} href={`/admin/leads?token=${token}`} variant="outlined" size="small">
+              <Button component={Link} href="/admin/leads" variant="outlined" size="small">
                 Ir a Chats & Leads
               </Button>
             </Box>

@@ -3,21 +3,17 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { requirePageRole } from '@/utils/auth/serverAuth';
 import LeadsTable from './LeadsTable';
 
 export const dynamic = 'force-dynamic';
 
-export default async function LeadsAdminPage({ searchParams }) {
-  const token = searchParams?.token;
-  const expectedToken = process.env.ADMIN_CITAS_TOKEN; // Reutilizo el token de admin
-
-  if (expectedToken && token !== expectedToken) {
-    notFound();
-  }
+export default async function LeadsAdminPage() {
+  // Solo administradores con sesión (falla cerrado). Ya no se usa ?token= en la URL.
+  await requirePageRole(['admin']);
 
   const supabase = createSupabaseServerClient({ admin: true });
 
@@ -65,7 +61,7 @@ export default async function LeadsAdminPage({ searchParams }) {
               <Typography variant="overline" sx={{ letterSpacing: 1 }}>
                 Admin
               </Typography>
-              <Button component={Link} href={`/admin/citas?token=${token}`} variant="outlined" size="small">
+              <Button component={Link} href="/admin/citas" variant="outlined" size="small">
                 Ver Citas Agendadas
               </Button>
             </Box>
