@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Box, Stepper, Step, StepLabel, Button, Typography, TextField, MenuItem, Grid, CircularProgress, Alert, Stack } from '@mui/material';
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { buildNuevaSolicitudPayload } from '@/utils/solicitudes';
 import { normalizeRfc, validateRfc } from '@/utils/validators/rfc';
 
 const steps = ['Tipo de Crédito', 'Detalles del Préstamo', 'Información Adicional', 'Confirmación'];
@@ -139,18 +140,10 @@ export default function NuevaSolicitudPage() {
 
       if (!user) throw new Error('No estás autenticado');
 
-      const { error: insertError } = await supabase.from('solicitudes_credito').insert({
-        cliente_id: user.id,
-        tipo_credito: formData.tipo_credito,
-        monto_solicitado: parseFloat(formData.monto_solicitado),
-        plazo_meses: parseInt(formData.plazo_meses),
-        estado: 'solicitud_iniciada',
-        detalles: {
-          empresa: formData.empresa,
-          rfc: normalizedRfc,
-          notas: formData.notas
-        }
-      });
+      // Lista blanca de campos; una vez enviada, la base impide que el cliente la modifique.
+      const { error: insertError } = await supabase
+        .from('solicitudes_credito')
+        .insert(buildNuevaSolicitudPayload({ userId: user.id, formData, rfc: normalizedRfc }));
 
       if (insertError) throw insertError;
 

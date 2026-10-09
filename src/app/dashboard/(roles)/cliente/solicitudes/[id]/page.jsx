@@ -15,6 +15,7 @@ import Typography from '@mui/material/Typography';
 
 import MainCard from '@/components/MainCard';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { clientePuedeEditarSolicitud } from '@/utils/solicitudes';
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value || 0);
@@ -104,6 +105,11 @@ export default function SolicitudDetallePage() {
 
   return (
     <Stack sx={{ gap: 3 }}>
+      {solicitud && !clientePuedeEditarSolicitud(solicitud) && (
+        <Alert severity="info">
+          Esta solicitud ya fue enviada y no puede modificarse. Si necesitas cambiar algún dato, contacta a tu analista.
+        </Alert>
+      )}
       <MainCard
         title="Detalle de solicitud"
         secondary={
