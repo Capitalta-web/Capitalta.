@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      # Valores ficticios: el build no necesita secretos reales y en CI nunca se usan llaves de producción.
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-dummy.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-dummy-anon-key
+      SUPABASE_SERVICE_ROLE_KEY: ci-dummy-service-role-key
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Activar Yarn 4 (corepack)
+        run: corepack enable
+
+      - name: Instalar dependencias
+        run: yarn install --immutable
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Tests
+        run: yarn test --ci
+
+      - name: Auditoría de dependencias (falla con vulnerabilidades críticas)
+        run: yarn npm audit --all --recursive --severity critical
+
+      - name: Build
+        run: yarn build
