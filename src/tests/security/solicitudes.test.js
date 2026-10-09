@@ -12,7 +12,14 @@ describe('solicitudes del cliente', () => {
     const payload = buildNuevaSolicitudPayload({
       userId: 'u1',
       rfc: 'XAXX010101000',
-      formData: { tipo_credito: 'simple', monto_solicitado: '500000', plazo_meses: '24', estado: 'aprobado', analista_id: 'x', empresa: 'ACME' }
+      formData: {
+        tipo_credito: 'simple',
+        monto_solicitado: '500000',
+        plazo_meses: '24',
+        estado: 'aprobado',
+        analista_id: 'x',
+        empresa: 'ACME'
+      }
     });
     expect(payload).toEqual({
       cliente_id: 'u1',
