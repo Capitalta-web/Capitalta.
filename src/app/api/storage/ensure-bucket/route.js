@@ -7,7 +7,7 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const bucket = String(body?.bucket || '').trim();
-    const isPublic = Boolean(body?.public);
+    // Solo `avatars` es público. `documentos-credito` (KYC) es SIEMPRE privado, diga lo que diga el cliente.
 
     if (!bucket) return NextResponse.json({ error: 'Bucket requerido' }, { status: 400 });
 
@@ -38,7 +38,7 @@ export async function POST(request) {
     }
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return NextResponse.json({ error: 'SUPABASE_SERVICE_ROLE_KEY no configurada' }, { status: 500 });
+      return NextResponse.json({ error: 'Servicio no disponible' }, { status: 503 });
     }
 
     const supabase = createSupabaseServerClient({ admin: true });
@@ -46,17 +46,24 @@ export async function POST(request) {
 
     const { data: existing, error: getError } = await supabase.storage.getBucket(bucket);
 
+    const shouldBePublic = bucket === 'avatars';
+
     if (existing && !getError) {
+      if (!shouldBePublic && existing.public) {
+        const { error: updateError } = await supabase.storage.updateBucket(bucket, { public: false });
+        if (updateError) return NextResponse.json({ error: 'No se pudo asegurar el bucket privado' }, { status: 500 });
+      }
       return NextResponse.json({ ok: true, bucket: existing.name });
     }
 
     const { data: created, error: createError } = await supabase.storage.createBucket(bucket, {
-      public: bucket === 'avatars' ? true : isPublic
+      public: shouldBePublic
     });
 
-    if (createError) return NextResponse.json({ error: createError.message }, { status: 500 });
+    if (createError) return NextResponse.json({ error: 'No se pudo crear el bucket' }, { status: 500 });
     return NextResponse.json({ ok: true, bucket: created?.name || bucket });
   } catch (err) {
-    return NextResponse.json({ error: err?.message || 'Error' }, { status: 500 });
+    console.error('[ensure-bucket]', err?.message || err);
+    return NextResponse.json({ error: 'Error' }, { status: 500 });
   }
 }

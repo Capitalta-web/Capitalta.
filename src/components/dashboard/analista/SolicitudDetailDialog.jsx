@@ -20,6 +20,7 @@ import {
   Alert
 } from '@mui/material';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { openDocumento } from '@/utils/documentosStorage';
 
 // Icons
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -296,7 +297,12 @@ export default function SolicitudDetailDialog({ open, onClose, solicitud, onStat
                       </Box>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Button variant="outlined" size="small" startIcon={<OpenInNewIcon />} href={doc.url_archivo} target="_blank">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<OpenInNewIcon />}
+                        onClick={() => openDocumento(supabase, doc.url_archivo)}
+                      >
                         Ver
                       </Button>
                       <IconButton color="success" onClick={() => handleDocumentAction(doc.id, 'validado')} disabled={actionLoading}>

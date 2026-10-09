@@ -30,6 +30,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 import { DOCUMENTOS_REQUERIDOS as REQUIRED_DOCUMENTS } from '@/utils/documentosRequeridos';
+import { DOCUMENTOS_BUCKET, buildDocumentoPath, openDocumento } from '@/utils/documentosStorage';
 
 export default function DocumentosPage() {
   const [user, setUser] = useState(null);
@@ -118,11 +119,11 @@ export default function DocumentosPage() {
     try {
       const toUpload = requiredCount > 1 ? files : files.slice(0, 1);
 
-      const bucket = 'documentos-credito';
+      const bucket = DOCUMENTOS_BUCKET;
       const ensureResp = await fetch('/api/storage/ensure-bucket', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bucket, public: true })
+        body: JSON.stringify({ bucket })
       });
       if (!ensureResp.ok) {
         const ensureBody = await ensureResp.json().catch(() => ({}));
@@ -130,22 +131,17 @@ export default function DocumentosPage() {
       }
 
       for (const file of toUpload) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${activeApplication.id}/${docType}_${Date.now()}_${Math.floor(Math.random() * 10000)}.${fileExt}`;
-        const filePath = `${fileName}`;
+        const filePath = buildDocumentoPath(activeApplication.id, docType, file.name);
 
         const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file);
         if (uploadError) throw uploadError;
 
-        const {
-          data: { publicUrl }
-        } = supabase.storage.from(bucket).getPublicUrl(filePath);
-
+        // Bucket privado: se guarda la RUTA del objeto; para verlo se genera una signed URL.
         const { error: dbError } = await supabase.from('documentos').insert({
           solicitud_id: activeApplication.id,
           tipo_documento: docType,
           nombre_archivo: file.name,
-          url_archivo: publicUrl,
+          url_archivo: filePath,
           subido_por: user.id,
           estado: 'subido'
         });
@@ -161,6 +157,11 @@ export default function DocumentosPage() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleViewDocument = async (urlOrPath) => {
+    const opened = await openDocumento(supabase, urlOrPath);
+    if (!opened) setError('No se pudo abrir el documento. Inténtalo de nuevo.');
   };
 
   const getDocStatusIcon = (status) => {
@@ -304,7 +305,7 @@ export default function DocumentosPage() {
                             </Button>
                           )}
                           {isUploaded && (
-                            <IconButton href={primaryDoc?.url_archivo} target="_blank" color="primary" size="small">
+                            <IconButton onClick={() => handleViewDocument(primaryDoc?.url_archivo)} color="primary" size="small">
                               <VisibilityIcon />
                             </IconButton>
                           )}
@@ -349,7 +350,7 @@ export default function DocumentosPage() {
                             />
                           </TableCell>
                           <TableCell align="right">
-                            <IconButton href={doc.url_archivo} target="_blank" color="primary" size="small">
+                            <IconButton onClick={() => handleViewDocument(doc.url_archivo)} color="primary" size="small">
                               <VisibilityIcon />
                             </IconButton>
                           </TableCell>
