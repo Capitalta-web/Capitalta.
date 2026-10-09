@@ -25,17 +25,16 @@ export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
     auth: {
       user: user,
       pass: pass
-    },
-    tls: {
-      rejectUnauthorized: false
     }
+    // Se valida el certificado TLS de smtp.gmail.com (antes estaba desactivado con rejectUnauthorized: false).
   });
 
   // Usamos el correo que sí tenemos controlado en Google Workspace
-  const fromEmail = "contacto@capitalta.mx";
+  const fromEmail = 'contacto@capitalta.mx';
 
   try {
-    console.log(`[Nodemailer Attempt]: Enviando a ${to} desde ${fromEmail} (via ${user})...`);
+    // No se loguean destinatarios completos ni contenido (puede incluir códigos de verificación).
+    console.info('[Nodemailer] Enviando correo transaccional');
     const info = await transporter.sendMail({
       from: `"Capitalta" <${fromEmail}>`,
       to,
@@ -46,7 +45,7 @@ export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
       html: html || `<p>${text}</p>`
     });
 
-    console.log('[Nodemailer Success]: Correo enviado con ID:', info.messageId);
+    console.info('[Nodemailer] Correo enviado:', info.messageId);
     return { success: true, id: info.messageId };
   } catch (error) {
     console.error('[Nodemailer Error Detail]:', error);
