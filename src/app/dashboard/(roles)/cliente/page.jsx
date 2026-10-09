@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Typography, Box, Grid, CircularProgress, Alert, Button } from '@mui/material';
+import { Typography, Box, Grid, CircularProgress, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,6 @@ import MisSolicitudesTable from '@/components/dashboard/cliente/MisSolicitudesTa
 import ProximaCitaCard from '@/components/dashboard/cliente/ProximaCitaCard';
 import DocumentosChecklist from '@/components/dashboard/cliente/DocumentosChecklist';
 import StatusWidget from '@/components/dashboard/cliente/StatusWidget';
-import MainCard from '@/components/MainCard';
 import { DOCUMENTOS_REQUERIDOS } from '@/utils/documentosRequeridos';
 
 export default function ClienteDashboard() {
