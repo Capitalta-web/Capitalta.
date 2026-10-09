@@ -1,13 +1,20 @@
+import { CONTACTO } from '@/data/datosNegocio';
+
 export const contactUS = {
   heading: 'Hablemos de tu proyecto',
   caption: 'Estamos listos para escuchar tus necesidades y proponerte la mejor solución financiera.',
   list: [
-    {
-      icon: 'tabler-phone',
-      title: 'Llámanos',
-      content: 'Atención personalizada de Lunes a Viernes',
-      link: { children: '800 258 2000', href: 'tel:8002582000' }
-    },
+    // TODO(Alberto): confirmar el 800 (CONTACTO.telefono800 en src/data/datosNegocio.js). Oculto mientras tanto.
+    ...(CONTACTO.telefono800.mostrar
+      ? [
+          {
+            icon: 'tabler-phone',
+            title: 'Llámanos',
+            content: 'Atención personalizada de lunes a viernes',
+            link: { children: CONTACTO.telefono800.numero, href: `tel:${CONTACTO.telefono800.tel}` }
+          }
+        ]
+      : []),
     {
       icon: 'tabler-device-mobile',
       title: 'Móvil / WhatsApp',
@@ -40,7 +47,12 @@ export const contactUS = {
       icon: 'tabler-map-pin',
       title: 'Ubicación',
       content: 'Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite, Naucalpan Estado de México, C.P. 53310',
-      link: { children: 'Ver mapa', href: 'https://maps.google.com/?q=Circuito+Circunvalación+Poniente+16,+Naucalpan', target: '_blank', rel: 'noopener noreferrer' }
+      link: {
+        children: 'Ver mapa',
+        href: 'https://maps.google.com/?q=Circuito+Circunvalación+Poniente+16,+Naucalpan',
+        target: '_blank',
+        rel: 'noopener noreferrer'
+      }
     }
   ]
 };

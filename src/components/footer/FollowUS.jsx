@@ -38,7 +38,7 @@ const socialIcons = [
 export default function FollowUS({ heading = true, color }) {
   return (
     <Stack sx={{ alignItems: { xs: 'center', md: 'flex-start' }, gap: 2, textAlign: { xs: 'center', md: 'left' } }}>
-      {heading && <Typeset {...{ heading: typeof heading === 'string' ? heading : 'Follow us on', headingProps: { variant: 'h4' } }} />}
+      {heading && <Typeset {...{ heading: typeof heading === 'string' ? heading : 'Síguenos en', headingProps: { variant: 'h4' } }} />}
       <Stack direction="row" sx={{ gap: { xs: 0.5, sm: 1.5 } }}>
         {socialIcons.map((item, index) => (
           <Link
@@ -47,7 +47,7 @@ export default function FollowUS({ heading = true, color }) {
             {...item.link}
             sx={{ ...item.link?.sx }}
             rel="noopener noreferrer"
-            aria-label="follow us on social media"
+            aria-label="Síguenos en redes sociales"
           >
             <Avatar
               variant="rounded"
@@ -57,16 +57,16 @@ export default function FollowUS({ heading = true, color }) {
                 height: { xs: 40, sm: 52, lg: 56 },
                 borderRadius: 3,
                 color: 'text.primary',
-                ':hover': { 
-                  bgcolor: 'primary.main', 
+                ':hover': {
+                  bgcolor: 'primary.main',
                   color: 'common.white'
                 },
                 transition: 'all 0.3s ease'
               }}
             >
-              <SvgIcon 
-                type={IconType.STROKE} 
-                {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })} 
+              <SvgIcon
+                type={IconType.STROKE}
+                {...(typeof item.icon === 'string' ? { name: item.icon } : { ...item.icon })}
                 size={24}
                 stroke={1.5}
               />

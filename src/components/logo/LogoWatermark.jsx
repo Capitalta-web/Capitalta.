@@ -16,7 +16,7 @@ export default function LogoWatermark({ width = 430, height = 466 }) {
   const logoWatermark = branding.logo.logoWatermark;
 
   return logoWatermark ? (
-    <CardMedia src={logoWatermark} component="img" alt="logo" loading="lazy" sx={{ width, height }} />
+    <CardMedia src={logoWatermark} component="img" alt="Capitalta" loading="lazy" sx={{ width, height }} />
   ) : (
     <Box sx={{ width, height }}>
       <svg viewBox="0 0 430 466" fill="none" xmlns="http://www.w3.org/2000/svg">

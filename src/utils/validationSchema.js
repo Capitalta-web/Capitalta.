@@ -1,29 +1,32 @@
 export const emailSchema = {
-  required: 'Email is required',
-  pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Invalid email address' }
+  required: 'El correo electrónico es obligatorio',
+  pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Correo electrónico no válido' }
 };
 
 export const passwordSchema = {
-  required: 'Password is required',
-  minLength: { value: 8, message: 'Password must be at least 8 characters' }
+  required: 'La contraseña es obligatoria',
+  minLength: { value: 8, message: 'La contraseña debe tener al menos 8 caracteres' }
 };
 
+// Acepta acentos, ñ, diéresis, apóstrofos, puntos y guiones (p. ej. "José María", "Núñez", "O'Neill").
+const NOMBRE_REGEX = /^[\p{L}\s'.-]+$/u;
+
 export const firstNameSchema = {
-  required: 'First name is required',
-  pattern: { value: /^[a-zA-Z\s]+$/, message: 'Invalid first name' }
+  required: 'El nombre es obligatorio',
+  pattern: { value: NOMBRE_REGEX, message: 'Nombre no válido' }
 };
 
 export const lastNameSchema = {
-  required: 'Last name is required',
-  pattern: { value: /^[a-zA-Z\s]+$/, message: 'Invalid last name' }
+  required: 'El apellido es obligatorio',
+  pattern: { value: NOMBRE_REGEX, message: 'Apellido no válido' }
 };
 
 export const phoneSchema = {
-  required: 'Phone number is required',
-  pattern: { value: /^[0-9()-.\s]{7,15}$/, message: 'Invalid phone number' }
+  required: 'El teléfono es obligatorio',
+  pattern: { value: /^[0-9()-.\s]{7,15}$/, message: 'Teléfono no válido' }
 };
 
 export const otpSchema = {
-  required: 'OTP is required',
-  minLength: { value: 6, message: 'OTP must be exactly 6 characters' }
+  required: 'El código es obligatorio',
+  minLength: { value: 6, message: 'El código debe tener exactamente 6 caracteres' }
 };

@@ -18,6 +18,7 @@ import { motion } from 'motion/react';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import SvgIcon from '@/components/SvgIcon';
 import Typeset from '@/components/Typeset';
+import { textoCat } from '@/components/TasaYCat';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
 import CreditEmpresarial from '@/images/graphics/CreditEmpresarial';
@@ -92,8 +93,7 @@ export default function FeatureProducts({ heading, caption, features }) {
                       background:
                         getVisual(item) === 'empresarial'
                           ? `radial-gradient(600px circle at 85% 20%, ${alpha(primaryMain, 0.18)}, transparent 45%), radial-gradient(420px circle at 20% 80%, ${alpha(primaryMain, 0.1)}, transparent 55%)`
-                          : `radial-gradient(600px circle at 85% 20%, ${alpha(primaryMain, 0.2)}, transparent 45%), radial-gradient(520px circle at 15% 85%, ${alpha(secondaryMain, 0.12)}, transparent 55%)`
-                      ,
+                          : `radial-gradient(600px circle at 85% 20%, ${alpha(primaryMain, 0.2)}, transparent 45%), radial-gradient(520px circle at 15% 85%, ${alpha(secondaryMain, 0.12)}, transparent 55%)`,
                       pointerEvents: 'none',
                       zIndex: 0
                     },
@@ -182,7 +182,10 @@ export default function FeatureProducts({ heading, caption, features }) {
                           <Stack direction="row" alignItems="center" spacing={1.5}>
                             <SvgIcon name="tabler-coin" size={20} color="primary.main" />
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                              Monto: <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>{item.monto}</Box>
+                              Monto:{' '}
+                              <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                                {item.monto}
+                              </Box>
                             </Typography>
                           </Stack>
                         )}
@@ -190,7 +193,19 @@ export default function FeatureProducts({ heading, caption, features }) {
                           <Stack direction="row" alignItems="center" spacing={1.5}>
                             <SvgIcon name="tabler-calendar-time" size={20} color="primary.main" />
                             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                              Plazo: <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>{item.plazo}</Box>
+                              Plazo:{' '}
+                              <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>
+                                {item.plazo}
+                              </Box>
+                            </Typography>
+                          </Stack>
+                        )}
+                        {/* Espacio reservado para el CAT junto a la tasa (se muestra al capturarlo en src/data/datosNegocio.js) */}
+                        {textoCat() && (
+                          <Stack direction="row" alignItems="center" spacing={1.5} data-slot="cat">
+                            <SvgIcon name="tabler-percentage" size={20} color="primary.main" />
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                              {textoCat()}
                             </Typography>
                           </Stack>
                         )}

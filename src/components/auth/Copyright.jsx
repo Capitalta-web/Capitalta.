@@ -28,25 +28,25 @@ export default function Copyright() {
     <Stack sx={{ gap: 1, width: 'fit-content', mx: 'auto' }}>
       <Stack direction="row" sx={{ justifyContent: 'center', gap: { xs: 1, md: 1.5 }, textAlign: 'center' }}>
         <Typography variant="caption" sx={{ ...copyrightSX, color: 'text.secondary', whiteSpace: 'nowrap' }}>
-          © 2024
-          <Link {...linkProps} aria-label="company" href={branding.company.url} sx={{ ...linkProps.sx, marginLeft: 0.5 }}>
+          © {new Date().getFullYear()}
+          <Link {...linkProps} aria-label="Capitalta" href={branding.company.url} sx={{ ...linkProps.sx, marginLeft: 0.5 }}>
             {branding.company.name}
           </Link>
         </Typography>
         <Divider orientation="vertical" flexItem sx={copyrightSX} />
-        <Link {...linkProps} aria-label="privacy policy" href="/privacy-policy">
-          Privacy Policy
+        <Link {...linkProps} href="/aviso-de-privacidad">
+          Aviso de Privacidad
         </Link>
         <Divider orientation="vertical" flexItem />
-        <Link {...linkProps} aria-label="terms & conditions" href="https://mui.com/store/terms">
-          Terms & Conditions
+        <Link {...linkProps} href="/legales/terminos-y-condiciones">
+          Términos y Condiciones
         </Link>
       </Stack>
       <Box sx={{ textAlign: 'center', display: { xs: 'block', md: 'none' } }}>
         <Divider sx={{ marginBottom: 1 }} />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          © 2024
-          <Link {...linkProps} aria-label="company" href={branding.company.url} sx={{ ...linkProps.sx, marginLeft: 0.5 }}>
+          © {new Date().getFullYear()}
+          <Link {...linkProps} aria-label="Capitalta" href={branding.company.url} sx={{ ...linkProps.sx, marginLeft: 0.5 }}>
             {branding.company.name}
           </Link>
         </Typography>
