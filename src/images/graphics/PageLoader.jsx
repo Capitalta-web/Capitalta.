@@ -26,7 +26,7 @@ export default function PageLoader() {
   return (
     <Stack direction="row" sx={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
       <Avatar sx={{ width: 65, height: 65, bgcolor: '#ffffff', padding: 1 }}>
-        <img src="/assets/images/capitalta/isotipo.png" alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src="/assets/images/capitalta/isotipo.png" alt="Capitalta" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </Avatar>
       <CircularProgress
         {...commonProps}

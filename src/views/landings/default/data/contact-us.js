@@ -1,13 +1,20 @@
+import { CONTACTO } from '@/data/datosNegocio';
+
 export const contactUS = {
   heading: 'Hablemos de tu proyecto',
   caption: 'Estamos listos para escuchar tus necesidades y proponerte la mejor solución financiera.',
   list: [
-    {
-      icon: 'tabler-phone',
-      title: 'Llámanos',
-      content: 'Atención personalizada de Lunes a Viernes',
-      link: { children: '800 258 2000', href: 'tel:8002582000' }
-    },
+    // TODO(Alberto): confirmar el 800 (CONTACTO.telefono800 en src/data/datosNegocio.js). Oculto mientras tanto.
+    ...(CONTACTO.telefono800.mostrar
+      ? [
+          {
+            icon: 'tabler-phone',
+            title: 'Llámanos',
+            content: 'Atención personalizada de lunes a viernes',
+            link: { children: CONTACTO.telefono800.numero, href: `tel:${CONTACTO.telefono800.tel}` }
+          }
+        ]
+      : []),
     {
       icon: 'tabler-device-mobile',
       title: 'Móvil / WhatsApp',

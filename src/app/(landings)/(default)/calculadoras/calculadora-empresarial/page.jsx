@@ -19,18 +19,17 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
+import TasaYCat, { textoCat } from '@/components/TasaYCat';
+import { PRODUCTOS, TASA_ANUAL_FIJA } from '@/data/datosNegocio';
 import { submitLeadAction, submitCotizacionAction } from '../actions';
 
-// export const metadata = {
-//   title: 'Calculadora Crédito Empresarial | Capitalta'
-// };
-
-const MONTO_MIN = 500000;
-const MONTO_MAX = 50000000;
-const PLAZO_MIN = 12;
-const PLAZO_MAX = 120;
-const TASA_MIN = 24;
-const TASA_MAX = 24;
+const PRODUCTO = PRODUCTOS.empresarial;
+const MONTO_MIN = PRODUCTO.montoMin;
+const MONTO_MAX = PRODUCTO.montoMax;
+const PLAZO_MIN = PRODUCTO.plazoMin;
+const PLAZO_MAX = PRODUCTO.plazoMax;
+const TASA_MIN = TASA_ANUAL_FIJA;
+const TASA_MAX = TASA_ANUAL_FIJA;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -102,7 +101,7 @@ function formatearFecha(fecha) {
 export default function CalculadoraEmpresarialPage() {
   const [monto, setMonto] = useState(1000000);
   const [plazo, setPlazo] = useState(36);
-  const [tasaAnual] = useState(24);
+  const tasaAnual = TASA_ANUAL_FIJA;
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -305,9 +304,13 @@ export default function CalculadoraEmpresarialPage() {
                 <td style="padding:4px;border:1px solid #ccc;">${plazoAjustado} meses</td>
               </tr>
               <tr>
-                <td style="padding:4px;border:1px solid #ccc;">Tasa anual estimada</td>
+                <td style="padding:4px;border:1px solid #ccc;">Tasa anual fija</td>
                 <td style="padding:4px;border:1px solid #ccc;">${tasaAjustada}%</td>
-              </tr>
+              </tr>${
+                textoCat()
+                  ? `<tr><td style="padding:4px;border:1px solid #ccc;">CAT</td><td style="padding:4px;border:1px solid #ccc;">${textoCat()}</td></tr>`
+                  : ''
+              }
             </tbody>
           </table>
 
@@ -377,8 +380,8 @@ export default function CalculadoraEmpresarialPage() {
                 </Typography>
                 <Typography variant="h2">Crédito Empresarial</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 640 }}>
-                  Proyecta tu Crédito Empresarial con montos, plazos y tasas acordes al tamaño de tu operación, revisa la tabla de
-                  amortización y genera un PDF para compartir la propuesta internamente.
+                  Proyecta tu Crédito Empresarial con montos y plazos acordes al tamaño de tu operación, revisa la tabla de amortización y
+                  genera un PDF para compartir la propuesta internamente.
                 </Typography>
               </Stack>
             </Grid>
@@ -407,10 +410,8 @@ export default function CalculadoraEmpresarialPage() {
                     </Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-                    <Typography variant="body2">Tasa anual estimada</Typography>
-                    <Typography variant="body2">
-                      {TASA_MIN}% a {TASA_MAX}% anual
-                    </Typography>
+                    <Typography variant="body2">Tasa anual fija</Typography>
+                    <Typography variant="body2">{TASA_ANUAL_FIJA}% anual fija</Typography>
                   </Stack>
                 </Stack>
               </Box>
@@ -472,12 +473,13 @@ export default function CalculadoraEmpresarialPage() {
                 </Box>
                 <Box>
                   <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="subtitle2">Tasa anual estimada</Typography>
+                    <Typography variant="subtitle2">Tasa anual fija</Typography>
                     <Typography variant="body2">{tasaAjustada}% (Fija)</Typography>
                   </Stack>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                    La tasa de interés para este producto es fija del 24% anual.
+                    La tasa de interés para este producto es fija del {TASA_ANUAL_FIJA}% anual.
                   </Typography>
+                  <TasaYCat mostrarTasa={false} variant="caption" sx={{ mt: 1, color: 'text.secondary' }} />
                 </Box>
               </Stack>
 

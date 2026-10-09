@@ -26,7 +26,7 @@ export default function LogoSection({ isIcon, sx, to }) {
         disableRipple
         sx={{ ...sx, display: 'block', '&:focus-visible': generateFocusVisibleStyles(palette.primary.main) }}
         rel="noopener noreferrer"
-        aria-label="logo"
+        aria-label="Capitalta - Inicio"
       >
         {isIcon ? <LogoIcon /> : <LogoMain />}
       </ButtonBase>
