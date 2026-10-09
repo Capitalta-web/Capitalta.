@@ -25,7 +25,7 @@ https://fhntmbfpuppmiashynlu.supabase.co
 
 **Publishable API Key:**
 ```
-sb_publishable_pPCi0YY6Y2YN_3lI0o2jnQ_d4ySrN2Z
+[REDACTADO: usar variable de entorno]
 ```
 
 Esta clave es segura para usar en aplicaciones del lado del cliente si se ha habilitado Row Level Security (RLS) para las tablas. También existe una clave secreta (service_role key) que debe tratarse como confidencial.
