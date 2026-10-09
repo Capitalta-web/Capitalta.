@@ -1,102 +1,81 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendVerificationCode } from '@/utils/nodemailer';
+import { sanitizeUserMetadata } from '@/utils/auth/roles';
+import { isValidEmail, maskEmail, normalizeEmail, otpErrorMessage } from '@/utils/security/otp';
+import { issueOtp } from '@/utils/security/otpStore';
+import { createRateLimiter, getClientIp, rateLimitHeaders } from '@/utils/security/rateLimit';
+
+// Límite best-effort por IP (ver nota en rateLimit.js). El límite fuerte por email está en la base.
+const ipLimiter = createRateLimiter({ limit: 5, windowMs: 15 * 60 * 1000 });
 
 /**
- * Endpoint de signup
- * 1. Crea usuario en Supabase usando admin.createUser (bypass email confirmation default)
- * 2. Genera código de verificación de 6 dígitos
- * 3. Envía código por email con Nodemailer
+ * POST /api/auth/signup
+ * 1. Crea el usuario (sin confirmar) con service role. El metadata se filtra: nunca incluye `role`.
+ * 2. Genera un código de 6 dígitos (CSPRNG), lo guarda hasheado con expiración e intentos.
+ * 3. Lo envía por email. El código NUNCA se loguea ni se devuelve en la respuesta.
  */
 export async function POST(request) {
-  try {
-    const body = await request.json();
-    const { email, password, options } = body;
+  const limit = ipLimiter.check(`signup:${getClientIp(request)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ error: otpErrorMessage('rate_limited') }, { status: 429, headers: rateLimitHeaders(limit) });
+  }
 
-    // Validación
+  try {
+    const body = await request.json().catch(() => ({}));
+    const email = normalizeEmail(body?.email);
+    const password = typeof body?.password === 'string' ? body.password : '';
+
     if (!email || !password) {
       return NextResponse.json({ error: 'Email y contraseña son requeridos' }, { status: 400 });
     }
-
-    // Usar cliente con Service Role Key (Admin)
-    const supabase = createSupabaseServerClient({ admin: true });
-
-    if (!supabase) {
-      console.error('Supabase server client could not be initialized.');
-      return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Email inválido' }, { status: 400 });
+    }
+    if (password.length < 8) {
+      return NextResponse.json({ error: 'La contraseña debe tener al menos 8 caracteres' }, { status: 400 });
     }
 
-    // 1. Crear usuario usando admin.createUser
-    // Esto nos permite crear el usuario sin enviar el correo de confirmación de Supabase
+    const supabase = createSupabaseServerClient({ admin: true });
+    if (!supabase) {
+      console.error('[Auth Signup] Supabase (service role) no configurado');
+      return NextResponse.json({ error: 'Servicio no disponible' }, { status: 503 });
+    }
+
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: false, // Importante: Usuario no confirmado inicialmente
-      user_metadata: options?.data || {}
+      email_confirm: false,
+      user_metadata: sanitizeUserMetadata(body?.options?.data)
     });
 
-    if (error) {
-      console.error('Supabase Admin Create User Error:', error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error || !data?.user) {
+      console.error('[Auth Signup] No se pudo crear el usuario:', error?.message);
+      return NextResponse.json({ error: 'No se pudo completar el registro. Si ya tienes cuenta, inicia sesión.' }, { status: 400 });
     }
 
-    if (!data.user) {
-      console.error('User not created');
-      return NextResponse.json({ error: 'No se pudo crear el usuario' }, { status: 400 });
+    const otp = await issueOtp(supabase, { email, userId: data.user.id, purpose: 'signup' });
+    if (!otp.ok) {
+      const status = otp.reason === 'rate_limited' ? 429 : 500;
+      return NextResponse.json({ error: otpErrorMessage(otp.reason) }, { status });
     }
 
-    // 2. Generar código de verificación de 6 dígitos
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    console.log(`[Auth Signup] Enviando código ${verificationCode} a ${email}`);
-
-    // 3. Guardar código en tabla otp_codes (usando supabase server client para bypass RLS si es necesario)
-    const { error: otpError } = await supabase.from('otp_codes').insert({
-      email,
-      user_id: data.user.id,
-      code: verificationCode,
-      // expires_at: new Date(Date.now() + 10 * 60000).toISOString() // Expiración en 10 min
-    });
-
-    if (otpError) {
-      console.error('Error saving OTP code:', otpError);
-      // Si falla guardar el código, no podemos verificar al usuario, así que es un error crítico
-      return NextResponse.json({ error: 'Error interno al generar código de verificación' }, { status: 500 });
-    }
-
-    // 4. Enviar código por email
-    const emailResult = await sendVerificationCode(email, verificationCode);
-
-    // En desarrollo, permitimos continuar aunque falle el envío de correo
-    if (!emailResult.success && process.env.NODE_ENV !== 'development') {
-      console.error('Email sending failed:', emailResult.error);
+    const emailResult = await sendVerificationCode(email, otp.code);
+    if (!emailResult.success) {
+      console.error('[Auth Signup] Falló el envío del código a', maskEmail(email));
       return NextResponse.json(
-        {
-          error: 'Usuario creado pero no se pudo enviar el código de verificación. Intenta nuevamente.',
-          userCreated: true,
-          details: emailResult.error
-        },
-        { status: 500 }
+        { error: 'Usuario creado pero no se pudo enviar el código de verificación. Intenta nuevamente.', userCreated: true },
+        { status: 502 }
       );
-    } else if (!emailResult.success && process.env.NODE_ENV === 'development') {
-      console.warn('[DEV MODE] Email failed but continuing registration flow. OTP:', verificationCode);
     }
-
-    console.log(`[Auth Signup Success] Usuario creado: ${email}, código guardado y enviado exitosamente (o simulado en dev)`);
 
     return NextResponse.json({
       success: true,
       message: 'Usuario registrado. Verifica tu email para el código de 6 dígitos.',
-      user: data.user,
-      email: email,
-      // En desarrollo, devolvemos el código para facilitar pruebas
-      devCode: process.env.NODE_ENV === 'development' ? verificationCode : undefined
+      email
     });
   } catch (err) {
-    console.error('API Route Error:', err.message || err);
-    return NextResponse.json({
-      error: 'Ocurrió un error inesperado',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    }, { status: 500 });
+    console.error('[Auth Signup] Error inesperado:', err?.message || err);
+    return NextResponse.json({ error: 'Ocurrió un error inesperado' }, { status: 500 });
   }
 }

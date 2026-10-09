@@ -1,107 +1,65 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { isValidEmail, isWellFormedCode, normalizeEmail, otpErrorMessage } from '@/utils/security/otp';
+import { verifyOtp } from '@/utils/security/otpStore';
+import { createRateLimiter, getClientIp, rateLimitHeaders } from '@/utils/security/rateLimit';
+
+// Best-effort por IP; el bloqueo fuerte (5 intentos por código) vive en la base (otp_codes.attempts).
+const ipLimiter = createRateLimiter({ limit: 20, windowMs: 15 * 60 * 1000 });
 
 /**
- * Endpoint para verificar código OTP de email
- *
- * POST /api/auth/verify-otp
- * Body: { email, code }
- *
- * Proceso:
- * 1. Validar que el código sea de 6 dígitos
- * 2. Buscar el código en tabla otp_codes
- * 3. Validar que no haya expirado
- * 4. Obtener el user_id del usuario
- * 5. Confirmar el email en auth.users (email_confirm: true)
- * 6. Marcar código como usado
- * 7. Retornar success
+ * POST /api/auth/verify-otp  Body: { email, code }
+ * Verifica el último código vigente del email, con expiración y límite de intentos,
+ * y confirma el email del usuario asociado.
  */
 export async function POST(request) {
-  try {
-    const body = await request.json();
-    const { email, code } = body;
+  const limit = ipLimiter.check(`verify:${getClientIp(request)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Demasiados intentos. Intenta más tarde.' }, { status: 429, headers: rateLimitHeaders(limit) });
+  }
 
-    // Validación
+  try {
+    const body = await request.json().catch(() => ({}));
+    const email = normalizeEmail(body?.email);
+    const code = typeof body?.code === 'string' ? body.code.trim() : '';
+
     if (!email || !code) {
       return NextResponse.json({ error: 'Email y código son requeridos' }, { status: 400 });
     }
-
-    if (!/^\d{6}$/.test(code)) {
+    if (!isValidEmail(email) || !isWellFormedCode(code)) {
       return NextResponse.json({ error: 'El código debe ser de 6 dígitos' }, { status: 400 });
     }
 
     const supabase = createSupabaseServerClient({ admin: true });
-
     if (!supabase) {
-      console.error('Supabase client could not be initialized');
-      return NextResponse.json({ error: 'Error de configuración del servidor' }, { status: 500 });
+      return NextResponse.json({ error: 'Servicio no disponible' }, { status: 503 });
     }
 
-    // 1. Buscar el código OTP en tabla otp_codes
-    const { data: otpRecord, error: otpError } = await supabase
-      .from('otp_codes')
-      .select('*')
-      .eq('email', email)
-      .eq('code', code)
-      .gt('expires_at', new Date().toISOString())
-      .eq('used', false)
-      .single();
-
-    if (otpError || !otpRecord) {
-      console.error('OTP Code not found or expired:', otpError);
-      return NextResponse.json({
-        error: 'Código inválido o expirado. Solicita un nuevo código.'
-      }, { status: 400 });
+    const result = await verifyOtp(supabase, { email, code, purpose: 'signup' });
+    if (!result.ok) {
+      const status = result.reason === 'db_error' ? 500 : result.reason === 'locked' ? 429 : 400;
+      return NextResponse.json({ error: otpErrorMessage(result.reason) }, { status });
     }
 
-    const userId = otpRecord.user_id || otpRecord.userId || otpRecord.usuario_id || null;
-    let targetUserId = userId;
-
-    if (!targetUserId) {
-      const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-      if (listError) {
-        console.error('Error listing users:', listError);
-        return NextResponse.json({ error: 'Error al confirmar email' }, { status: 500 });
-      }
-      const found = (listData?.users || []).find((u) => u.email === email);
-      targetUserId = found?.id || null;
+    const userId = result.record?.user_id;
+    if (!userId) {
+      return NextResponse.json({ error: otpErrorMessage('not_found') }, { status: 400 });
     }
 
-    if (!targetUserId) {
-      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
-    }
-
-    const { error: confirmError } = await supabase.auth.admin.updateUserById(targetUserId, { email_confirm: true });
+    const { error: confirmError } = await supabase.auth.admin.updateUserById(userId, { email_confirm: true });
     if (confirmError) {
-      console.error('Error confirming email:', confirmError);
+      console.error('[Verify OTP] No se pudo confirmar el email:', confirmError.message);
       return NextResponse.json({ error: 'No se pudo confirmar el email' }, { status: 500 });
-    }
-
-    // 3. Marcar código como usado
-    const { error: updateOtpError } = await supabase
-      .from('otp_codes')
-      .update({
-        used: true,
-        used_at: new Date().toISOString()
-      })
-      .eq('id', otpRecord.id);
-
-    if (updateOtpError) {
-      console.error('Error marking OTP as used:', updateOtpError);
-      // No bloqueamos aquí, el usuario puede continuar
     }
 
     return NextResponse.json({
       success: true,
       message: 'Email verificado exitosamente. Ahora puedes iniciar sesión.',
-      email: email,
+      email,
       verified: true
     });
   } catch (err) {
-    console.error('API Route Error:', err.message || err);
-    return NextResponse.json({
-      error: 'Ocurrió un error inesperado',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    }, { status: 500 });
+    console.error('[Verify OTP] Error inesperado:', err?.message || err);
+    return NextResponse.json({ error: 'Ocurrió un error inesperado' }, { status: 500 });
   }
 }
