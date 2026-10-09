@@ -1,6 +1,7 @@
 'use client';
 import { createContext, use, useEffect, useState } from 'react';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { resolveRole } from '@/utils/auth/roles';
 
 /***************************  AUTH - CONTEXT & PROVIDER  ***************************/
 
@@ -16,7 +17,8 @@ export const AuthProvider = ({ children }) => {
     return {
       ...authUser,
       ...(safeProfile ? safeProfile : {}),
-      role: safeProfile?.role || authUser?.user_metadata?.role || 'cliente'
+      // El rol solo viene de profiles.role; nunca de user_metadata.
+      role: resolveRole(safeProfile)
     };
   };
 
@@ -81,19 +83,15 @@ export const AuthProvider = ({ children }) => {
         // If profile not found (PGRST116), try to create it manually as fallback
         if (error.code === 'PGRST116') {
           console.warn('Profile not found for user, attempting to create default profile...');
-          
+
           const newProfile = {
             id: authUser.id,
             email: authUser.email,
-            nombre_completo: authUser.user_metadata?.full_name || authUser.user_metadata?.nombre_completo || 'Usuario Nuevo',
-            role: authUser.user_metadata?.role || 'cliente'
+            nombre_completo: authUser.user_metadata?.full_name || authUser.user_metadata?.nombre_completo || 'Usuario Nuevo'
+            // Sin `role`: la base asigna 'cliente' por defecto y el trigger impide otro valor.
           };
 
-          const { data: insertedProfile, error: insertError } = await supabase
-            .from('profiles')
-            .insert([newProfile])
-            .select()
-            .single();
+          const { data: insertedProfile, error: insertError } = await supabase.from('profiles').insert([newProfile]).select().single();
 
           if (insertError) {
             console.error('Error auto-creating profile:', insertError);

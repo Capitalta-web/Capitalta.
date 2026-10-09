@@ -1,53 +1,70 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
+import { getAccessRedirect, requiresSession, resolveRole } from '@/utils/auth/roles';
 
+function redirectTo(request, pathname) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = '';
+  return NextResponse.redirect(url);
+}
+
+/**
+ * Refresca la sesión de Supabase y protege /dashboard/* y /admin/*.
+ * Falla cerrado: si falta configuración, no hay sesión o el rol no alcanza,
+ * se redirige (nunca se deja pasar). El rol se lee SOLO de public.profiles.role.
+ */
 export async function updateSession(request) {
-  let supabaseResponse = NextResponse.next({
-    request
-  });
+  const pathname = request.nextUrl.pathname;
+  const isProtected = requiresSession(pathname);
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  if (!url || !anonKey) {
+    return isProtected ? redirectTo(request, '/auth/login') : NextResponse.next({ request });
+  }
+
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(url, anonKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value));
-        supabaseResponse = NextResponse.next({
-          request
-        });
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        supabaseResponse = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) => supabaseResponse.cookies.set(name, value, options));
       }
     }
   });
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth/login';
-    return NextResponse.redirect(url);
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data?.user || null;
+  } catch {
+    user = null;
   }
 
-  if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const { data: profile } = await supabase.from('profiles').select('role,tipo_persona').eq('id', user.id).single();
+  if (!isProtected) return supabaseResponse;
 
-    const legacyRole = profile?.tipo_persona;
-    const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
-    const role = profile?.role || mappedRole || (user.user_metadata && user.user_metadata.role) || 'cliente';
-    const path = request.nextUrl.pathname;
+  let role = null;
+  if (user) {
+    try {
+      const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+      role = resolveRole(error ? null : profile);
+    } catch {
+      role = resolveRole(null);
+    }
+  }
 
-    if (path.startsWith('/dashboard/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard/cliente', request.url));
-    }
-    if (path.startsWith('/dashboard/analista') && role !== 'analista') {
-      return NextResponse.redirect(new URL('/dashboard/cliente', request.url));
-    }
-    if (path.startsWith('/dashboard/cliente') && role === 'admin') {
-      return NextResponse.redirect(new URL('/dashboard/admin', request.url));
-    }
+  const target = getAccessRedirect({ pathname, user, role });
+  if (target) {
+    const response = redirectTo(request, target);
+    // Conserva las cookies de sesión refrescadas.
+    supabaseResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
+    return response;
   }
 
   return supabaseResponse;

@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form';
 import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 import { NextLink } from '../routes';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient'; // Added
+import { dashboardPathForRole, resolveRole } from '@/utils/auth/roles';
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
@@ -70,25 +71,13 @@ export default function AuthLogin({ inputSx }) {
         return;
       } else {
         // Get user and determine dashboard route
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
         if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role,tipo_persona')
-            .eq('id', user.id)
-            .single();
-
-          const legacyRole = profile?.tipo_persona;
-          const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
-          const role = profile?.role || mappedRole || user.user_metadata?.role || 'cliente';
-          const dashboard =
-            role === 'admin'
-              ? '/dashboard/admin'
-              : role === 'analista'
-                ? '/dashboard/analista'
-                : role === 'notario'
-                  ? '/dashboard/notario'
-                  : '/dashboard/cliente';
+          // El rol se lee solo de profiles.role (nunca de user_metadata).
+          const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+          const dashboard = dashboardPathForRole(resolveRole(profile));
           router.refresh();
           router.replace(dashboard);
         } else {

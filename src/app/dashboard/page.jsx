@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
+import { dashboardPathForRole, resolveRole } from '@/utils/auth/roles';
 import { CircularProgress, Box, Typography } from '@mui/material';
 
 export default function DashboardRedirect() {
@@ -25,34 +26,9 @@ export default function DashboardRedirect() {
         return;
       }
 
-      const { data: profile, error } = await supabase.from('profiles').select('role,tipo_persona').eq('id', user.id).single();
-
-      if (error || !profile) {
-        const roleFromJwt = user.user_metadata?.role || 'cliente';
-        const dashboard =
-          roleFromJwt === 'admin'
-            ? '/dashboard/admin'
-            : roleFromJwt === 'analista'
-              ? '/dashboard/analista'
-              : roleFromJwt === 'notario'
-                ? '/dashboard/notario'
-                : '/dashboard/cliente';
-        router.replace(dashboard);
-      } else {
-        const legacyRole = profile.tipo_persona;
-        const mappedRole = legacyRole === 'administrador' ? 'admin' : legacyRole;
-        const role = profile.role || mappedRole || 'cliente';
-
-        if (role === 'admin') {
-          router.replace('/dashboard/admin');
-        } else if (role === 'analista') {
-          router.replace('/dashboard/analista');
-        } else if (role === 'notario') {
-          router.replace('/dashboard/notario');
-        } else {
-          router.replace('/dashboard/cliente');
-        }
-      }
+      // El rol se lee solo de profiles.role (nunca de user_metadata).
+      const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+      router.replace(dashboardPathForRole(resolveRole(error ? null : profile)));
     };
 
     checkUser();
