@@ -78,7 +78,8 @@ insert into storage.buckets (id, name, public) values ('documentos-credito', 'do
 
 create table public.profiles (id uuid primary key references auth.users(id), role text not null default 'cliente', nombre_completo text, tipo_persona text);
 create table public.solicitudes_credito (id uuid primary key default gen_random_uuid(), cliente_id uuid, analista_id uuid, estado text, monto numeric);
-create table public.documentos (id uuid primary key default gen_random_uuid(), solicitud_id uuid, url_archivo text not null, subido_por uuid);
+create table public.documentos (id uuid primary key default gen_random_uuid(), solicitud_id uuid, url_archivo text not null, subido_por uuid,
+  estado text default 'subido', comentarios text);
 create table public.leads (id serial primary key, email text);
 create table public.articulos (id serial primary key, titulo text);
 create table public.avaluos (id serial primary key, solicitud_id uuid);
@@ -102,6 +103,9 @@ create policy "Analistas y Admins ven todas las solicitudes" on public.solicitud
 alter table public.leads enable row level security;
 create policy "Solo usuarios autenticados ven leads" on public.leads for select using (auth.role() = 'authenticated');
 alter table public.documentos enable row level security;
+create policy "Usuarios ven sus propios documentos" on public.documentos for select using (auth.uid() = subido_por);
+create policy "Usuarios pueden subir documentos" on public.documentos for insert with check (auth.uid() = subido_por);
+create policy "Usuarios editan documentos (legado inseguro)" on public.documentos for update using (auth.uid() = subido_por);
 alter table public.articulos enable row level security;
 create policy "Usuarios autenticados gestionan articulos" on public.articulos for all using (auth.role() = 'authenticated');
 alter table public.avaluos enable row level security;
@@ -178,8 +182,59 @@ await check('un cliente no crea solicitudes en estado avanzado ni cambia el esta
   const r = await as(A, `insert into solicitudes_credito (cliente_id, estado) values ('${A}', 'aprobada') returning id, estado`);
   assert.equal(r.rows[0].estado, 'solicitud_iniciada');
   solA = r.rows[0].id;
-  assert.equal((await as(A, `update solicitudes_credito set estado = 'fondeado' where id = '${solA}'`)).ok, false);
+  const upd = await as(A, `update solicitudes_credito set estado = 'fondeado' where id = '${solA}'`);
+  assert.equal(upd.ok === false || upd.affected === 0, true);
+  assert.equal((await rows(`select estado from solicitudes_credito where id = '${solA}'`))[0].estado, 'solicitud_iniciada');
   assert.equal((await as(C, `update solicitudes_credito set estado = 'en_comite' where id = '${solA}'`)).affected, 1);
+});
+
+await check('una solicitud enviada no se puede modificar (monto, plazo, etc.)', async () => {
+  const r = await as(A, `update solicitudes_credito set monto = 999999999 where id = '${solA}'`);
+  assert.equal(r.ok === false || r.affected === 0, true);
+  assert.equal((await rows(`select monto from solicitudes_credito where id = '${solA}'`))[0].monto, null);
+});
+await check('el trigger bloquea cambios aunque exista una política UPDATE permisiva heredada', async () => {
+  await db.exec(`create policy "legado permisivo" on public.solicitudes_credito for update using (auth.uid() = cliente_id)`);
+  try {
+    const r = await as(A, `update solicitudes_credito set monto = 1 where id = '${solA}'`);
+    assert.equal(r.ok, false);
+    assert.match(r.err, /ya fue enviada/);
+  } finally {
+    await db.exec(`drop policy "legado permisivo" on public.solicitudes_credito`);
+  }
+});
+await check('una solicitud enviada no se puede borrar', async () => {
+  const r = await as(A, `delete from solicitudes_credito where id = '${solA}'`);
+  assert.equal(r.ok === false || r.affected === 0, true);
+  assert.equal((await rows(`select count(*)::int as n from solicitudes_credito where id = '${solA}'`))[0].n, 1);
+});
+await check('un borrador sí se edita y se envía; después queda bloqueado', async () => {
+  const r = await as(A, `insert into solicitudes_credito (cliente_id, estado, monto) values ('${A}', 'borrador', 100) returning id, estado`);
+  assert.equal(r.rows[0].estado, 'borrador');
+  const draftId = r.rows[0].id;
+  assert.equal((await as(A, `update solicitudes_credito set monto = 200 where id = '${draftId}'`)).affected, 1);
+  assert.equal((await as(A, `update solicitudes_credito set estado = 'aprobado' where id = '${draftId}'`)).ok, false);
+  assert.equal((await as(A, `update solicitudes_credito set estado = 'solicitud_iniciada' where id = '${draftId}'`)).affected, 1);
+  const after = await as(A, `update solicitudes_credito set monto = 300 where id = '${draftId}'`);
+  assert.equal(after.ok === false || after.affected === 0, true);
+  assert.equal((await rows(`select monto::int as m from solicitudes_credito where id = '${draftId}'`))[0].m, 200);
+});
+await check('un cliente no puede asignarse analista al crear la solicitud', async () => {
+  const r = await as(A, `insert into solicitudes_credito (cliente_id, estado, analista_id) values ('${A}', 'solicitud_iniciada', '${C}') returning analista_id`);
+  assert.equal(r.rows[0].analista_id, null);
+});
+await check('el staff sí puede ajustar el monto de una solicitud enviada', async () => {
+  assert.equal((await as(C, `update solicitudes_credito set monto = 500000 where id = '${solA}'`)).affected, 1);
+});
+await check('el cliente no valida sus propios documentos', async () => {
+  const r = await as(A, `insert into documentos (solicitud_id, url_archivo, subido_por, estado) values ('${solA}', 'x/y.pdf', '${A}', 'validado') returning id, estado`);
+  assert.equal(r.rows[0].estado, 'subido');
+  const docId = r.rows[0].id;
+  assert.equal((await as(A, `update documentos set estado = 'validado' where id = '${docId}'`)).ok, false);
+  const del = await as(A, `delete from documentos where id = '${docId}'`);
+  assert.equal(del.ok === false || del.affected === 0, true);
+  assert.equal((await rows(`select estado from documentos where id = '${docId}'`))[0].estado, 'subido');
+  await db.exec(`delete from documentos where id = '${docId}'`);
 });
 
 console.log('Storage');
