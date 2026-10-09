@@ -4,13 +4,22 @@ import { obtenerProximasFechas, generarCodigoCita, sucursalesMock } from '@/util
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendAppointmentConfirmation, sendVerificationCode } from '@/utils/nodemailer';
 import { sendSMS } from '@/utils/sms';
+import { requireApiUser } from '@/utils/auth/apiGuards';
+import { createRateLimiter, rateLimitHeaders } from '@/utils/security/rateLimit';
+import { normalizeEmail, otpErrorMessage } from '@/utils/security/otp';
+import { issueOtp, verifyOtp } from '@/utils/security/otpStore';
+import { sanitizeChatMessages } from '@/utils/security/chatInput';
 
-    // Configuración del cliente OpenAI para x.ai (Grok)
-// Si no hay XAI_API_KEY, intentará usar OPENAI_API_KEY o fallará controladamente.
-const client = new OpenAI({
-  apiKey: process.env.XAI_API_KEY || process.env.OPENAI_API_KEY || 'dummy-key',
-  baseURL: process.env.XAI_API_KEY ? 'https://api.x.ai/v1' : undefined // Default OpenAI URL if not using x.ai key
-});
+// Límite best-effort por usuario (ver nota en src/utils/security/rateLimit.js).
+const chatLimiter = createRateLimiter({ limit: 20, windowMs: 60 * 1000 });
+
+// Cliente OpenAI-compatible (x.ai / OpenAI). Se crea por petición y SOLO si hay API key:
+// sin key el endpoint responde 503 (falla cerrado), no usa una key ficticia.
+function createAiClient() {
+  if (process.env.XAI_API_KEY) return new OpenAI({ apiKey: process.env.XAI_API_KEY, baseURL: 'https://api.x.ai/v1' });
+  if (process.env.OPENAI_API_KEY) return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return null;
+}
 
 const SYSTEM_PROMPT = `
 Eres el Asistente Virtual de Capitalta, una financiera experta en soluciones de crédito para PYMEs en México.
@@ -88,13 +97,10 @@ const tools = [
     type: 'function',
     function: {
       name: 'sendVerificationCode',
-      description: 'Envía un código de verificación de 6 dígitos al correo del usuario.',
+      description: 'Envía un código de verificación de 6 dígitos al correo registrado del usuario autenticado.',
       parameters: {
         type: 'object',
-        properties: {
-          email: { type: 'string', description: 'Email del destinatario' }
-        },
-        required: ['email']
+        properties: {}
       }
     }
   },
@@ -106,10 +112,9 @@ const tools = [
       parameters: {
         type: 'object',
         properties: {
-          email: { type: 'string', description: 'Email del usuario' },
           code: { type: 'string', description: 'Código de 6 dígitos a verificar' }
         },
-        required: ['email', 'code']
+        required: ['code']
       }
     }
   },
@@ -127,21 +132,48 @@ const tools = [
 ];
 
 export async function POST(req) {
+  // 1) Sesión obligatoria (falla cerrado). El contexto del usuario se toma de la sesión, no del body.
+  const auth = await requireApiUser();
+  if (!auth.ok) return auth.response;
+
+  const limit = chatLimiter.check(`chat:${auth.user.id}`);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { error: 'Demasiadas solicitudes. Intenta en un momento.' },
+      { status: 429, headers: rateLimitHeaders(limit) }
+    );
+  }
+
+  // 2) Sin API key de IA configurada => 503 (no hay modo "mock" que escriba en la base).
+  const client = createAiClient();
+  if (!client) {
+    return NextResponse.json({ error: 'Asistente no disponible' }, { status: 503 });
+  }
+
   try {
-    const { messages, userContext, sessionId } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const messages = sanitizeChatMessages(body?.messages);
+    const sessionId = typeof body?.sessionId === 'string' ? body.sessionId.slice(0, 100) : null;
+    if (messages.length === 0) {
+      return NextResponse.json({ error: 'Mensaje requerido' }, { status: 400 });
+    }
+
+    const sessionEmail = normalizeEmail(auth.user.email);
+    const userContext = {
+      id: auth.user.id,
+      email: sessionEmail,
+      name: auth.user.user_metadata?.full_name || auth.user.user_metadata?.nombre_completo || 'Cliente'
+    };
 
     let currentSystemPrompt = SYSTEM_PROMPT;
-    if (userContext) {
-      currentSystemPrompt += `
-      
+    currentSystemPrompt += `
+
 ## CONTEXTO DEL USUARIO ACTUAL:
 - Nombre: ${userContext.name}
 - Email: ${userContext.email}
-- ID: ${userContext.id}
 
 INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email para agendar citas automáticamente sin preguntarlos de nuevo, a menos que quiera usar otros datos.
 `;
-    }
 
     // Función auxiliar para persistencia
     const saveChat = async (history) => {
@@ -151,7 +183,13 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
       try {
         // Buscar conversación existente por session_id
-        const { data: existing } = await supabase.from('chat_conversaciones').select('id').eq('session_id', sessionId).single();
+        const { data: existing } = await supabase
+          .from('chat_conversaciones')
+          .select('id, usuario_id')
+          .eq('session_id', sessionId)
+          .maybeSingle();
+        // No se sobrescriben conversaciones de otro usuario.
+        if (existing && existing.usuario_id !== userContext.id) return;
 
         const resumen =
           history.length > 0 ? history[history.length - 1].content?.substring(0, 100) || 'Interacción compleja' : 'Nuevo chat';
@@ -162,14 +200,14 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
             .update({
               mensajes: history,
               updated_at: new Date().toISOString(),
-              usuario_id: userContext?.id || null,
+              usuario_id: userContext.id,
               resumen
             })
             .eq('id', existing.id);
         } else {
           await supabase.from('chat_conversaciones').insert({
             session_id: sessionId,
-            usuario_id: userContext?.id || null,
+            usuario_id: userContext.id,
             mensajes: history,
             resumen,
             estado: 'activa'
@@ -179,28 +217,6 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         console.error('Error guardando chat:', err);
       }
     };
-
-    if (!process.env.XAI_API_KEY && !process.env.OPENAI_API_KEY) {
-    // Fallback Mock para demostración si no hay API Key configurada
-      const lastMessage = messages[messages.length - 1].content.toLowerCase();
-      let mockResponse =
-        'Lo siento, no tengo configurada mi API Key de IA en este momento. Por favor configura XAI_API_KEY en el archivo .env.';
-
-      if (lastMessage.includes('cita')) {
-        mockResponse = "Para agendar una cita, por favor visita nuestra sección 'Mi Cuenta' o contáctanos por WhatsApp.";
-      } else if (lastMessage.includes('hola')) {
-        mockResponse = '¡Hola! Bienvenido a Capitalta. ¿En qué puedo ayudarte hoy?';
-      }
-
-      const mockMessage = { role: 'assistant', content: mockResponse };
-
-      // Guardar en historial
-      await saveChat([...messages, mockMessage]);
-
-      return NextResponse.json({
-        message: mockMessage
-      });
-    }
 
     const response = await client.chat.completions.create({
       model: process.env.XAI_API_KEY ? 'grok-beta' : 'gpt-3.5-turbo',
@@ -221,81 +237,33 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
         getBranchInfo: async () => {
           return JSON.stringify(sucursalesMock);
         },
-        sendVerificationCode: async (args) => {
-          const { email } = args;
-          const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-          console.log(`[Verification Code Flow]: Generando código para ${email}`);
-
+        // El código solo se envía al email de la sesión (no a direcciones arbitrarias) y nunca se loguea.
+        sendVerificationCode: async () => {
           const supabase = createSupabaseServerClient({ admin: true });
-          if (supabase) {
-            // Guardar código en Supabase
-            const { error } = await supabase.from('temp_verification_codes').insert({ email, code });
-
-            if (error) {
-              console.error('[Supabase Error]: Error al guardar código de verificación:', error);
-              return JSON.stringify({ success: false, error: 'Error interno al generar código' });
-            }
-
-            console.log(`[Verification Code Flow]: Código guardado en Supabase para ${email}. Procediendo a enviar email...`);
-
-            // Enviar por Nodemailer
-            const result = await sendVerificationCode(email, code);
-            if (result.success) {
-              console.log(`[Verification Code Flow]: Email enviado exitosamente a ${email}`);
-              return JSON.stringify({ success: true, message: `Código enviado a ${email}. Por favor ingrésalo para continuar.` });
-            } else {
-              console.error('[Verification Code Flow]: Falló el envío de email:', result.error);
-            }
-          } else {
-            console.error('[Supabase Error]: No se pudo inicializar el cliente de Supabase.');
+          if (!supabase || !sessionEmail) {
+            return JSON.stringify({ success: false, error: 'No se pudo enviar el código' });
           }
-          return JSON.stringify({ success: false, error: 'No se pudo enviar el código' });
+          const otp = await issueOtp(supabase, { email: sessionEmail, userId: userContext.id, purpose: 'chat' });
+          if (!otp.ok) {
+            return JSON.stringify({ success: false, error: otpErrorMessage(otp.reason) });
+          }
+          const result = await sendVerificationCode(sessionEmail, otp.code);
+          if (!result.success) {
+            return JSON.stringify({ success: false, error: 'No se pudo enviar el código' });
+          }
+          return JSON.stringify({ success: true, message: 'Código enviado a tu correo registrado. Ingrésalo para continuar.' });
         },
         verifyCode: async (args) => {
-          const { email, code } = args;
-          console.log(`[Verification Code Flow]: Verificando código ${code} para ${email}`);
-          
           const supabase = createSupabaseServerClient({ admin: true });
-          if (supabase) {
-            // Buscamos el código más reciente que coincida, no haya sido usado y no haya expirado
-            const { data, error } = await supabase
-              .from('temp_verification_codes')
-              .select('*')
-              .eq('email', email)
-              .eq('code', code.trim())
-              .eq('is_used', false)
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .single();
-
-            if (error || !data) {
-              console.error(`[OTP Error]: Código inválido o no encontrado para ${email}. Detalle:`, error?.message);
-              return JSON.stringify({ success: false, error: 'Código inválido o expirado. Por favor, asegúrate de copiar el último código recibido.' });
-            }
-
-            // Validar expiración manualmente por seguridad extra
-            const now = new Date();
-            const expiresAt = new Date(data.expires_at);
-            if (now > expiresAt) {
-              console.error(`[OTP Error]: Código expirado para ${email}. Expiró el: ${data.expires_at}`);
-              return JSON.stringify({ success: false, error: 'El código ha expirado. Por favor solicita uno nuevo.' });
-            }
-
-            // Marcar como usado
-            const { error: updateError } = await supabase
-              .from('temp_verification_codes')
-              .update({ is_used: true })
-              .eq('id', data.id);
-
-            if (updateError) {
-              console.error('[Supabase Error]: No se pudo marcar el código como usado:', updateError);
-            }
-
-            console.log(`[Verification Code Flow]: Verificación exitosa para ${email}`);
-            return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente. Ahora podemos proceder con tu solicitud.' });
+          if (!supabase || !sessionEmail) {
+            return JSON.stringify({ success: false, error: 'Error de conexión con el servicio de verificación.' });
           }
-          return JSON.stringify({ success: false, error: 'Error de conexión con el servicio de verificación.' });
+          const code = typeof args?.code === 'string' ? args.code.trim() : '';
+          const result = await verifyOtp(supabase, { email: sessionEmail, code, purpose: 'chat' });
+          if (!result.ok) {
+            return JSON.stringify({ success: false, error: otpErrorMessage(result.reason) });
+          }
+          return JSON.stringify({ success: true, message: 'Identidad verificada exitosamente. Ahora podemos proceder con tu solicitud.' });
         },
         bookAppointment: async (args) => {
           const { fecha, hora, nombre, sucursalId, email, telefono } = args;
@@ -355,11 +323,14 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
       // Ejecutar herramientas solicitadas
       for (const toolCall of responseMessage.tool_calls) {
         const functionName = toolCall.function.name;
-        const functionToCall = availableFunctions[functionName];
-        const functionArgs = JSON.parse(toolCall.function.arguments);
+        const functionToCall = Object.prototype.hasOwnProperty.call(availableFunctions, functionName)
+          ? availableFunctions[functionName]
+          : null;
 
         let functionResponse;
         try {
+          if (!functionToCall) throw new Error('Herramienta no disponible');
+          const functionArgs = JSON.parse(toolCall.function.arguments || '{}');
           functionResponse = await functionToCall(functionArgs);
         } catch (e) {
           functionResponse = JSON.stringify({ error: e.message });
@@ -389,7 +360,7 @@ INSTRUCCIÓN ADICIONAL: El usuario ya está autenticado. Usa su nombre y email p
 
     return NextResponse.json({ message: responseMessage });
   } catch (error) {
-    console.error('Error en API Chat:', error);
-    return NextResponse.json({ error: 'Error interno del servidor', details: error.message }, { status: 500 });
+    console.error('Error en API Chat:', error?.message || error);
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
