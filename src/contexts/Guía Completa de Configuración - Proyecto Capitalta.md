@@ -19,7 +19,7 @@ https://fhntmbfpuppmiashynlu.supabase.co
 
 ### Anon Key (Pública - para Frontend)
 ```
-[REDACTADO: usar variable de entorno]..
+[REDACTADO: usar variable de entorno]
 ```
 
 ### Publishable Key (Nueva - Recomendada)

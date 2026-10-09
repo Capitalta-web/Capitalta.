@@ -58,7 +58,7 @@ Continuando con el flujo...
 - Apellido: Manus
 - Email: [REDACTADO]
 - Teléfono: 5512345678
-- Contraseña: [REDACTADA]
+- Contraseña: [REDACTADO]
 
 Continuando al siguiente paso...
 
