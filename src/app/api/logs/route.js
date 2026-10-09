@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { createRateLimiter, getClientIp, rateLimitHeaders } from '@/utils/security/rateLimit';
+
+// Endpoint público: límite best-effort por IP para evitar spam de logs (ver rateLimit.js).
+const logsLimiter = createRateLimiter({ limit: 30, windowMs: 60 * 1000 });
 
 const allowedLevels = new Set(['debug', 'info', 'warn', 'error', 'critical']);
 
@@ -59,6 +63,11 @@ async function saveToChat(payload) {
 }
 
 export async function POST(request) {
+  const limit = logsLimiter.check(`logs:${getClientIp(request)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ ok: false }, { status: 429, headers: rateLimitHeaders(limit) });
+  }
+
   try {
     const body = await request.json();
     const payload = {
