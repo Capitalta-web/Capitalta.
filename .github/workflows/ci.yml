@@ -41,6 +41,9 @@ jobs:
       - name: Tests
         run: yarn test --ci
 
+      - name: Verificar migraciones de seguridad (Postgres en memoria, sin base real)
+        run: yarn test:db
+
       - name: Auditoría de dependencias (falla con vulnerabilidades críticas)
         run: yarn npm audit --all --recursive --severity critical
 
