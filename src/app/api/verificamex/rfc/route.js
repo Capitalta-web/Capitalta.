@@ -1,7 +1,16 @@
 import { NextResponse } from 'next/server';
 import { validateRfc } from '@/utils/validators/rfc';
+import { createRateLimiter, getClientIp, rateLimitHeaders } from '@/utils/security/rateLimit';
+
+// Cada consulta gasta créditos de VerificaMex: límite best effort por IP.
+const rfcLimiter = createRateLimiter({ limit: 10, windowMs: 60 * 1000 });
 
 export async function POST(request) {
+  const limit = rfcLimiter.check(`rfc:${getClientIp(request)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Demasiadas solicitudes' }, { status: 429, headers: rateLimitHeaders(limit) });
+  }
+
   const payload = await request.json().catch(() => ({}));
   const rfc = payload?.rfc;
 

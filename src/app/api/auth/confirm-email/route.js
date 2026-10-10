@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
+import { isValidSharedToken } from '@/utils/auth/apiGuards';
 
 /**
  * Endpoint INTERNO para confirmar email del usuario
@@ -13,14 +14,15 @@ import { createSupabaseServerClient } from '@/utils/supabaseClient';
  */
 export async function POST(request) {
   try {
-    const internalToken = request.headers.get('x-internal-token');
-    const expectedToken = process.env.INTERNAL_API_TOKEN || process.env.ADMIN_CITAS_TOKEN;
-    if (expectedToken && internalToken !== expectedToken) {
+    // Falla cerrado: sin INTERNAL_API_TOKEN (>= 16 caracteres) configurado, nadie puede usar este endpoint.
+    if (!isValidSharedToken(request.headers.get('x-internal-token'), process.env.INTERNAL_API_TOKEN)) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { email } = body;
+    const body = await request.json().catch(() => ({}));
+    const email = String(body?.email || '')
+      .trim()
+      .toLowerCase();
 
     // Validación
     if (!email) {
@@ -36,17 +38,16 @@ export async function POST(request) {
     }
 
     // Buscar usuario por email
-    const { data: users, error: listError } = await supabase.auth.admin.listUsers();
+    const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
 
     if (listError) {
       console.error('Error listing users:', listError);
       return NextResponse.json({ error: 'Error al buscar usuario' }, { status: 500 });
     }
 
-    const user = users.find((u) => u.email === email);
+    const user = (listData?.users || []).find((u) => String(u.email || '').toLowerCase() === email);
 
     if (!user) {
-      console.error(`User not found: ${email}`);
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
@@ -60,7 +61,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Error al confirmar email' }, { status: 500 });
     }
 
-    console.log(`[Confirm Email] Email confirmado para: ${email} (user_id: ${user.id})`);
+    console.log(`[Confirm Email] Email confirmado (user_id: ${user.id})`);
 
     return NextResponse.json({
       success: true,

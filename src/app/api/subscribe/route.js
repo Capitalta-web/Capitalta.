@@ -31,7 +31,8 @@ export async function POST(request) {
     // Handle successful response
     return NextResponse.json({ message: 'Subscribed successfully!' }, { status: 200 });
   } catch (error) {
-    // Handle failure response
-    return NextResponse.json({ error }, { status: 500 });
+    // No devolver el error de axios: incluye la configuración de la petición (con el header Authorization).
+    console.error('[api/subscribe]', error?.response?.status || error?.message);
+    return NextResponse.json({ error: 'No se pudo completar la suscripción' }, { status: 500 });
   }
 }

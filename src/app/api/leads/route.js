@@ -2,15 +2,25 @@ import { NextResponse } from 'next/server';
 
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendEmail } from '@/utils/nodemailer';
+import { createRateLimiter, getClientIp, rateLimitHeaders } from '@/utils/security/rateLimit';
+
+// Formulario público (contacto, registro, calculadoras, brókers): límite best effort por IP
+// para frenar spam y el reenvío de correos a direcciones arbitrarias.
+const leadsLimiter = createRateLimiter({ limit: 5, windowMs: 60 * 1000 });
 
 export async function POST(request) {
+  const limit = leadsLimiter.check(`leads:${getClientIp(request)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta de nuevo en un minuto.' }, { status: 429, headers: rateLimitHeaders(limit) });
+  }
+
   const supabase = createSupabaseServerClient({ admin: true }) || createSupabaseServerClient();
 
   if (!supabase) {
     return NextResponse.json({ error: 'Supabase no está configurado' }, { status: 500 });
   }
 
-  const body = await request.json();
+  const body = await request.json().catch(() => ({}));
 
   const { email, nombre, apellido, telefono, tipo_cliente, empresa, rfc, monto_solicitado, plazo_meses, tipo_credito, origen } = body;
 
@@ -76,7 +86,8 @@ export async function POST(request) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('[api/leads]', error.message);
+    return NextResponse.json({ error: 'No se pudo registrar tu información. Intenta de nuevo.' }, { status: 500 });
   }
 
   const escapeHtml = (value) =>

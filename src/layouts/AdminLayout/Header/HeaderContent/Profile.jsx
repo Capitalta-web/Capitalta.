@@ -6,7 +6,6 @@ import { Fragment, useMemo, useRef, useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
@@ -17,7 +16,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 
@@ -29,7 +27,7 @@ import { ThemeDirection, ThemeI18n } from '@/config';
 import MainCard from '@/components/MainCard';
 import Profile from '@/components/Profile';
 import { varSlide } from '@/components/third-party/motion/animate/dialog';
-import { AvatarSize, ChipIconPosition } from '@/enum';
+import { AvatarSize } from '@/enum';
 import useConfig from '@/hooks/useConfig';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { logout } from '@/utils/api/auth';
@@ -38,8 +36,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
 // @assets
-import { IconChevronRight, IconLanguage, IconLogout, IconPhoto, IconTextDirectionLtr, IconUser } from '@tabler/icons-react';
+import { IconLogout, IconPhoto, IconUser } from '@tabler/icons-react';
 
+// eslint-disable-next-line no-unused-vars -- resto de la plantilla (idioma/dirección), sin uso en Capitalta
 const languageList = [
   { key: ThemeI18n.EN, value: 'English' },
   { key: ThemeI18n.FR, value: 'French' },
@@ -53,7 +52,7 @@ export default function ProfileSection() {
   const theme = useTheme();
   const tooltipShadow = theme?.vars?.customShadows?.tooltip || theme?.customShadows?.tooltip || theme?.shadows?.[1];
   const {
-    state: { i18n, themeDirection },
+    state: { i18n },
     setField
   } = useConfig();
   const { userData } = useCurrentUser();
@@ -70,6 +69,7 @@ export default function ProfileSection() {
   const open = Boolean(anchorEl);
   const innerOpen = Boolean(innerAnchorEl);
   const id = open ? 'profile-action-popper' : undefined;
+  // eslint-disable-next-line no-unused-vars -- resto de la plantilla (idioma/dirección), sin uso en Capitalta
   const innerId = innerOpen ? 'profile-inner-popper' : undefined;
   const buttonStyle = { borderRadius: 2, p: 1 };
 
@@ -165,20 +165,10 @@ export default function ProfileSection() {
       const fileExt = file.name.split('.').pop();
       const filePath = `avatars/${userData.id}/${Date.now()}_${Math.floor(Math.random() * 10000)}.${fileExt}`;
 
-      const ensureResp = await fetch('/api/storage/ensure-bucket', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bucket, public: true })
-      });
-      if (!ensureResp.ok) {
-        const ensureBody = await ensureResp.json().catch(() => ({}));
-        setUploadError(ensureBody?.error || 'No se pudo preparar el storage para la foto.');
-        return;
-      }
-
+      // El bucket 'avatars' se administra en Supabase (ya no se crea desde la app).
       const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file, { upsert: true });
       if (uploadError) {
-        setUploadError(uploadError.message);
+        setUploadError(/bucket not found/i.test(uploadError.message || '') ? 'La foto de perfil no está disponible por ahora.' : uploadError.message);
         return;
       }
 
@@ -218,6 +208,7 @@ export default function ProfileSection() {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars -- resto de la plantilla (idioma/dirección), sin uso en Capitalta
   const i18nHandler = (event, key) => {
     handleInnerActionClick(event);
     if (key != i18n) setField('i18n', key);
