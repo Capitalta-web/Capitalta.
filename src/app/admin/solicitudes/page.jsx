@@ -28,10 +28,11 @@ import {
   TableRow,
   TablePagination,
 } from '@mui/material';
-import { IconEye, IconCheck, IconX } from '@tabler/icons-react';
+import { IconEye } from '@tabler/icons-react';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 const STATUS_OPTIONS = ['pendiente', 'en-revision', 'aprobada', 'rechazada', 'activo', 'cerrado'];
+// eslint-disable-next-line no-unused-vars -- transiciones de estado documentadas, aún sin uso
 const NEXT_STATUS = {
   'pendiente': ['en-revision', 'rechazada'],
   'en-revision': ['aprobada', 'rechazada'],

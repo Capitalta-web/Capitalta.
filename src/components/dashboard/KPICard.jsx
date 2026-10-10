@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, Grid, Stack, Typography, Box, LinearProgress } from '@mui/material';
+import { Card, Stack, Typography, Box, LinearProgress } from '@mui/material';
 import { forwardRef } from 'react';
 
 const KPICard = forwardRef(({

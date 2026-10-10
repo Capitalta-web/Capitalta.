@@ -187,7 +187,7 @@ export default function AuthRegister({ inputSx }) {
           />
         </Stack>
         <Button fullWidth type="submit" color="primary" variant="contained" disabled={isLoading} sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
-          {isLoading ? 'Creando cuenta...' : 'Sign Up'}
+          {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
         </Button>
       </Stack>
     </form>

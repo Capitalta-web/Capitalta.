@@ -65,9 +65,9 @@ export default function Register({ heading, caption, loginLink }) {
                 href={loginLink || '/auth/login'}
                 sx={{ '&:hover': { color: 'primary.dark' } }}
                 rel="noopener noreferrer"
-                aria-label="sign in"
+                aria-label="Iniciar sesión"
               >
-                Sign In
+                Inicia sesión
               </Link>
             </Typography>
             <Divider sx={{ my: { xs: 4, sm: 5 } }}>

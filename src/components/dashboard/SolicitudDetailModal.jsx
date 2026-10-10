@@ -22,14 +22,10 @@ import {
   TextField,
   IconButton,
   Alert,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   useMediaQuery
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { IconCheck, IconClock, IconX, IconShieldCheck, IconShieldX } from '@tabler/icons-react';
+import { IconCheck, IconClock, IconX, IconShieldCheck } from '@tabler/icons-react';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { evaluarSolicitud } from '@/utils/buro/decision';
 

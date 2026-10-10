@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Box, AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Avatar, Menu, MenuItem, Typography, Container, Alert } from '@mui/material';
+import { Box, AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Avatar, Menu, MenuItem, Typography, Container } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { IconLogout, IconSettings, IconHome, IconFileText, IconDashboard } from '@tabler/icons-react';
+import { IconLogout, IconSettings, IconFileText, IconDashboard } from '@tabler/icons-react';
 
 const DRAWER_WIDTH = 260;
 
@@ -12,7 +12,7 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const { user, isProcessing } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [, setMobileOpen] = useState(false);
 
   // Redirect non-admin users
   useEffect(() => {

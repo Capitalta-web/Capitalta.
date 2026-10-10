@@ -21,6 +21,7 @@ import { useForm } from 'react-hook-form';
 import { emailSchema, passwordSchema } from '@/utils/validationSchema';
 import { NextLink } from '../routes';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient'; // Added
+import { dashboardForRole } from '@/utils/auth/roles';
 
 // @assets
 import { CloseEye, OpenEye } from '@/icons';
@@ -76,8 +77,8 @@ export default function AuthLogin({ inputSx }) {
         if (user) {
           const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
 
-          const role = profile?.role || user.user_metadata?.role || 'cliente';
-          const dashboard = role === 'admin' ? '/dashboard/admin' : '/dashboard/cliente';
+          // El rol solo se toma de profiles.role (user_metadata lo puede escribir el propio usuario).
+          const dashboard = dashboardForRole(profile?.role);
           router.refresh();
           router.replace(dashboard);
         } else {
@@ -109,7 +110,7 @@ export default function AuthLogin({ inputSx }) {
           <OutlinedInput
             {...register('email', emailSchema)}
             placeholder="example@gmail.com"
-            slotProps={{ input: { 'aria-label': 'Email address' } }}
+            slotProps={{ input: { 'aria-label': 'Correo electrónico' } }}
             error={errors.email && Boolean(errors.email)}
             sx={{ ...inputSx }}
           />
@@ -121,16 +122,16 @@ export default function AuthLogin({ inputSx }) {
         </Stack>
         <Stack sx={{ gap: 0.5 }}>
           <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-            Password
+            Contraseña
           </Typography>
           <OutlinedInput
             {...register('password', passwordSchema)}
             type={isOpen ? 'text' : 'password'}
             placeholder="Enter your password"
-            slotProps={{ input: { 'aria-label': 'Password' } }}
+            slotProps={{ input: { 'aria-label': 'Contraseña' } }}
             error={errors.password && Boolean(errors.password)}
             endAdornment={
-              <IconButton onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="eye">
+              <IconButton onClick={() => setIsOpen(!isOpen)} rel="noopener noreferrer" aria-label="Mostrar u ocultar contraseña">
                 {isOpen ? <OpenEye color={palette.grey[700]} /> : <CloseEye color={palette.grey[700]} />}
               </IconButton>
             }
@@ -152,12 +153,12 @@ export default function AuthLogin({ inputSx }) {
               href="/auth/forgot-password"
               sx={{ textAlign: 'right', '&:hover': { color: 'primary.dark' } }}
             >
-              Forgot Password?
+              ¿Olvidaste tu contraseña?
             </Link>
           </Stack>
         </Stack>
         <Button fullWidth type="submit" color="primary" variant="contained" disabled={isLoading} sx={{ mt: { xs: 0.5, sm: 1.5 } }}>
-          {isLoading ? 'Iniciando...' : 'Sign In'}
+          {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
         </Button>
       </Stack>
     </form>

@@ -16,11 +16,10 @@ import IconButton from '@mui/material/IconButton';
 import Alert from '@mui/material/Alert';
 import Slider from '@mui/material/Slider';
 import Paper from '@mui/material/Paper';
-import Divider from '@mui/material/Divider';
 import Collapse from '@mui/material/Collapse';
 
 // @icons
-import { IconEye, IconEyeOff, IconBrandGoogle, IconArrowRight, IconChecks } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconArrowRight, IconChecks } from '@tabler/icons-react';
 
 // @project
 import Logo from '@/components/logo';
@@ -34,6 +33,7 @@ export default function RegistrationPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
+  // eslint-disable-next-line no-unused-vars -- el formulario de correo queda siempre visible mientras Google OAuth esté oculto
   const [showEmailForm, setShowEmailForm] = useState(true);
 
   const getBaseUrl = () => window.location.origin.replace(/\/$/, '').replace('https://www.capitalta.mx', 'https://capitalta.mx');
@@ -126,6 +126,7 @@ export default function RegistrationPage() {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars -- botón de Google oculto (commit e697193); se conserva para reactivarlo
   const handleGoogleSignup = async () => {
     setLoading(true);
     setError('');
