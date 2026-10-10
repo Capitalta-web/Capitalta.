@@ -16,6 +16,8 @@ import { notFound } from 'next/navigation';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sucursalesMock } from '@/utils/citas';
+import { requirePageRole } from '@/utils/auth/serverAuth';
+import { ROLES } from '@/utils/auth/roles';
 
 function formatoFecha(fechaISO) {
   const fecha = new Date(fechaISO);
@@ -56,13 +58,9 @@ function obtenerSucursal(sucursalId) {
 
 export const dynamic = 'force-dynamic';
 
-export default async function CitasAdminPage({ searchParams }) {
-  const token = searchParams?.token;
-  const expectedToken = process.env.ADMIN_CITAS_TOKEN;
-
-  if (expectedToken && token !== expectedToken) {
-    notFound();
-  }
+export default async function CitasAdminPage() {
+  // Solo administradores (sesión + profiles.role). Antes bastaba con no definir ADMIN_CITAS_TOKEN para dejarla abierta.
+  await requirePageRole([ROLES.ADMIN]);
 
   const supabase = createSupabaseServerClient({ admin: true });
 
