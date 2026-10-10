@@ -100,3 +100,19 @@ export const TIEMPO_RESPUESTA = null;
 
 // TODO(Alberto/Cumplimiento): confirmar que el contrato no tiene penalización por prepago.
 export const SIN_PENALIZACION_PREPAGO = { mostrar: false };
+
+/* ---------------------------------------------------------------------------
+ * Panel lateral de /auth/registro
+ * ------------------------------------------------------------------------- */
+export const REGISTRO = {
+  beneficios: [
+    // Depende de TIEMPO_RESPUESTA: sin plazo confirmado no se promete "Aprobación en 48 horas".
+    { texto: TIEMPO_RESPUESTA ? `Respuesta en ${TIEMPO_RESPUESTA}` : null },
+    { texto: 'Sin costos ocultos' }, // TODO(Alberto/Cumplimiento): confirmar (comisiones, CAT).
+    { texto: 'Trámite 100% digital' }, // TODO(Alberto): confirmar; hoy se agendan citas y documentos presenciales.
+    { texto: 'Asesoría personalizada' }
+  ].filter((b) => b.texto),
+  // TODO(Alberto): el testimonio "Carlos Mendoza, Director General, TechSolutions" no tiene fuente.
+  // Solo mostrar un testimonio real con autorización por escrito del cliente.
+  testimonio: { mostrar: false, cita: '', nombre: '', cargo: '' }
+};

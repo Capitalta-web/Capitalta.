@@ -261,7 +261,7 @@ export default function CalculadoraEmpresarialPage() {
         <body style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
             <div style="display:flex;align-items:center;gap:12px;">
-              <img src="/assets/logos/capitalta-logo.svg" alt="Capitalta" style="height:40px;" />
+              <img src="/assets/images/capitalta/logo.svg" alt="Capitalta" style="height:40px;" />
               <h1 style="margin:0;font-size:20px;">Cotización Crédito Empresarial</h1>
             </div>
             <div style="text-align:right;font-size:12px;color:#555;">

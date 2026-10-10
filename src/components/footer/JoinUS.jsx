@@ -19,7 +19,7 @@ export default function JoinUS({ stackProps, headingProps, captionProps }) {
     <Stack {...rest} sx={{ gap: 2, ...sx }}>
       <Typeset
         {...{
-          heading: 'Join our newsletter',
+          heading: 'Suscríbete a nuestro boletín',
           caption: 'Discover the features that will transform your customer relationships.',
           stackProps: { sx: { gap: 0.5, width: { xs: 1, md: '60%' } } },
           headingProps: { variant: 'h4', ...headingProps },
@@ -27,17 +27,17 @@ export default function JoinUS({ stackProps, headingProps, captionProps }) {
         }}
       />
       <OutlinedInput
-        placeholder="Enter your email address"
+        placeholder="Escribe tu correo electrónico"
         endAdornment={
           <IconButton
             sx={{ px: 3, py: 2, bgcolor: 'primary.main', borderRadius: 25, '&:hover': { bgcolor: 'primary.dark', boxShadow: 1 } }}
             rel="noopener noreferrer"
-            aria-label="send"
+            aria-label="Enviar"
           >
             <SvgIcon name="tabler-send" size={16} color="background.default" stroke={2} />
           </IconButton>
         }
-        slotProps={{ input: { 'aria-label': 'Email address', sx: { px: 3, py: 2.25 } }, notchedOutline: { sx: { borderRadius: 25 } } }}
+        slotProps={{ input: { 'aria-label': 'Correo electrónico', sx: { px: 3, py: 2.25 } }, notchedOutline: { sx: { borderRadius: 25 } } }}
         sx={{ typography: 'caption2', color: 'text.primary', maxWidth: 400, width: 1, pr: 0.5 }}
       />
     </Stack>
