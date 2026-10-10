@@ -113,9 +113,9 @@ FOR INSERT WITH CHECK (true);
 ### 1.3 Datos de Prueba
 
 Crear 3 usuarios:
-- admin@example.com / password123 → role: admin
-- analista@example.com / password123 → role: analista
-- cliente@example.com / password123 → role: cliente
+- admin@example.com / [REDACTADO] → role: admin
+- analista@example.com / [REDACTADO] → role: analista
+- cliente@example.com / [REDACTADO] → role: cliente
 
 **SQL para crear profiles (después de que se registren):**
 ```sql

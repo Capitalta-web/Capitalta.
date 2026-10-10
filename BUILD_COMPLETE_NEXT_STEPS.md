@@ -39,8 +39,8 @@ npm run dev
    - First Name: `TestUser`
    - Last Name: `Capítalia`
    - Email: `test.user@example.com`
-   - Password: `TestPassword123!`
-   - Confirm Password: `TestPassword123!`
+   - Password: [REDACTADO]
+   - Confirm Password: [REDACTADO]
 
 3. **Click en "Sign Up"**
 
@@ -72,7 +72,7 @@ npm run dev
 ```
 URL: http://localhost:3000/auth/login
 Email: admin@capitalta.mx  
-Password: password123
+Password: [REDACTADO]
 
 Esperado:
 - ✓ Sin error
@@ -85,7 +85,7 @@ Esperado:
 #### Test 2b: Analista Login
 ```
 Email: analista@capitalta.mx
-Password: password123
+Password: [REDACTADO]
 
 Esperado:
 - ✓ Dashboard carga  
@@ -96,7 +96,7 @@ Esperado:
 #### Test 2c: Cliente Login
 ```
 Email: cliente@capitalta.mx
-Password: password123
+Password: [REDACTADO]
 
 Esperado:
 - ✓ Dashboard carga
@@ -109,7 +109,7 @@ Esperado:
 #### Test 2d: Error Handling
 ```
 Email: admin@capitalta.mx
-Password: wrongpassword
+Password: [REDACTADO]
 
 Esperado:
 - ✓ Mensajeerror: "Invalid login credentials"

@@ -32,7 +32,7 @@
 - [ ] **Testing del Login:**
   - [ ] Abrir DevTools (F12)
   - [ ] Ir a Console
-  - [ ] Intentar login con test@capitalta.mx / 123456Capitalta
+  - [ ] Intentar login con test@capitalta.mx / [contraseña REDACTADA]
   - [ ] **Copiar todos los mensajes de console** (🔵, ✅, ❌)
   - [ ] Verificar si redirige a `/dashboard/admin`
 

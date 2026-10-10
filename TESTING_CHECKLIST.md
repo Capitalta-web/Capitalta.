@@ -32,19 +32,19 @@ Test con los 3 usuarios de prueba
 ```
 - [ ] **Admin Login:**
   - Email: admin@capitalta.mx
-  - Password: password123
+  - Password: [REDACTADO]
   - Esperado: /dashboard/admin
   - Muestra: "Dashboard Admin - admin@capitalta.mx"
 
 - [ ] **Analista Login:**
   - Email: analista@capitalta.mx  
-  - Password: password123
+  - Password: [REDACTADO]
   - Esperado: /dashboard/analista
   - Muestra: "Dashboard Analista"
 
 - [ ] **Cliente Login:**
   - Email: cliente@capitalta.mx
-  - Password: password123
+  - Password: [REDACTADO]
   - Esperado: /dashboard/cliente
   - Muestra: "Tu Panel de Control"
 

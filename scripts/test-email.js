@@ -1,3 +1,4 @@
+const { randomBytes } = require('node:crypto');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 
@@ -15,9 +16,10 @@ async function testEmail() {
 
   console.log(`Intentando registrar usuario de prueba: ${testEmail}`);
 
-  const { data, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email: testEmail,
-    password: 'Password123!',
+    // Contraseña aleatoria por ejecución: no dejar credenciales fijas en el repositorio.
+    password: randomBytes(18).toString('base64url'),
   });
 
   if (error) {

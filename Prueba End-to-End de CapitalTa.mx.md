@@ -58,7 +58,7 @@ Continuando con el flujo...
 - Apellido: Manus
 - Email: test.manus.capitalta@gmail.com
 - Teléfono: 5512345678
-- Contraseña: TestPassword123!
+- Contraseña: [REDACTADO]
 
 Continuando al siguiente paso...
 

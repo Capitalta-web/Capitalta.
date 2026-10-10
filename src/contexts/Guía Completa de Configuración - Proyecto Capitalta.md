@@ -19,12 +19,12 @@ https://fhntmbfpuppmiashynlu.supabase.co
 
 ### Anon Key (Pública - para Frontend)
 ```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZobnRtYmZwdXBwbWlhc2h5bmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NjExNjUsImV4cCI6M...
+[REDACTADO: usar variable de entorno]...
 ```
 
 ### Publishable Key (Nueva - Recomendada)
 ```
-sb_publishable_pPCi0YY6Y2YN_3lI0o2jnQ_d4ySrN2Z
+[REDACTADO: usar variable de entorno]
 ```
 
 ### Service Role Key (Secreta - Solo Backend)
@@ -229,7 +229,7 @@ pnpm add @supabase/supabase-js
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://fhntmbfpuppmiashynlu.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_pPCi0YY6Y2YN_3lI0o2jnQ_d4ySrN2Z
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[REDACTADO: usar variable de entorno]
 ```
 
 ### Crear el cliente de Supabase
