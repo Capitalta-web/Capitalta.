@@ -22,12 +22,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Environment (cualquier .env*, salvo la plantilla sin secretos)
+.env*
+!.env.example
+
+# Yarn (estado local de instalación)
+.yarn/install-state.gz
 
 # Vercel
 .vercel
