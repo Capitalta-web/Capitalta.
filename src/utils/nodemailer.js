@@ -29,8 +29,9 @@ export async function sendEmail({ to, subject, html, text, cc, replyTo }) {
       user: user,
       pass: pass
     },
+    // Se valida el certificado TLS de smtp.gmail.com (antes estaba desactivada la validación).
     tls: {
-      rejectUnauthorized: false
+      minVersion: 'TLSv1.2'
     }
   });
 
@@ -115,6 +116,16 @@ export async function sendAppointmentConfirmation(cita) {
 /**
  * Envía un correo de bienvenida después del registro exitoso.
  */
+/**
+ * Teléfonos de contacto para los correos. El 800 no está confirmado por negocio
+ * (ver datosNegocio.CONTACTO.telefono800 en el PR de contenido): solo se muestra si se define
+ * CONTACTO_TELEFONO_800 en el entorno.
+ */
+function telefonosContacto() {
+  const tel800 = String(process.env.CONTACTO_TELEFONO_800 || '').trim();
+  return [tel800, '55 9489 7309'].filter(Boolean).map(escapeHtml).join(' | ');
+}
+
 export async function sendWelcomeEmail(email, nombreSinEscapar) {
   const nombre = escapeHtml(nombreSinEscapar);
   const subject = '¡Bienvenido a Capitalta! Tu cuenta está lista';
@@ -160,7 +171,7 @@ export async function sendWelcomeEmail(email, nombreSinEscapar) {
           </p>
           <ul style="color: #666; font-size: 14px; margin: 10px 0 0 20px; padding-left: 0;">
             <li>📧 <strong>Email:</strong> contacto@capitalta.mx</li>
-            <li>📞 <strong>Teléfono:</strong> 800 258 2000 | 55 9489 7309</li>
+            <li>📞 <strong>Teléfono:</strong> ${telefonosContacto()}</li>
             <li>📍 <strong>Dirección:</strong> Circuito Circunvalación Poniente 16, Local V - W, Ciudad Satélite, Naucalpan, Edo. Méx.</li>
             <li>⏰ <strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM</li>
           </ul>
