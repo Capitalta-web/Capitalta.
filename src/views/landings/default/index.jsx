@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -22,6 +22,8 @@ import { FeatureProducts } from '@/blocks/feature';
 import { Hero16 } from '@/blocks/hero';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import LazySection from '@/components/LazySection';
+import TasaYCat from '@/components/TasaYCat';
+import { PRODUCTOS, TASA_ANUAL_FIJA } from '@/data/datosNegocio';
 
 // @data
 import { metrics, faq, feature20, hero } from './data';
@@ -30,19 +32,15 @@ import { metrics, faq, feature20, hero } from './data';
 
 export default function Main() {
   const theme = useTheme();
-  const [monto, setMonto] = useState(250000);
-  const [plazo, setPlazo] = useState(24);
   const [tipoCredito, setTipoCredito] = useState('simple');
-  const [tasaAnual, setTasaAnual] = useState(24);
+  const producto = tipoCredito === 'empresarial' ? PRODUCTOS.empresarial : PRODUCTOS.revolvente;
+  const [montoCapturado, setMonto] = useState(PRODUCTOS.revolvente.montoMin);
+  const [plazoCapturado, setPlazo] = useState(24);
+  const tasaAnual = TASA_ANUAL_FIJA;
 
-  useEffect(() => {
-    // Set rate based on credit type
-    if (tipoCredito === 'simple') {
-      setTasaAnual(24);
-    } else if (tipoCredito === 'empresarial') {
-      setTasaAnual(24);
-    }
-  }, [tipoCredito]);
+  // Mantener monto y plazo dentro de los rangos del producto seleccionado
+  const monto = Math.min(producto.montoMax, Math.max(producto.montoMin, montoCapturado || 0));
+  const plazo = Math.min(producto.plazoMax, Math.max(producto.plazoMin, plazoCapturado || 0));
 
   const tasaMensual = tasaAnual / 12 / 100;
   const pagoMensual =
@@ -94,7 +92,7 @@ export default function Main() {
                       </Typography>
                       <TextField
                         variant="standard"
-                        value={monto.toLocaleString()}
+                        value={montoCapturado.toLocaleString('es-MX')}
                         onChange={(e) => {
                           const value = e.target.value.replace(/,/g, '');
                           if (!isNaN(value)) {
@@ -112,18 +110,18 @@ export default function Main() {
                     <Slider
                       value={typeof monto === 'number' ? monto : 0}
                       onChange={(e, newValue) => setMonto(newValue)}
-                      min={50000}
-                      max={50000000}
+                      min={producto.montoMin}
+                      max={producto.montoMax}
                       step={10000}
                       valueLabelDisplay="auto"
-                      valueLabelFormat={(value) => `$${value.toLocaleString()}`}
+                      valueLabelFormat={(value) => `$${value.toLocaleString('es-MX')}`}
                     />
                     <Stack direction="row" justifyContent="space-between" mt={0.5}>
                       <Typography variant="caption" color="text.secondary">
-                        $50k
+                        ${producto.montoMin.toLocaleString('es-MX')}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        $50M
+                        ${producto.montoMax.toLocaleString('es-MX')}
                       </Typography>
                     </Stack>
                   </Box>
@@ -140,18 +138,18 @@ export default function Main() {
                     <Slider
                       value={typeof plazo === 'number' ? plazo : 0}
                       onChange={(e, newValue) => setPlazo(newValue)}
-                      min={6}
-                      max={60}
+                      min={producto.plazoMin}
+                      max={producto.plazoMax}
                       step={6}
                       marks
                       valueLabelDisplay="auto"
                     />
                     <Stack direction="row" justifyContent="space-between" mt={0.5}>
                       <Typography variant="caption" color="text.secondary">
-                        6 meses
+                        {producto.plazoMin} meses
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        60 meses
+                        {producto.plazoMax} meses
                       </Typography>
                     </Stack>
                   </Box>
@@ -166,18 +164,18 @@ export default function Main() {
                         onChange={(event) => setTipoCredito(event.target.value)}
                         variant="outlined"
                       >
-                        <MenuItem value="simple">Crédito Revolvente</MenuItem>
-                        <MenuItem value="empresarial">Crédito Empresarial</MenuItem>
+                        <MenuItem value="simple">{PRODUCTOS.revolvente.nombre}</MenuItem>
+                        <MenuItem value="empresarial">{PRODUCTOS.empresarial.nombre}</MenuItem>
                       </TextField>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
-                        label="Tasa anual (%)"
+                        label="Tasa anual fija (%)"
                         type="number"
                         value={tasaAnual}
-                        onChange={(event) => setTasaAnual(Number(event.target.value) || 0)}
                         InputProps={{
+                          readOnly: true,
                           endAdornment: <InputAdornment position="end">%</InputAdornment>
                         }}
                       />
@@ -306,15 +304,19 @@ export default function Main() {
               <Typography variant="caption" sx={{ display: 'block', mt: 2, textAlign: 'center', color: 'text.secondary' }}>
                 * Cálculo informativo. Sujeto a aprobación de crédito y condiciones finales.
               </Typography>
+              <TasaYCat variant="caption" align="center" sx={{ mt: 0.5, color: 'text.secondary' }} />
             </Grid>
           </Grid>
         </Box>
       </ContainerWrapper>
 
-      <LazySection
-        sections={[{ importFunc: () => import('@/blocks/metrics').then((module) => ({ default: module.Metrics5 })), props: metrics }]}
-        offset="200px"
-      />
+      {/* Métricas sin verificar: se muestran solo con METRICAS.mostrar = true en src/data/datosNegocio.js */}
+      {metrics.mostrar && (
+        <LazySection
+          sections={[{ importFunc: () => import('@/blocks/metrics').then((module) => ({ default: module.Metrics5 })), props: metrics }]}
+          offset="200px"
+        />
+      )}
 
       <ContainerWrapper>
         <Box sx={{ py: { xs: 6, md: 8 }, textAlign: 'center' }}>

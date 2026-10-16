@@ -18,6 +18,7 @@ import { motion } from 'motion/react';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import SvgIcon from '@/components/SvgIcon';
 import Typeset from '@/components/Typeset';
+import { textoCat } from '@/components/TasaYCat';
 import { SECTION_COMMON_PY } from '@/utils/constant';
 
 import CreditEmpresarial from '@/images/graphics/CreditEmpresarial';
@@ -196,6 +197,15 @@ export default function FeatureProducts({ heading, caption, features }) {
                               <Box component="span" sx={{ color: 'text.secondary', fontWeight: 400 }}>
                                 {item.plazo}
                               </Box>
+                            </Typography>
+                          </Stack>
+                        )}
+                        {/* Espacio reservado para el CAT junto a la tasa (se muestra al capturarlo en src/data/datosNegocio.js) */}
+                        {textoCat() && (
+                          <Stack direction="row" alignItems="center" spacing={1.5} data-slot="cat">
+                            <SvgIcon name="tabler-percentage" size={20} color="primary.main" />
+                            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                              {textoCat()}
                             </Typography>
                           </Stack>
                         )}

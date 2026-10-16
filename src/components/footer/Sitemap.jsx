@@ -13,87 +13,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 // @project
-import branding from '@/branding.json';
-import { DOCS_URL, FREEBIES_URL } from '@/path';
 import { generateFocusVisibleStyles } from '@/utils/CommonFocusStyle';
-
-/***************************  SITEMAP - DATA  ***************************/
-
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
-const menuItems = [
-  {
-    id: 'resources',
-    grid: { size: { xs: 12, sm: 'auto' } },
-    title: 'Resources',
-    menu: [
-      {
-        label: 'Freebies',
-        link: { href: FREEBIES_URL, ...linkProps }
-      },
-      {
-        label: 'Documentation',
-        link: { href: DOCS_URL, ...linkProps }
-      },
-      {
-        label: 'Blog',
-        link: { href: 'https://blog.Capitalta.io/', ...linkProps }
-      },
-      {
-        label: 'Refund Policy',
-        link: { href: 'https://mui.com/store/customer-refund-policy/', ...linkProps }
-      }
-    ]
-  },
-  {
-    id: 'support',
-    grid: { size: { xs: 6, sm: 'auto' } },
-    title: 'Support',
-    menu: [
-      {
-        label: 'Pricing',
-        link: { href: 'https://mui.com/store/items/Capitalta-multipurpose-ui-kit-and-dashboard/', ...linkProps }
-      },
-      {
-        label: 'FAQ',
-        link: { href: 'https://capitalta.gitbook.io/Capitalta/faq', ...linkProps }
-      },
-      {
-        label: 'Support',
-        link: { href: branding.company.socialLink.support, ...linkProps }
-      },
-      {
-        label: 'License Terms',
-        link: { href: 'https://mui.com/store/license/', ...linkProps }
-      },
-      {
-        label: 'Discord',
-        link: { href: branding.company.socialLink.discord, ...linkProps }
-      }
-    ]
-  },
-  {
-    id: 'company',
-    grid: { size: { xs: 6, sm: 'auto' } },
-    title: 'Company',
-    menu: [
-      {
-        label: 'Why capitalta?',
-        link: {
-          href: 'https://blog.Capitalta.io/a-decade-of-expertise-the-capitalta-story-and-why-you-should-trust-us',
-          ...linkProps
-        }
-      },
-      {
-        label: 'About',
-        link: { href: '/about', ...linkProps }
-      },
-      {
-        label: 'Contact Us',
-        link: { href: '/contact', ...linkProps }
-      }
-    ]
-  }
-];
 
 /***************************  FOOTER - SITEMAP  ***************************/
 
@@ -111,7 +31,7 @@ export default function Sitemap({ list, isMenuDesign }) {
 
   return (
     <Grid container spacing={{ xs: 2.5, md: 4 }} sx={{ justifyContent: 'space-between' }}>
-      {(list || menuItems).map((item, index) => (
+      {(list || []).map((item, index) => (
         <Grid key={index} {...item.grid}>
           <Stack sx={{ alignItems: 'flex-start', gap: { md: 3 } }}>
             <Typography variant="h4">{item.title}</Typography>

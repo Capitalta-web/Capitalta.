@@ -91,8 +91,8 @@ export default function ContactUsForm1() {
             <FieldLabel name="First Name" />
             <OutlinedInput
               {...register('firstName', firstNameSchema)}
-              placeholder="First name"
-              slotProps={{ input: { 'aria-label': 'First name' } }}
+              placeholder="Nombre"
+              slotProps={{ input: { 'aria-label': 'Nombre' } }}
               fullWidth
               error={errors.firstName && Boolean(errors.firstName)}
             />
@@ -104,8 +104,8 @@ export default function ContactUsForm1() {
             <FieldLabel name="Last Name" />
             <OutlinedInput
               {...register('lastName', lastNameSchema)}
-              placeholder="Last name"
-              slotProps={{ input: { 'aria-label': 'Last name' } }}
+              placeholder="Apellido"
+              slotProps={{ input: { 'aria-label': 'Apellido' } }}
               fullWidth
               error={errors.lastName && Boolean(errors.lastName)}
             />
@@ -134,8 +134,8 @@ export default function ContactUsForm1() {
               rules={phoneSchema}
               render={({ field: { onChange } }) => (
                 <OutlinedInput
-                  placeholder="Phone number"
-                  slotProps={{ input: { 'aria-label': 'Phone number' } }}
+                  placeholder="Teléfono"
+                  slotProps={{ input: { 'aria-label': 'Teléfono' } }}
                   fullWidth
                   error={errors.phone && Boolean(errors.phone)}
                   onChange={onChange}
@@ -227,7 +227,7 @@ export default function ContactUsForm1() {
           <Stack sx={{ gap: 0.5 }}>
             <FieldLabel name="Message" />
             <OutlinedInput
-              {...register('message', { required: 'Message is required' })}
+              {...register('message', { required: 'El mensaje es obligatorio' })}
               multiline
               rows={4}
               placeholder="Please type your message here.."

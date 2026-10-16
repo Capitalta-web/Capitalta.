@@ -18,15 +18,15 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
+import TasaYCat, { textoCat } from '@/components/TasaYCat';
+import { PRODUCTOS, SIN_PENALIZACION_PREPAGO, TASA_ANUAL_FIJA } from '@/data/datosNegocio';
+import { rangoMonto, rangoPlazo } from '@/utils/formatoProductos';
 
-// export const metadata = {
-//   title: 'Crédito Revolvente | Capitalta'
-// };
-
-const MONTO_MIN = 500000;
-const MONTO_MAX = 50000000;
-const PLAZO_MIN = 12;
-const PLAZO_MAX = 60;
+const PRODUCTO = PRODUCTOS.revolvente;
+const MONTO_MIN = PRODUCTO.montoMin;
+const MONTO_MAX = PRODUCTO.montoMax;
+const PLAZO_MIN = PRODUCTO.plazoMin;
+const PLAZO_MAX = PRODUCTO.plazoMax;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -90,7 +90,7 @@ function formatoMoneda(valor) {
 export default function CreditoSimplePage() {
   const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual] = useState(24);
+  const tasaAnual = TASA_ANUAL_FIJA;
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -145,8 +145,8 @@ export default function CreditoSimplePage() {
                 </Typography>
                 <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 600 }}>
-                  Impulsa tus ideas o capital de trabajo con un solo desembolso, plazos definidos y una tasa fija del 24% anual desde el
-                  inicio.
+                  Impulsa tus ideas o capital de trabajo con un solo desembolso, plazos definidos y una tasa fija del {TASA_ANUAL_FIJA}%
+                  anual desde el inicio.
                 </Typography>
                 <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', pt: 1 }}>
                   <Button variant="contained" color="secondary" href="/auth/registro">
@@ -172,16 +172,22 @@ export default function CreditoSimplePage() {
                   <Typography variant="subtitle2">Resumen rápido</Typography>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Montos</Typography>
-                    <Typography variant="body2">$30,000 - $50,000,000 MXN</Typography>
+                    <Typography variant="body2">{rangoMonto('revolvente')} MXN</Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Plazos</Typography>
-                    <Typography variant="body2">3 a 60 meses</Typography>
+                    <Typography variant="body2">{rangoPlazo('revolvente')}</Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Tasa</Typography>
-                    <Typography variant="body2">Tasa fija competitiva</Typography>
+                    <Typography variant="body2">{TASA_ANUAL_FIJA}% anual fija</Typography>
                   </Stack>
+                  {/* Espacio reservado para el CAT (src/data/datosNegocio.js) */}
+                  {textoCat() && (
+                    <Typography variant="caption" sx={{ opacity: 0.85 }} data-slot="cat">
+                      {textoCat()}
+                    </Typography>
+                  )}
                 </Stack>
               </Box>
             </Grid>
@@ -311,7 +317,7 @@ export default function CreditoSimplePage() {
                     <Stack spacing={1}>
                       <Typography variant="subtitle1">Montos</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Desde $30,000 hasta $10,000,000 MXN, sujeto al valor de la garantía.
+                        Desde {rangoMonto('revolvente').replace(' - ', ' hasta ')} MXN, sujeto al valor de la garantía.
                       </Typography>
                     </Stack>
                   </Box>
@@ -330,7 +336,7 @@ export default function CreditoSimplePage() {
                     <Stack spacing={1}>
                       <Typography variant="subtitle1">Plazos</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        De 3 a 60 meses, con pagos mensuales fijos.
+                        De {rangoPlazo('revolvente')}, con pagos mensuales fijos.
                       </Typography>
                     </Stack>
                   </Box>
@@ -347,32 +353,35 @@ export default function CreditoSimplePage() {
                     }}
                   >
                     <Stack spacing={1}>
-                      <Typography variant="subtitle1">Tasa fija competitiva</Typography>
+                      <Typography variant="subtitle1">Tasa fija del {TASA_ANUAL_FIJA}% anual</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         La tasa se mantiene estable durante todo el crédito, lo que facilita la planeación.
                       </Typography>
                     </Stack>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Box
-                    sx={{
-                      p: 2.5,
-                      borderRadius: 3,
-                      border: '1px solid',
-                      borderColor: 'grey.200',
-                      bgcolor: 'background.paper',
-                      height: '100%'
-                    }}
-                  >
-                    <Stack spacing={1}>
-                      <Typography variant="subtitle1">Sin penalización por prepago</Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Puedes adelantar pagos o liquidar antes sin costos adicionales por penalizaciones.
-                      </Typography>
-                    </Stack>
-                  </Box>
-                </Grid>
+                {/* TODO(Alberto/Cumplimiento): confirmar en contrato; se muestra con SIN_PENALIZACION_PREPAGO.mostrar = true */}
+                {SIN_PENALIZACION_PREPAGO.mostrar && (
+                  <Grid item xs={12} sm={6}>
+                    <Box
+                      sx={{
+                        p: 2.5,
+                        borderRadius: 3,
+                        border: '1px solid',
+                        borderColor: 'grey.200',
+                        bgcolor: 'background.paper',
+                        height: '100%'
+                      }}
+                    >
+                      <Stack spacing={1}>
+                        <Typography variant="subtitle1">Sin penalización por prepago</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          Puedes adelantar pagos o liquidar antes sin costos adicionales por penalizaciones.
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  </Grid>
+                )}
               </Grid>
             </Stack>
           </Grid>
@@ -412,8 +421,9 @@ export default function CreditoSimplePage() {
                 InputProps={{
                   readOnly: true
                 }}
-                helperText="La tasa de interés para este producto es fija del 24% anual."
+                helperText={`La tasa de interés para este producto es fija del ${TASA_ANUAL_FIJA}% anual.`}
               />
+              <TasaYCat mostrarTasa={false} variant="caption" sx={{ color: 'text.secondary' }} />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>
                 <Box

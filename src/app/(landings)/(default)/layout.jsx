@@ -2,9 +2,6 @@ import PropTypes from 'prop-types';
 // @next
 import dynamic from 'next/dynamic';
 
-// @project
-// import LandingPresentation from '@/components/LandingPresentation';
-
 const ScrollFab = dynamic(() => import('@/components/ScrollFab'));
 const WhatsAppFab = dynamic(() => import('@/components/WhatsAppFab'));
 const MainLayout = dynamic(() => import('@/views/landings/default/layout'));

@@ -129,11 +129,11 @@ export default function ContactUsForm2() {
         <Grid container spacing={2.5} sx={{ justifyContent: 'space-between' }}>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 0.5 }}>
-              <FieldLabel name="First Name" />
+              <FieldLabel name="Nombre" />
               <OutlinedInput
                 {...register('firstName', firstNameSchema)}
-                placeholder="First name"
-                slotProps={{ input: { 'aria-label': 'First name' } }}
+                placeholder="Nombre"
+                slotProps={{ input: { 'aria-label': 'Nombre' } }}
                 fullWidth
                 error={errors.firstName && Boolean(errors.firstName)}
               />
@@ -142,11 +142,11 @@ export default function ContactUsForm2() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 0.5 }}>
-              <FieldLabel name="Last Name" />
+              <FieldLabel name="Apellido" />
               <OutlinedInput
                 {...register('lastName', lastNameSchema)}
-                placeholder="Last name"
-                slotProps={{ input: { 'aria-label': 'Last name' } }}
+                placeholder="Apellido"
+                slotProps={{ input: { 'aria-label': 'Apellido' } }}
                 fullWidth
                 error={errors.lastName && Boolean(errors.lastName)}
               />
@@ -155,11 +155,11 @@ export default function ContactUsForm2() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 0.5 }}>
-              <FieldLabel name="Email" />
+              <FieldLabel name="Correo electrónico" />
               <OutlinedInput
                 {...register('email', emailSchema)}
-                placeholder="example@gmail.com"
-                slotProps={{ input: { 'aria-label': 'Email Address' } }}
+                placeholder="nombre@empresa.com"
+                slotProps={{ input: { 'aria-label': 'Correo electrónico' } }}
                 fullWidth
                 error={errors.email && Boolean(errors.email)}
               />
@@ -168,15 +168,15 @@ export default function ContactUsForm2() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Stack sx={{ gap: 0.5 }}>
-              <FieldLabel name="Phone Number" />
+              <FieldLabel name="Teléfono" />
               <Controller
                 control={control}
                 name="phone"
                 rules={phoneSchema}
                 render={({ field: { onChange } }) => (
                   <OutlinedInput
-                    placeholder="Phone number"
-                    slotProps={{ input: { 'aria-label': 'Phone number' } }}
+                    placeholder="Teléfono"
+                    slotProps={{ input: { 'aria-label': 'Teléfono' } }}
                     fullWidth
                     error={errors.phone && Boolean(errors.phone)}
                     onChange={onChange}
@@ -265,15 +265,15 @@ export default function ContactUsForm2() {
           </Grid>
           <Grid size={12}>
             <Stack sx={{ gap: 0.5 }}>
-              <FieldLabel name="Message" />
+              <FieldLabel name="Mensaje" />
               <OutlinedInput
-                {...register('message', { required: 'Message is required' })}
+                {...register('message', { required: 'El mensaje es obligatorio' })}
                 multiline
                 rows={4}
-                placeholder="Please type your message here.."
+                placeholder="Escribe tu mensaje aquí..."
                 fullWidth
                 error={errors.message && Boolean(errors.message)}
-                slotProps={{ input: { 'aria-label': 'Message' } }}
+                slotProps={{ input: { 'aria-label': 'Mensaje' } }}
               />
               {errors.message?.message && <ErrorMessage message={errors.message?.message} />}
             </Stack>

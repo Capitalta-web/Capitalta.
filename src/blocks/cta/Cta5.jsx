@@ -51,7 +51,7 @@ export default function Cta5({ heading, caption, label, input = false, primaryBt
         }}
       >
         <Grid container spacing={1.5}>
-          <Grid size={{ xs: 12, sm: 8, md: 9 }}>
+          <Grid size={saleData ? { xs: 12, sm: 8, md: 9 } : 12}>
             <motion.div initial={{ opacity: 0, y: -100 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.6 }}>
               <GraphicsCard sx={{ position: 'relative' }}>
                 <Stack
@@ -72,7 +72,7 @@ export default function Cta5({ heading, caption, label, input = false, primaryBt
                   {input && typeof input === 'object' && (
                     <Stack sx={{ gap: 0.75, width: { sm: '100%', md: 'unset' } }}>
                       <OutlinedInput
-                        placeholder={input.placeholder || 'Enter your email address'}
+                        placeholder={input.placeholder || 'Ingresa tu correo electrónico'}
                         endAdornment={
                           <Button
                             color="primary"
@@ -135,52 +135,56 @@ export default function Cta5({ heading, caption, label, input = false, primaryBt
               </GraphicsCard>
             </motion.div>
           </Grid>
-          <Grid size={{ xs: 12, sm: 4, md: 3 }}>
-            <Grid container sx={{ height: 1, position: 'relative' }}>
-              <Grid size={{ xs: 6, sm: 12 }} sx={{ minHeight: { sm: '50%' } }}>
-                <GraphicsCard sx={{ height: 1 }}>
-                  <Stack sx={{ alignItems: 'center', gap: 1, py: { xs: 2, sm: 6, md: 7.5 }, px: { xs: 2, sm: 3.5 }, textAlign: 'center' }}>
-                    <Typography component="div" variant="h1">
-                      {saleData.count}
-                      <Typography variant="h2" component="span" sx={{ color: 'text.secondary' }}>
-                        {saleData.defaultUnit}
+          {saleData && (
+            <Grid size={{ xs: 12, sm: 4, md: 3 }}>
+              <Grid container sx={{ height: 1, position: 'relative' }}>
+                <Grid size={{ xs: 6, sm: 12 }} sx={{ minHeight: { sm: '50%' } }}>
+                  <GraphicsCard sx={{ height: 1 }}>
+                    <Stack
+                      sx={{ alignItems: 'center', gap: 1, py: { xs: 2, sm: 6, md: 7.5 }, px: { xs: 2, sm: 3.5 }, textAlign: 'center' }}
+                    >
+                      <Typography component="div" variant="h1">
+                        {saleData.count}
+                        <Typography variant="h2" component="span" sx={{ color: 'text.secondary' }}>
+                          {saleData.defaultUnit}
+                        </Typography>
                       </Typography>
-                    </Typography>
-                    <Typography sx={{ color: 'text.secondary' }}>{saleData.caption}</Typography>
-                  </Stack>
-                </GraphicsCard>
-              </Grid>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  left: '50%',
-                  top: '50%',
-                  transform: { xs: 'translate(-50%,-50%) rotate(90deg)', sm: 'translate(-50%,-50%)' },
-                  '& .wave svg': { width: { xs: 70, sm: 122 } }
-                }}
-              >
-                <Wave />
-              </Box>
-              <Grid size={{ xs: 6, sm: 12 }} sx={{ minHeight: { sm: '50%' } }}>
-                <GraphicsCard sx={{ height: 1 }}>
-                  <ProfileGroup
-                    {...profileGroups}
-                    sx={{
-                      py: { xs: 2, sm: 4, md: 6.75 },
-                      px: { xs: 2, sm: 1.5 },
-                      height: 1,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textAlign: 'center',
-                      '& .MuiAvatarGroup-root': { mb: 0.5 },
-                      '& .MuiAvatar-root': { width: { xs: 40, sm: 58 }, height: { xs: 40, sm: 58 } },
-                      '& .wave': { display: 'none' }
-                    }}
-                  />
-                </GraphicsCard>
+                      <Typography sx={{ color: 'text.secondary' }}>{saleData.caption}</Typography>
+                    </Stack>
+                  </GraphicsCard>
+                </Grid>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: '50%',
+                    top: '50%',
+                    transform: { xs: 'translate(-50%,-50%) rotate(90deg)', sm: 'translate(-50%,-50%)' },
+                    '& .wave svg': { width: { xs: 70, sm: 122 } }
+                  }}
+                >
+                  <Wave />
+                </Box>
+                <Grid size={{ xs: 6, sm: 12 }} sx={{ minHeight: { sm: '50%' } }}>
+                  <GraphicsCard sx={{ height: 1 }}>
+                    <ProfileGroup
+                      {...profileGroups}
+                      sx={{
+                        py: { xs: 2, sm: 4, md: 6.75 },
+                        px: { xs: 2, sm: 1.5 },
+                        height: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        '& .MuiAvatarGroup-root': { mb: 0.5 },
+                        '& .MuiAvatar-root': { width: { xs: 40, sm: 58 }, height: { xs: 40, sm: 58 } },
+                        '& .wave': { display: 'none' }
+                      }}
+                    />
+                  </GraphicsCard>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          )}
         </Grid>
       </motion.div>
     </ContainerWrapper>

@@ -11,16 +11,8 @@ import Button from '@mui/material/Button';
 
 export default function NavPrimaryButton({ sx, children, ...rest }) {
   return (
-    <Button
-      variant="contained"
-      size="small"
-      sx={sx}
-      {...rest}
-      {...(rest?.href && { component: NextLink })}
-      rel="noopener noreferrer"
-      aria-label="nav-primary-btn"
-    >
-      {children || 'Primary Button'}
+    <Button variant="contained" size="small" sx={sx} {...rest} {...(rest?.href && { component: NextLink })} rel="noopener noreferrer">
+      {children || 'Solicitar crédito'}
     </Button>
   );
 }

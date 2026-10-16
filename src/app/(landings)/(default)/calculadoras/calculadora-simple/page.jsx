@@ -19,18 +19,17 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
+import TasaYCat, { textoCat } from '@/components/TasaYCat';
+import { PRODUCTOS, TASA_ANUAL_FIJA } from '@/data/datosNegocio';
 import { submitLeadAction, submitCotizacionAction } from '../actions';
 
-// export const metadata = {
-//   title: 'Calculadora Crédito Revolvente | Capitalta'
-// };
-
-const MONTO_MIN = 500000;
-const MONTO_MAX = 50000000;
-const PLAZO_MIN = 12;
-const PLAZO_MAX = 60;
-const TASA_MIN = 24;
-const TASA_MAX = 24;
+const PRODUCTO = PRODUCTOS.revolvente;
+const MONTO_MIN = PRODUCTO.montoMin;
+const MONTO_MAX = PRODUCTO.montoMax;
+const PLAZO_MIN = PRODUCTO.plazoMin;
+const PLAZO_MAX = PRODUCTO.plazoMax;
+const TASA_MIN = TASA_ANUAL_FIJA;
+const TASA_MAX = TASA_ANUAL_FIJA;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -102,7 +101,7 @@ function formatearFecha(fecha) {
 export default function CalculadoraSimplePage() {
   const [monto, setMonto] = useState(500000);
   const [plazo, setPlazo] = useState(24);
-  const [tasaAnual] = useState(24);
+  const tasaAnual = TASA_ANUAL_FIJA;
 
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
@@ -260,7 +259,7 @@ export default function CalculadoraSimplePage() {
         <body style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding:24px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
             <div style="display:flex;align-items:center;gap:12px;">
-              <img src="/assets/logos/capitalta-logo.svg" alt="Capitalta" style="height:40px;" />
+              <img src="/assets/images/capitalta/logo.svg" alt="Capitalta" style="height:40px;" />
               <h1 style="margin:0;font-size:20px;">Cotización Crédito Revolvente</h1>
             </div>
             <div style="text-align:right;font-size:12px;color:#555;">
@@ -303,9 +302,13 @@ export default function CalculadoraSimplePage() {
                 <td style="padding:4px;border:1px solid #ccc;">${plazoAjustado} meses</td>
               </tr>
               <tr>
-                <td style="padding:4px;border:1px solid #ccc;">Tasa anual estimada</td>
+                <td style="padding:4px;border:1px solid #ccc;">Tasa anual fija</td>
                 <td style="padding:4px;border:1px solid #ccc;">${tasaAjustada}%</td>
-              </tr>
+              </tr>${
+                textoCat()
+                  ? `<tr><td style="padding:4px;border:1px solid #ccc;">CAT</td><td style="padding:4px;border:1px solid #ccc;">${textoCat()}</td></tr>`
+                  : ''
+              }
             </tbody>
           </table>
 
@@ -375,8 +378,8 @@ export default function CalculadoraSimplePage() {
                 </Typography>
                 <Typography variant="h2">Crédito Revolvente</Typography>
                 <Typography variant="body1" sx={{ maxWidth: 640 }}>
-                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del 24% anual, revisa la tabla de
-                  amortización completa y descarga una cotización en PDF para compartirla o analizarla con tu equipo.
+                  Simula tu Crédito Revolvente con rangos reales de monto, plazo y una tasa fija del {TASA_ANUAL_FIJA}% anual, revisa la
+                  tabla de amortización completa y descarga una cotización en PDF para compartirla o analizarla con tu equipo.
                 </Typography>
               </Stack>
             </Grid>
@@ -405,10 +408,8 @@ export default function CalculadoraSimplePage() {
                     </Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-                    <Typography variant="body2">Tasa anual estimada</Typography>
-                    <Typography variant="body2">
-                      {TASA_MIN}% a {TASA_MAX}% anual
-                    </Typography>
+                    <Typography variant="body2">Tasa anual fija</Typography>
+                    <Typography variant="body2">{TASA_ANUAL_FIJA}% anual fija</Typography>
                   </Stack>
                 </Stack>
               </Box>
@@ -474,8 +475,9 @@ export default function CalculadoraSimplePage() {
                     <Typography variant="body2">{tasaAjustada}% (Fija)</Typography>
                   </Stack>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 1, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                    La tasa de interés para este producto es fija del 24% anual.
+                    La tasa de interés para este producto es fija del {TASA_ANUAL_FIJA}% anual.
                   </Typography>
+                  <TasaYCat mostrarTasa={false} variant="caption" sx={{ mt: 1, color: 'text.secondary' }} />
                 </Box>
               </Stack>
 

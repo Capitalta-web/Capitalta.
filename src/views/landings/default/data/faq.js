@@ -1,5 +1,6 @@
 // @project
-import branding from '@/branding.json';
+import { TIEMPO_RESPUESTA } from '@/data/datosNegocio';
+import { rangoMonto } from '@/utils/formatoProductos';
 
 export const faq = {
   heading: 'Preguntas frecuentes sobre Capitalta',
@@ -14,14 +15,16 @@ export const faq = {
     },
     {
       question: '¿Cuál es el monto mínimo y máximo que puedo solicitar?',
-      answer:
-        'Los montos dependen del tipo de crédito y de tu perfil, pero contamos con opciones desde $30,000 hasta 50 millones de pesos.',
+      answer: `Los montos dependen del tipo de crédito y de tu perfil. Crédito Revolvente: ${rangoMonto('revolvente')} MXN; Crédito Empresarial: ${rangoMonto('empresarial')} MXN.`,
       category: 'Créditos y elegibilidad'
     },
     {
       question: '¿En cuánto tiempo obtendré una respuesta a mi solicitud?',
       answer: {
-        content: 'En la mayoría de los casos damos una respuesta inicial en menos de 72 horas hábiles.',
+        // TODO(Alberto): confirmar el tiempo de respuesta (TIEMPO_RESPUESTA en src/data/datosNegocio.js).
+        content: TIEMPO_RESPUESTA
+          ? `En la mayoría de los casos damos una respuesta inicial en ${TIEMPO_RESPUESTA}.`
+          : 'El tiempo de respuesta depende del producto y de que tu expediente esté completo; un asesor te informará los tiempos de tu solicitud.',
         type: 'list',
         data: [{ primary: 'Revisión rápida de tu información.' }, { primary: 'Seguimiento personalizado durante el proceso.' }]
       },
@@ -50,7 +53,7 @@ export const faq = {
       category: 'Seguridad y confianza'
     }
   ],
-  link: { children: 'Get in Touch', href: branding.company.socialLink.support, target: '_blank', rel: 'noopener noreferrer' },
+  link: { children: 'Contáctanos', href: '/contacto' },
   categories: ['Créditos y elegibilidad', 'Proceso y tiempos', 'Seguridad y confianza'],
   activeCategory: 'Créditos y elegibilidad'
 };

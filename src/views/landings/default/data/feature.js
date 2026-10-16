@@ -1,74 +1,6 @@
 // @project
-import branding from '@/branding.json';
-import { IconType } from '@/enum';
-
-const linkProps = { target: '_blank', rel: 'noopener noreferrer' };
-
-export const feature2 = {
-  heading: 'Culture of inovation',
-  caption:
-    'Join a team that embraces forward-thinking ideas, fosters innovation, and cultivates an environment where your creativity can flourish.',
-  features: [
-    {
-      icon: { name: 'tabler-users', type: IconType.STROKE, color: 'grey.900', stroke: 1 },
-      title: 'Teamwork',
-      content: 'We embrace varied perspectives and backgrounds, creating an inclusive environment.'
-    },
-    {
-      icon: { name: 'tabler-star', type: IconType.STROKE, color: 'grey.900', stroke: 1 },
-      title: 'Inclusivity',
-      content: 'We embrace varied perspectives and backgrounds, creating an inclusive environment.'
-    },
-    {
-      icon: { name: 'tabler-chart-histogram', type: IconType.STROKE, color: 'grey.900', stroke: 1 },
-      title: 'Growth',
-      content: 'Our culture prioritizes continuous learning, encouraging personal and professional development. '
-    }
-  ]
-};
-
-export const feature5 = {
-  heading: 'Beyond the 9-to-5',
-  caption: 'Our benefits go beyond the standard, ensuring your life outside of work is just as fulfilling.',
-  image1: { light: '/assets/images/graphics/ai/graphics3-light.svg', dark: '/assets/images/graphics/ai/graphics3-dark.svg' },
-  image2: { dark: '/assets/images/graphics/ai/graphics2-dark.svg', light: '/assets/images/graphics/ai/graphics2-light.svg' },
-  features: [
-    {
-      icon: 'tabler-coin',
-      title: 'Compensation',
-      content: 'Enjoy a competitive salary that recognizes your skills and contributions.'
-    },
-    {
-      icon: 'tabler-health-recognition',
-      title: 'Healthcare',
-      content: "Access to a comprehensive healthcare plan, ensuring you and your family's well-being."
-    }
-  ],
-  features2: [
-    {
-      icon: 'tabler-briefcase',
-      title: 'Automated scaling',
-      content: 'Embrace a flexible work environment, allowing you to balance work.'
-    },
-    {
-      icon: 'tabler-users',
-      title: 'Real-time',
-      content: 'Support your family commitments with family-friendly policies and benefits.'
-    }
-  ],
-  profileGroups: {
-    avatarGroups: [
-      { avatar: '/assets/images/user/avatar1.png' },
-      { avatar: '/assets/images/user/avatar2.png' },
-      { avatar: '/assets/images/user/avatar3.png' },
-      { avatar: '/assets/images/user/avatar4.png' },
-      { avatar: '/assets/images/user/avatar5.png' }
-    ],
-    review: '10k+ Reviews (4.5 out of 5)'
-  },
-  content: 'Explore diverse career paths within the company through our internal mobility programs.',
-  actionBtn: { children: 'Explore all Features', href: '#', sx: { textTransform: 'none' } }
-};
+import { TASA_ANUAL_FIJA } from '@/data/datosNegocio';
+import { rangoMonto, rangoPlazo } from '@/utils/formatoProductos';
 
 export const aboutCapitalta = {
   heading: 'Quiénes somos',
@@ -130,9 +62,10 @@ export const feature20 = {
     {
       icon: 'tabler-currency-dollar',
       title: 'Crédito Revolvente',
-      description: 'Crédito amortizable con un solo desembolso y tasa fija del 24% anual.',
-      monto: '$30,000–$10,000,000',
-      plazo: '3–60 meses',
+      // TODO(Alberto): confirmar descripción; el nombre "Revolvente" no cuadra con "un solo desembolso".
+      description: `Crédito amortizable con un solo desembolso y tasa fija del ${TASA_ANUAL_FIJA}% anual.`,
+      monto: rangoMonto('revolvente', '–'),
+      plazo: rangoPlazo('revolvente'),
       href: '/productos/credito-simple',
       visual: 'revolvente',
       recommended: false
@@ -140,64 +73,11 @@ export const feature20 = {
     {
       icon: 'tabler-building-bank',
       title: 'Crédito Empresarial',
-      description: 'Financiamiento a medida para empresas.',
-      monto: '$500,000–$50,000,000',
-      plazo: '12–120 meses',
+      description: `Financiamiento a medida para empresas, con tasa fija del ${TASA_ANUAL_FIJA}% anual.`,
+      monto: rangoMonto('empresarial', '–'),
+      plazo: rangoPlazo('empresarial'),
       href: '/productos/credito-empresarial',
       visual: 'empresarial'
-    }
-  ]
-};
-
-export const feature = {
-  heading: `Beneficios de elegir ${branding.brandName}`,
-  features: [
-    {
-      image: '/assets/images/shared/react.svg',
-      title: 'Tecnología',
-      content: 'Plataforma digital ágil y segura.'
-    },
-    {
-      image: '/assets/images/shared/next-js.svg',
-      title: 'Rapidez',
-      content: 'Procesos optimizados para respuestas rápidas.'
-    },
-    {
-      image: '/assets/images/shared/react.svg',
-      title: 'Seguridad',
-      content: 'Protección de datos con estándares bancarios.'
-    },
-    {
-      image: '/assets/images/shared/next-js.svg',
-      title: 'Flexibilidad',
-      content: 'Productos adaptables a tu flujo de efectivo.'
-    },
-    {
-      image: '/assets/images/shared/figma.svg',
-      title: 'Claridad',
-      content: 'Sin letras chiquitas ni costos ocultos.'
-    },
-    {
-      title: 'Conoce nuestros planes',
-      content: 'Encuentra el financiamiento ideal para ti.',
-      actionBtn: { children: 'Ver Productos', href: '/productos', ...linkProps }
-    }
-  ]
-};
-
-export const feature7 = {
-  heading: 'Real-time performance insights',
-  caption: 'Gain a competitive edge with real-time performance monitoring.',
-  testimonials: [
-    {
-      name: 'John Doe',
-      designation: 'CEO',
-      review: 'The team at SaasAble is incredibly talented and dedicated. They went above and beyond to ensure our project was a success.'
-    },
-    {
-      name: 'Jane Smith',
-      designation: 'CTO',
-      review: 'I highly recommend SaasAble for any software development needs. Their expertise and professionalism are unmatched.'
     }
   ]
 };

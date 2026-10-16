@@ -37,7 +37,7 @@ export default function ScrollFab() {
             <Fab
               color="primary"
               rel="noopener noreferrer"
-              aria-label="scroll to top"
+              aria-label="Volver arriba"
               onClick={scrollToTop}
               sx={{ width: { xs: 40, lg: 52 }, height: { xs: 40, lg: 52 } }}
             >

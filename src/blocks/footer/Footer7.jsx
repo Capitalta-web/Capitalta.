@@ -140,7 +140,7 @@ export default function Footer7() {
           delay: 0.4
         }}
       >
-        <Stack id="footer-7" role="contentinfo" rel="noopener noreferrer" aria-label="Footer 7" sx={{ gap: { xs: 3, sm: 4, md: 5 } }}>
+        <Stack id="footer-7" role="contentinfo" rel="noopener noreferrer" aria-label="Pie de página" sx={{ gap: { xs: 3, sm: 4, md: 5 } }}>
           <Grid container spacing={{ xs: 4, md: 3 }}>
             <Grid size={{ xs: 12, md: 4 }}>
               <Stack direction={{ sm: 'row', md: 'column' }} sx={{ gap: 3, justifyContent: 'space-between', height: 1 }}>

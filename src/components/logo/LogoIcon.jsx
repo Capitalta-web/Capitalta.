@@ -32,7 +32,7 @@ export default function LogoIcon() {
       }}
     >
       {shouldUseAsset ? (
-        <CardMedia src={logoIconPath} component="img" alt="logo" sx={{ height: 1, width: 1, objectFit: 'contain' }} loading="lazy" />
+        <CardMedia src={logoIconPath} component="img" alt="Capitalta" sx={{ height: 1, width: 1, objectFit: 'contain' }} loading="lazy" />
       ) : (
         <svg viewBox="0 0 37 40" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
