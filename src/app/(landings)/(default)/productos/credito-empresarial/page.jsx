@@ -18,15 +18,15 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import ContainerWrapper from '@/components/ContainerWrapper';
+import TasaYCat, { textoCat } from '@/components/TasaYCat';
+import { PRODUCTOS, SIN_PENALIZACION_PREPAGO, TASA_ANUAL_FIJA } from '@/data/datosNegocio';
+import { rangoMonto, rangoPlazo } from '@/utils/formatoProductos';
 
-// export const metadata = {
-//   title: 'Crédito Empresarial | Capitalta'
-// };
-
-const MONTO_MIN = 500000;
-const MONTO_MAX = 50000000;
-const PLAZO_MIN = 12;
-const PLAZO_MAX = 120;
+const PRODUCTO = PRODUCTOS.empresarial;
+const MONTO_MIN = PRODUCTO.montoMin;
+const MONTO_MAX = PRODUCTO.montoMax;
+const PLAZO_MIN = PRODUCTO.plazoMin;
+const PLAZO_MAX = PRODUCTO.plazoMax;
 
 function calcularPagoMensual(monto, plazo, tasaAnual) {
   const tasaMensual = tasaAnual / 12 / 100;
@@ -90,7 +90,7 @@ function formatoMoneda(valor) {
 export default function CreditoEmpresarialPage() {
   const [monto, setMonto] = useState(1000000);
   const [plazo, setPlazo] = useState(36);
-  const [tasaAnual] = useState(24);
+  const tasaAnual = TASA_ANUAL_FIJA;
 
   const montoAjustado = useMemo(() => {
     if (!monto || monto <= 0) {
@@ -172,16 +172,22 @@ export default function CreditoEmpresarialPage() {
                   <Typography variant="subtitle2">Resumen rápido</Typography>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Montos</Typography>
-                    <Typography variant="body2">$20,000 - $50,000,000 MXN</Typography>
+                    <Typography variant="body2">{rangoMonto('empresarial')} MXN</Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Plazos</Typography>
-                    <Typography variant="body2">1 a 120 meses</Typography>
+                    <Typography variant="body2">{rangoPlazo('empresarial')}</Typography>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
                     <Typography variant="body2">Tasa</Typography>
-                    <Typography variant="body2">Tasa fija competitiva</Typography>
+                    <Typography variant="body2">{TASA_ANUAL_FIJA}% anual fija</Typography>
                   </Stack>
+                  {/* Espacio reservado para el CAT (src/data/datosNegocio.js) */}
+                  {textoCat() && (
+                    <Typography variant="caption" sx={{ opacity: 0.85 }} data-slot="cat">
+                      {textoCat()}
+                    </Typography>
+                  )}
                 </Stack>
               </Box>
             </Grid>
@@ -311,7 +317,8 @@ export default function CreditoEmpresarialPage() {
                     <Stack spacing={1}>
                       <Typography variant="subtitle1">Montos</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Desde $20,000 hasta $50,000,000 MXN, considerando hasta el 50% del valor del inmueble en garantía.
+                        Desde {rangoMonto('empresarial').replace(' - ', ' hasta ')} MXN, considerando hasta el 50% del valor del inmueble en
+                        garantía.
                       </Typography>
                     </Stack>
                   </Box>
@@ -330,7 +337,7 @@ export default function CreditoEmpresarialPage() {
                     <Stack spacing={1}>
                       <Typography variant="subtitle1">Plazos</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        De 1 a 120 meses, en función de la naturaleza del proyecto y el flujo de la empresa.
+                        De {rangoPlazo('empresarial')}, en función de la naturaleza del proyecto y el flujo de la empresa.
                       </Typography>
                     </Stack>
                   </Box>
@@ -347,32 +354,35 @@ export default function CreditoEmpresarialPage() {
                     }}
                   >
                     <Stack spacing={1}>
-                      <Typography variant="subtitle1">Tasa fija competitiva</Typography>
+                      <Typography variant="subtitle1">Tasa fija del {TASA_ANUAL_FIJA}% anual</Typography>
                       <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                         Mantén visibilidad sobre tus pagos con una tasa estable durante toda la vida del crédito.
                       </Typography>
                     </Stack>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Box
-                    sx={{
-                      p: 2.5,
-                      borderRadius: 3,
-                      border: '1px solid',
-                      borderColor: 'grey.200',
-                      bgcolor: 'background.paper',
-                      height: '100%'
-                    }}
-                  >
-                    <Stack spacing={1}>
-                      <Typography variant="subtitle1">Sin penalización por prepago</Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        Posibilidad de adelantar pagos o liquidar anticipadamente sin cargos por penalización.
-                      </Typography>
-                    </Stack>
-                  </Box>
-                </Grid>
+                {/* TODO(Alberto/Cumplimiento): confirmar en contrato; se muestra con SIN_PENALIZACION_PREPAGO.mostrar = true */}
+                {SIN_PENALIZACION_PREPAGO.mostrar && (
+                  <Grid item xs={12} sm={6}>
+                    <Box
+                      sx={{
+                        p: 2.5,
+                        borderRadius: 3,
+                        border: '1px solid',
+                        borderColor: 'grey.200',
+                        bgcolor: 'background.paper',
+                        height: '100%'
+                      }}
+                    >
+                      <Stack spacing={1}>
+                        <Typography variant="subtitle1">Sin penalización por prepago</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                          Posibilidad de adelantar pagos o liquidar anticipadamente sin cargos por penalización.
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  </Grid>
+                )}
               </Grid>
             </Stack>
           </Grid>
@@ -412,8 +422,9 @@ export default function CreditoEmpresarialPage() {
                 InputProps={{
                   readOnly: true
                 }}
-                helperText="La tasa de interés para este producto es fija del 24% anual."
+                helperText={`La tasa de interés para este producto es fija del ${TASA_ANUAL_FIJA}% anual.`}
               />
+              <TasaYCat mostrarTasa={false} variant="caption" sx={{ color: 'text.secondary' }} />
               <Stack spacing={1.5}>
                 <Typography variant="subtitle2">Resumen estimado</Typography>
                 <Box

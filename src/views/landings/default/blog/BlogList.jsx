@@ -46,11 +46,7 @@ export default function BlogList() {
 
   return (
     <>
-      <SectionHero
-        heading="Blog Capitalta"
-        caption="Descubre estrategias financieras, noticias y consejos para impulsar tu negocio."
-        search={false}
-      />
+      <SectionHero heading="Blog Capitalta" caption="Descubre estrategias financieras, noticias y consejos para impulsar tu negocio." />
       <ContainerWrapper sx={{ py: SECTION_COMMON_PY }}>
         {loading ? (
           <Grid container spacing={3}>

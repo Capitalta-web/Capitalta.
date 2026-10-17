@@ -24,7 +24,7 @@ export default function About() {
 
   return (
     <>
-      <SectionHero heading="Más que una financiera, un aliado estratégico" search={false} />
+      <SectionHero heading="Más que una financiera, un aliado estratégico" />
       <Feature15 {...aboutCapitalta} />
 
       <ContainerWrapper>

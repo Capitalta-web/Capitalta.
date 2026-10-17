@@ -25,6 +25,7 @@ import { IconEye, IconEyeOff, IconArrowRight, IconChecks } from '@tabler/icons-r
 import Logo from '@/components/logo';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import { notifyRegistroCredito } from '@/utils/notifyRegistro';
+import { REGISTRO } from '@/data/datosNegocio';
 
 export default function RegistrationPage() {
   const router = useRouter();
@@ -258,7 +259,7 @@ export default function RegistrationPage() {
                 Impulsa tu negocio hoy mismo.
               </Typography>
               <Stack spacing={2}>
-                {['Aprobación en 48 horas', 'Sin costos ocultos', 'Trámite 100% digital', 'Asesoría personalizada'].map((item, index) => (
+                {REGISTRO.beneficios.map(({ texto: item }, index) => (
                   <Stack key={index} direction="row" alignItems="center" spacing={1.5}>
                     <Box
                       sx={{
@@ -281,22 +282,21 @@ export default function RegistrationPage() {
               </Stack>
             </Box>
 
-            <Box sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2, backdropFilter: 'blur(10px)' }}>
-              <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 2 }}>
-                "Capitalta entendió nuestras necesidades cuando otros bancos nos cerraron la puerta. El proceso fue rápido y transparente."
-              </Typography>
-              <Stack direction="row" alignItems="center" spacing={2}>
-                <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.2)' }} />
-                <Box>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                    Carlos Mendoza
-                  </Typography>
-                  <Typography variant="caption" sx={{ opacity: 0.8 }}>
-                    Director General, TechSolutions
-                  </Typography>
-                </Box>
-              </Stack>
-            </Box>
+            {REGISTRO.testimonio.mostrar ? (
+              <Box sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2, backdropFilter: 'blur(10px)' }}>
+                <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 2 }}>
+                  “{REGISTRO.testimonio.cita}”
+                </Typography>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                  {REGISTRO.testimonio.nombre}
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                  {REGISTRO.testimonio.cargo}
+                </Typography>
+              </Box>
+            ) : (
+              <Box />
+            )}
           </Box>
         </Box>
 

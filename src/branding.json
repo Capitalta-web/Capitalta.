@@ -3,7 +3,8 @@
   "title": "Soluciones Financieras",
   "company": {
     "name": "Capitalta",
-    "url": "https://capitalta.com.mx",
+    "legalName": "ALTA CAPITAL S.A. de C.V., SOFOM ENR",
+    "url": "https://capitalta.mx",
     "socialLink": {
       "linkedin": "https://linkedin.com/company/capitalta",
       "instagram": "https://www.instagram.com/capitaltamx/",
@@ -23,4 +24,3 @@
     "logoWatermark": ""
   }
 }
-

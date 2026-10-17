@@ -7,7 +7,6 @@ import NextLink from 'next/link';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import CardMedia from '@mui/material/CardMedia';
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
@@ -26,7 +25,7 @@ import Wave from '@/images/graphics/Wave';
 
 /***************************  SECTION HERO  ***************************/
 
-export default function SectionHero({ heading, caption, offer = false, breadcrumbs }) {
+export default function SectionHero({ heading, caption, breadcrumbs }) {
   const theme = useTheme();
 
   const boxRadius = { xs: 24, sm: 40 };
@@ -77,35 +76,6 @@ export default function SectionHero({ heading, caption, offer = false, breadcrum
               sx={{ bgcolor: 'grey.100' }}
             />
           )}
-          {offer && (
-            <Chip
-              variant="outlined"
-              label={
-                <>
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    Over 200+
-                  </Typography>
-                  <Chip
-                    label="Design Blocks"
-                    size="small"
-                    slotProps={{ label: { sx: { px: 1.25, py: 0.75, typography: 'caption', color: 'primary.main' } } }}
-                    sx={{ bgcolor: 'primary.lighter', mr: -1, ml: 0.75 }}
-                    icon={
-                      <CardMedia
-                        component="img"
-                        image="/assets/images/shared/celebration.svg"
-                        sx={{ width: 20, height: 20, pl: 0.75 }}
-                        alt="celebration"
-                        loading="lazy"
-                      />
-                    }
-                  />
-                </>
-              }
-              slotProps={{ label: { sx: { py: 0.5, px: 1.5 } } }}
-              sx={{ bgcolor: 'grey.100' }}
-            />
-          )}
           <Typography variant="h1" sx={{ textAlign: 'center', width: { xs: 345, sm: 550, md: 700 } }}>
             {heading}
           </Typography>
@@ -123,4 +93,4 @@ export default function SectionHero({ heading, caption, offer = false, breadcrum
   );
 }
 
-SectionHero.propTypes = { heading: PropTypes.string, offer: PropTypes.bool, breadcrumbs: PropTypes.array };
+SectionHero.propTypes = { heading: PropTypes.string, caption: PropTypes.string, breadcrumbs: PropTypes.array };

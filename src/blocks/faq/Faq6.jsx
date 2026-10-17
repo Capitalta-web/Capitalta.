@@ -127,7 +127,7 @@ export default function Faq6({ heading, caption, defaultExpanded, faqList, getIn
                     setFilterFaqList(faqList);
                   }}
                 >
-                  All
+                  Todas
                 </Button>
                 {categories.map((item, index) => (
                   <Button

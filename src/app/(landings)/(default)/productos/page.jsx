@@ -1,8 +1,9 @@
 import ProductosContent from './ProductosContent';
 
-export const metadata = {
-  title: 'Productos de crédito | Capitalta'
-};
+// @project
+import { SEO_CONTENT } from '@/metadata';
+
+export const metadata = { ...SEO_CONTENT.productos };
 
 export default function ProductosPage() {
   return <ProductosContent />;
