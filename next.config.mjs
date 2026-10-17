@@ -1,19 +1,8 @@
-/** @type {import('next').NextConfig} */
-const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms https://fomo.codedthemes.com;
-    style-src 'self' 'unsafe-inline' https://fomo.codedthemes.com https://fonts.googleapis.com;
-    img-src 'self' blob: data: https://www.googletagmanager.com https://flagcdn.com https://*.openstreetmap.org https://*.clarity.ms https://*.bing.com https://fomo.codedthemes.com https://*.supabase.co https://*.supabase.net;
-    font-src 'self' https://*.gstatic.com;
-    object-src 'self';
-    base-uri 'self';
-    form-action 'self';
-    media-src 'self' https://*.cloudfront.net;
-    connect-src 'self' https://www.googletagmanager.com https://raw.githubusercontent.com https://fomo.codedthemes.com https://*.clarity.ms https://*.azurewebsites.net https://*.supabase.co https://*.supabase.net;
-    upgrade-insecure-requests;
-`;
+import { buildSecurityHeaders } from './src/utils/security/headers.mjs';
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   modularizeImports: {
     '@mui/material': {
       transform: '@mui/material/{{member}}'
@@ -32,33 +21,8 @@ const nextConfig = {
     ]
   },
   async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, '')
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY'
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block'
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
-          }
-        ]
-      }
-    ];
+    // CSP y cabeceras de seguridad: ver src/utils/security/headers.mjs
+    return [{ source: '/(.*)', headers: buildSecurityHeaders() }];
   },
   async redirects() {
     return [
@@ -68,15 +32,8 @@ const nextConfig = {
         permanent: true
       }
     ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/tailwind/:path*' /** settings for tailwind version of project */,
-        destination: 'https://phpstack-207002-5285707.cloudwaysapps.com/tailwind/:path*'
-      }
-    ];
   }
+  // Se quitó el rewrite /tailwind/* hacia cloudwaysapps.com (resto de la plantilla).
 };
 
 export default nextConfig;

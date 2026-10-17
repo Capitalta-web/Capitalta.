@@ -4,11 +4,20 @@ import { createSupabaseServerClient } from '@/utils/supabaseClient';
 import { sendEmail } from '@/utils/nodemailer';
 import { CONTACT_EMAIL, escapeHtml, row } from '@/utils/emailHtml';
 
+import { createRateLimiter, getClientIp, rateLimitHeaders } from '@/utils/security/rateLimit';
+
+const brokersLimiter = createRateLimiter({ limit: 5, windowMs: 60 * 1000 });
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const clean = (value, max = 200) => (value === undefined || value === null ? '' : String(value).trim().slice(0, max));
 
 export async function POST(request) {
+  const limit = brokersLimiter.check(`brokers:${getClientIp(request)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta de nuevo en un minuto.' }, { status: 429, headers: rateLimitHeaders(limit) });
+  }
+
   let body;
   try {
     body = await request.json();

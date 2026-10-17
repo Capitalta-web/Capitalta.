@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Box, Grid, Card, Stack, Typography, Button, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
-import { IconFileText, IconCircleCheck, IconCircleX, IconClock, IconArrowRight } from '@tabler/icons-react';
+import { IconFileText, IconCircleCheck, IconClock, IconArrowRight } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 import KPICard from '@/components/dashboard/KPICard';

@@ -11,17 +11,15 @@ import {
   LinearProgress,
   Stack,
   Typography,
-  Alert,
-  IconButton
+  Alert
 } from '@mui/material';
 import {
   IconCloudUpload,
   IconCheck,
   IconX,
-  IconFile,
-  IconFileText
+  IconFile
 } from '@tabler/icons-react';
-import { validateFile, formatFileSize, getFileExtension, createFilePreview, revokeFilePreview } from '@/utils/documentValidation';
+import { validateFile, formatFileSize, createFilePreview, revokeFilePreview } from '@/utils/documentValidation';
 
 export default function DocumentUploadZone({
   documentType = 'identity',

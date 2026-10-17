@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Box,
   Card,
   Table,
   TableBody,
@@ -11,12 +10,11 @@ import {
   TableRow,
   TablePagination,
   Button,
-  Stack,
   Typography,
   Chip,
   CircularProgress
 } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const statusConfig = {
   pendiente: { label: 'Pendiente', color: 'warning' },

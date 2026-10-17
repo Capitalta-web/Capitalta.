@@ -10,7 +10,6 @@ import {
   Grid,
   Card,
   Stack,
-  Button,
   LinearProgress,
   Alert,
   CircularProgress
@@ -88,7 +87,7 @@ export default function DocumentosPage() {
     try {
       // Upload to storage
       const fileName = `${user.id}/${docType}/${Date.now()}-${file.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('documentos')
         .upload(fileName, file, { upsert: true });
 

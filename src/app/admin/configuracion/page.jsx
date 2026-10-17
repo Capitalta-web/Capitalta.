@@ -13,12 +13,12 @@ import {
   Divider,
   FormControlLabel,
   Switch,
-  Grid,
-} from '@mui/material';
+  } from '@mui/material';
 import { IconMail, IconPhone, IconBell } from '@tabler/icons-react';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 export default function ConfiguracionPage() {
+  // eslint-disable-next-line no-unused-vars
   const supabase = createSupabaseBrowserClient();
 
   const [config, setConfig] = useState({

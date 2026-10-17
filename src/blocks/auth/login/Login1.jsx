@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 // @project
-import { AuthLogin, AuthSocial, Copyright } from '@/components/auth';
+import { AuthLogin, Copyright } from '@/components/auth';
 import ContainerWrapper from '@/components/ContainerWrapper';
 import { NextLink } from '@/components/routes';
 import Typeset from '@/components/Typeset';
@@ -71,9 +71,9 @@ export default function Login1({ heading, caption, signupLink }) {
                   href={signupLink || '/auth/signup'}
                   sx={{ '&:hover': { color: 'primary.dark' } }}
                   rel="noopener noreferrer"
-                  aria-label="sign up"
+                  aria-label="Crear cuenta"
                 >
-                  Sign Up
+                  Regístrate
                 </Link>
               </Typography>
             </Box>

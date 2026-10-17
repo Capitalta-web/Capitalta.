@@ -7,20 +7,13 @@ import {
   Breadcrumbs,
   Link as MuiLink,
   Typography,
-  Stack,
   Grid,
   TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
   Alert,
-  CircularProgress,
   Card
 } from '@mui/material';
 import { createSupabaseBrowserClient } from '@/utils/supabaseClient';

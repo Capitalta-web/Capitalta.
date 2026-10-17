@@ -35,21 +35,16 @@ export default function ProfilePage() {
     setErrorMsg('');
 
     try {
+      // El bucket 'avatars' se administra en Supabase (ya no se crea desde la app).
       const bucket = 'avatars';
-      // Asegurar bucket
-      const ensureResp = await fetch('/api/storage/ensure-bucket', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bucket, public: true })
-      });
-
-      if (!ensureResp.ok) throw new Error('No se pudo preparar el almacenamiento de avatares.');
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${userData.id}/avatar_${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file, { upsert: true });
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        throw new Error(/bucket not found/i.test(uploadError.message || '') ? 'La foto de perfil no está disponible por ahora.' : uploadError.message);
+      }
 
       const {
         data: { publicUrl }

@@ -18,10 +18,7 @@ import {
   TextField,
   Typography,
   Alert,
-  Checkbox,
-  FormControlLabel,
   CircularProgress,
-  Divider,
   useMediaQuery
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
