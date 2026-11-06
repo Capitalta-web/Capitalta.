@@ -17,11 +17,6 @@ import { createSupabaseBrowserClient } from '@/utils/supabaseClient';
 
 const authButtons = [
   {
-    label: 'Google',
-    icon: '/assets/images/social/google.svg',
-    title: 'Sign in with Google'
-  },
-  {
     label: 'Apple',
     icon: { light: '/assets/images/social/apple-light.svg', dark: '/assets/images/social/apple-dark.svg' },
     title: 'Sign in with Apple'
@@ -74,7 +69,6 @@ export default function AuthSocial({ type = SocialTypes.VERTICAL, buttonSx }) {
           fullWidth
           disabled={isLoading || item.label === 'Apple'}
           onClick={() => {
-            if (item.label === 'Google') handleSocialLogin('google');
             if (item.label === 'Facebook') handleSocialLogin('facebook');
           }}
           sx={{
